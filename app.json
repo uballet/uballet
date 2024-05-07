@@ -18,6 +18,7 @@
       "supportsTablet": true
     },
     "android": {
+      "package": "com.uballet.wallet",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
@@ -25,6 +26,11 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "5041aad6-cc9f-4375-9021-c586d07c1e91"
+      }
     }
   }
 }
