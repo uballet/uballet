@@ -3,18 +3,36 @@ import { StyleSheet } from 'react-native';
 const globalStyles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     alignItems: 'center',
     padding: 16,
+    backgroundColor: '#E0F7FA',
   },
   userSettings: {
     position: 'absolute',
-    top: 20,
+    top: 50,
     left: 20,
   },
+  balanceContainer: {
+    alignItems: 'center',
+    marginTop: 40,
+  },
+  balanceHeader: {
+    fontSize: 16,
+    color: '#333',
+    marginTop: 25,
+  },
   balance: {
-    fontSize: 24,
-    marginVertical: 20,
+    fontSize: 32,
+    marginVertical: 0,
+    color: '#007ACC',
+    fontWeight: 'bold',
+  },
+  seeAll: {
+    fontSize: 14,
+    color: '#007ACC',
+    textDecorationLine: 'underline',
+    marginBottom: 20,
   },
   keyFeatures: {
     flexDirection: 'row',
@@ -28,9 +46,18 @@ const globalStyles = StyleSheet.create({
     borderRadius: 25,
     backgroundColor: '#ccc',
   },
-  movements: {
+  movementsContainer: {
+    flex: 1,
     width: '100%',
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    padding: 16,
     marginTop: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 5,
   },
   movementsHeader: {
     fontSize: 18,
