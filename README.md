@@ -4,9 +4,11 @@ ERC-4337 compliant mobile wallet for Ethereum based blockchains
 
 ## First steps 
 
-Tener instalado node 
+Instalar NodeJS: https://nodejs.org/en/download/package-manager
 
-Instalar expo, desde el directorio raiz ejecutar `npm install expo`
+Instalar Expo
+
+Desde el directorio raiz ejecutar `npm install expo`
 
 Para levantar el proyecto hay que correr `npx expo start`
 
