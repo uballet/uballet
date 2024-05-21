@@ -10,6 +10,8 @@ Instalar Expo
 
 Desde el directorio raiz ejecutar `npm install expo`
 
+Actualizar las dependencias `npx expo install --fix`
+
 Para levantar el proyecto hay que correr `npx expo start`
 
 ## Entorno virtual
