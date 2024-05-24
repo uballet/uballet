@@ -7,7 +7,7 @@
     },
     "noEmit": true,
     "verbatimModuleSyntax": true,
-    "types": ["node"]
+    "types": ["node", "jest"]
   },
   "include": ["**/*.ts", "**/*.tsx"]
 }

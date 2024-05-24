@@ -18,14 +18,7 @@ export default PillMeta
 
 type Story = StoryObj<typeof PillMeta>
 
-export const Basic: Story = {
-    render: (props) => {
-        return <Pill {...props} />
-    },
-    args: {
-        text: "Hello Pill"
-    }
-}
+export const Basic: Story = {}
 
 export const WithEmptyText: Story = {
     render: (props) => {
