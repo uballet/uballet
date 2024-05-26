@@ -1,4 +1,4 @@
-name: Run React Native Unit Tests
+name: React Native Unit Tests
 
 on:
   push:
