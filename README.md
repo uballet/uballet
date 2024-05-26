@@ -33,3 +33,10 @@ Para correr desde la terminal
 
 Tener instalado XCode. Cuando XCode solicite los tipos de proyectos a desarrollar tildar la opcion de `iOS`. Posterior a eso se va a descargar el simulador.
 
+### Storybook
+
+Para correr storybook se debe correr alguno de los dos scripts `npm run storybook:ios` o `npm run storybook:android`.
+
+Además, se debe incluir en el archivo `.env` una entrada `EXPO_PUBLIC_STORYBOOK=${STORYBOOK}`. Esto significa que la variable de ambiente
+
+`STORYBOOK` que es seteada en los scripts mencionados previamente se hace disponible para la aplicación a través de la variable `EXPO_PUBLIC_STORYBOOK`.
