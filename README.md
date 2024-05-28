@@ -1,31 +1,44 @@
 # uballet
-ERC-4337 compliant mobile wallet for Ethereum based blockchains
 
+![Badge for react native unit tests](https://github.com/MarkoVrljicak/uballet/actions/workflows/unit-test.yml/badge.svg)
 
-## First steps 
+ERC-4337 compliant mobile wallet for Ethereum-based blockchains
 
-Tener instalado node 
+## Development and setup
 
-Instalar expo, desde el directorio raiz ejecutar `npm install expo`
+### First steps 
 
-Para levantar el proyecto hay que correr `npx expo start`
+Install NodeJS: [NodeJS Download](https://nodejs.org/en/download/package-manager)
 
-## Entorno virtual
+Install Expo
 
-### Android 
+From the root directory, run `npm install expo`
 
-Tener instalador Android Studio
-Desde Android Studio > Tool > Device manager > Cretae virtual device > Elegir un emulador a gusto con una imagen API 34 (Android 14)
+Update dependencies `npx expo install --fix`
 
-Para correr desde la terminal
+To start the project, run `npx expo start`
 
-> El comando emulator deberia instarse y ser agregado al entorno de la terminal cuando se hace la configuracion del Android Studio
+### Virtual environment
 
-`emulator -list-avds` para ver el listado de emuladores instalados
+#### Android 
 
-`emulator -avd $NOMBRE` para correr el emulador desde terminal 
+Have Android Studio installed
+From Android Studio > Tool > Device manager > Create virtual device > Choose an emulator with an API 34 (Android 14) image
 
-### iOS
+To run from the terminal
 
-Tener instalado XCode. Cuando XCode solicite los tipos de proyectos a desarrollar tildar la opcion de `iOS`. Posterior a eso se va a descargar el simulador.
+> The emulator command should be installed and added to the terminal environment when configuring Android Studio
 
+`emulator -list-avds` to see the list of installed emulators
+
+`emulator -avd $NAME` to run the emulator from the terminal 
+
+#### iOS
+
+Have XCode installed. When XCode asks for the types of projects to develop, select the `iOS` option. After that, the simulator will be downloaded.
+
+#### Storybook
+
+To run storybook, you must run one of the two scripts `npm run storybook:ios` or `npm run storybook:android`.
+
+Also, you need to include an entry `EXPO_PUBLIC_STORYBOOK=${STORYBOOK}` in the `.env` file. This means that the environment variable `STORYBOOK` which is set in the previously mentioned scripts, is made available to the application through the variable `EXPO_PUBLIC_STORYBOOK`.
