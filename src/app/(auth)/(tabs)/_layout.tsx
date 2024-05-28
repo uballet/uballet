@@ -24,8 +24,14 @@ function TabsLayout() {
                     tabBarIcon: ({ color }) => <MaterialIcons name="settings" size={24} color={color} />,
                 }}
             />
+            <Tabs.Screen name="balance"
+                options={{
+                    tabBarButton: () => null,
+                }}
+            />
         </Tabs>
     )
 }
 
-export default TabsLayout
+export default TabsLayout;
+

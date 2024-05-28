@@ -71,6 +71,29 @@ const globalStyles = StyleSheet.create({
   amount: {
     color: 'red',
   },
+  balanceScreenContainer: {
+    flex: 1,
+    backgroundColor: '#fff',
+    padding: 20,
+  },
+  balanceScreenHeader: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginVertical: 20,
+  },
+  balanceItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginVertical: 10,
+  },
+  currency: {
+    fontSize: 18,
+  },
+  balanceAmount: {
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
 });
 
 export default globalStyles;

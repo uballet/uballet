@@ -13,7 +13,7 @@ const HomeScreen: React.FC = () => {
       <View style={styles.balanceContainer}>
         <Text style={styles.balanceHeader}>Balance</Text>
         <Text style={styles.balance}>0.0023 ETH</Text>
-        <Link href="/screens/balance" style={styles.seeAll}>
+        <Link href="balance" style={styles.seeAll}>
           <Text>See all</Text>
         </Link>
       </View>
