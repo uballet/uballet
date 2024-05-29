@@ -5,8 +5,8 @@ import { MaterialIcons } from '@expo/vector-icons';
 
 function TabsLayout() {
     return (
-        <Tabs initialRouteName="home">
-            <Tabs.Screen name="home"
+        <Tabs initialRouteName="index">
+            <Tabs.Screen name="index"
                 options={{
                     title: "Home",
                     tabBarIcon: ({ color }) => <AntDesign name="home" size={24} color={color} />,
