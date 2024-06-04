@@ -1,5 +1,5 @@
-import React from 'react';
 import { Slot } from 'expo-router';
+import AuthProvider from '../providers/AuthProvider';
 
 export default function App() {
   if (process.env.EXPO_PUBLIC_STORYBOOK === "true") {
@@ -8,6 +8,8 @@ export default function App() {
     return <Storybook />
   }
   return (
-    <Slot />
+    <AuthProvider>
+      <Slot />
+    </AuthProvider>
   );
 }
