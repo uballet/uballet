@@ -1,6 +1,5 @@
 import Constants from "expo-constants";
 import { Platform } from "react-native";
-import * as Device from "expo-device";
 import * as Notifications from "expo-notifications";
 
 function handleRegistrationError(errorMessage: string) {
@@ -8,6 +7,11 @@ function handleRegistrationError(errorMessage: string) {
   throw new Error(errorMessage);
 }
 
+/*
+  This function requests permission to send push notifications and registers the device
+  to receive push notifications. It returns the push token string that can be used to
+  send push notifications to the device.
+*/
 export async function registerForPushNotificationsAsync() {
   if (Platform.OS === "android") {
     Notifications.setNotificationChannelAsync("default", {
