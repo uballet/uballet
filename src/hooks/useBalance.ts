@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useAccountContext } from "./useAccountContext";
-import { useLightAccount, useSafeLightAccount } from "./useLightAccount";
+import { useSafeLightAccount } from "./useLightAccount";
 import { formatEther } from "viem";
 
 export function useBalance() {
