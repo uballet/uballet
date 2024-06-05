@@ -17,7 +17,7 @@ export function useTransfer() {
                 uo: {
                     target: address,
                     data: '0x',
-                    value: parseEther('0.04999')
+                    value: parseEther('0.0001')
                 },
             })
             const txHash = await client.waitForUserOperationTransaction(uo)
