@@ -9,7 +9,7 @@ export function useTransfer() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(false)
     const [txHash, setTxHash] = useState<null | string>(null)
-    const transferToAddress = useCallback(async (address: `0x${string}`) => {
+    const transferToAddress = useCallback(async (address: `0x${string}`, etherAmount: string) => {
         try {
             setLoading(true)
             const uo = await client.sendUserOperation({
@@ -17,7 +17,7 @@ export function useTransfer() {
                 uo: {
                     target: address,
                     data: '0x',
-                    value: parseEther('0.0001')
+                    value: parseEther(etherAmount)
                 },
             })
             const txHash = await client.waitForUserOperationTransaction(uo)
