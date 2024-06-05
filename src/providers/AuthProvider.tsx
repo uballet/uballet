@@ -11,7 +11,7 @@ export const AuthContext = createContext<{
 export default function AuthProvider({ children }: PropsWithChildren) {
     const [user, setUser] = useState<{ email: string } | null>(null)
     const loginWithEmailAndPassword = useCallback((email: string, password: string) => {
-        if (email === 'test@fi.uba.ar')
+        if (email.endsWith('@fi.uba.ar'))
             if (password === 'test')
                 setUser({ email })
     }, [])
