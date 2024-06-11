@@ -29,6 +29,12 @@ function TabsLayout() {
                     tabBarButton: () => null,
                 }}
             />
+            <Tabs.Screen name="notifications"
+                options={{
+                    title: "Notifications",
+                    tabBarIcon: ({ color }) => <MaterialIcons name="notifications" size={24} color={color} />,
+                }}
+            />
         </Tabs>
     )
 }
