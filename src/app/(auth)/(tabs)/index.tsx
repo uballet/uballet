@@ -1,16 +1,23 @@
 import React from 'react';
 import { View, ScrollView } from 'react-native';
-import { Avatar, Card, FAB, List, Text } from 'react-native-paper';
+import { ActivityIndicator, Avatar, Card, FAB, List, Text } from 'react-native-paper';
 import { Link } from 'expo-router';
 import styles from '../../../styles/styles';
+import { useBalance } from '../../../hooks/useBalance';
 
 const HomeScreen: React.FC = () => {
+  const balance = useBalance()
+
+  console.log({ balance })
   return (
     <ScrollView >
       <Avatar.Icon style={styles.userSettings} size={30} icon="account" />
       <View style={styles.balanceContainer}>
         <Text style={styles.balanceHeader}>Balance</Text>
-        <Text style={styles.balance}>0.0023 ETH</Text>
+        {balance !== null
+          ? (<Text style={styles.balance}>{balance?.toString()} eth</Text>)
+          : <ActivityIndicator />
+        }
         <Link href="balance" style={styles.seeAll}>
           <Text>See all</Text>
         </Link>
