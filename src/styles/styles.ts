@@ -6,7 +6,6 @@ const globalStyles = StyleSheet.create({
     justifyContent: 'flex-start',
     alignItems: 'center',
     padding: 16,
-    backgroundColor: '#E0F7FA',
   },
   userSettings: {
     position: 'absolute',
@@ -40,18 +39,9 @@ const globalStyles = StyleSheet.create({
     width: '100%',
     marginVertical: 20,
   },
-  featureCircle: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: '#ccc',
-  },
   movementsContainer: {
-    flex: 1,
-    width: '100%',
-    backgroundColor: '#fff',
     borderRadius: 10,
-    padding: 16,
+    margin: 16,
     marginTop: 20,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
@@ -73,7 +63,6 @@ const globalStyles = StyleSheet.create({
   },
   balanceScreenContainer: {
     flex: 1,
-    backgroundColor: '#fff',
     padding: 20,
   },
   balanceScreenHeader: {
