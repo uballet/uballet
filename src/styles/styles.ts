@@ -7,6 +7,21 @@ const globalStyles = StyleSheet.create({
     alignItems: 'center',
     padding: 16,
   },
+  containerLogin: {
+    height: '100%',
+    justifyContent: 'space-between',
+    padding: 16,
+  },
+  item: {
+    marginVertical: 8,
+  },
+  image: {
+    width: 100,
+    height: 100,
+    alignSelf: 'center',
+    resizeMode: 'contain',
+    marginVertical: 8,
+  },
   userSettings: {
     position: 'absolute',
     top: 50,
