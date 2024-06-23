@@ -1,14 +1,18 @@
 import React from 'react';
 import { View, Text, ScrollView, ActivityIndicator } from 'react-native';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { Link } from 'expo-router';
 import styles from '../../../styles/styles';
 import { useBalance } from '../../../hooks/useBalance';
+import { useRecentTransactions } from '../../../hooks/useRecentTransactions';
 
+const formatTxAddress = (address: string) => {
+  return `${address.slice(0, 5)}...${address.slice(36)}`
+}
 const HomeScreen: React.FC = () => {
   const balance = useBalance()
+  const { fromTransfers, toTransfers } = useRecentTransactions()
 
-  console.log({ balance })
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.userSettings}>
@@ -32,12 +36,26 @@ const HomeScreen: React.FC = () => {
       </View>
       <View style={styles.movementsContainer}>
         <Text style={styles.movementsHeader}>Movements</Text>
-        {[...Array(6)].map((_, index) => (
+        <Text style={styles.movementsHeader}>Received</Text>
+        {!toTransfers && (
+          <ActivityIndicator />
+        )}
+        {toTransfers && toTransfers.map((transfer, index) => (
           <View key={index} style={styles.movementRow}>
-            <Text>Some address - 10/11/12 12:00am</Text>
-            <Text style={styles.amount}>-0.0523</Text>
+            <Text>{`From: ${formatTxAddress(transfer.from)} - Block: ${transfer.blockNum}`}</Text>
+            <Text style={{ color: 'green' }}>{transfer.value}</Text>
           </View>
         ))}
+        <Text style={styles.movementsHeader}>Sent</Text>
+        {!fromTransfers && (
+          <ActivityIndicator />
+        )}
+        {fromTransfers && fromTransfers.map((transfer, index) => (
+          <View key={index} style={styles.movementRow}>
+            <Text>{`From: ${formatTxAddress(transfer.from)} - Block: ${transfer.blockNum}`}</Text>
+            <Text style={{ color: 'red' }}>{transfer.value}</Text>
+          </View>
+        ))}        
       </View>
     </ScrollView>
   );
