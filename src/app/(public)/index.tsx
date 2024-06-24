@@ -1,11 +1,14 @@
 import { useState } from "react";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import useEmailAndPasswordAuth from "../../hooks/useEmailAndPasswordAuth";
+import useBiometricAuth from "../../hooks/useBiometricAuth";
 
 export default function LoginScreen() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('')
-    const login = useEmailAndPasswordAuth();
+    // const login = useEmailAndPasswordAuth();
+    const login = useBiometricAuth();
+    
     return (
         <View style={ScreenStyleSheet.container}>
             <TextInput style={ScreenStyleSheet.input} autoCapitalize="none" autoCorrect={false} placeholder="Email" onChangeText={v => setEmail(v)}/>
