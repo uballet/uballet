@@ -1,20 +1,55 @@
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
-import useEmailAndPasswordAuth from "../../hooks/useEmailAndPasswordAuth";
+import { AuthContext } from "../../providers/AuthProvider";
 
 export default function LoginScreen() {
     const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('')
-    const login = useEmailAndPasswordAuth();
+    const [password, setPassword] = useState('');
+    const { user, isEmailSet, loginWithEmailAndPassword, loginWithBiometrics } = useContext(AuthContext);
+
+    useEffect(() => {
+        const checkEmailAndLogin = async () => {
+            const emailSet = await isEmailSet();
+            if (emailSet) {
+                loginWithBiometrics();
+            }
+        };
+
+        checkEmailAndLogin();
+    }, [user, isEmailSet, loginWithBiometrics]);
+
+    const handleLogin = () => {
+        loginWithEmailAndPassword(email, password);
+        loginWithBiometrics();
+    };
+
     return (
         <View style={ScreenStyleSheet.container}>
-            <TextInput style={ScreenStyleSheet.input} autoCapitalize="none" autoCorrect={false} placeholder="Email" onChangeText={v => setEmail(v)}/>
-            <TextInput style={ScreenStyleSheet.input} autoCapitalize="none" autoCorrect={false} placeholder="Password" onChangeText={v => setPassword(v)}/>
-            <Pressable style={ScreenStyleSheet.button} onPress={() => login(email, password)}>
-                <Text style={ScreenStyleSheet.buttonText}>Login</Text>
-            </Pressable>
+            <>
+                <TextInput
+                    style={ScreenStyleSheet.input}
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                    placeholder="Email"
+                    onChangeText={v => setEmail(v)}
+                />
+                <TextInput
+                    style={ScreenStyleSheet.input}
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                    placeholder="Password"
+                    onChangeText={v => setPassword(v)}
+                    secureTextEntry
+                />
+                <Pressable
+                    style={ScreenStyleSheet.button}
+                    onPress={handleLogin}
+                >
+                    <Text style={ScreenStyleSheet.buttonText}>Login</Text>
+                </Pressable>
+            </>
         </View>
-    )
+    );
 }
 
 const ScreenStyleSheet = StyleSheet.create({
@@ -42,4 +77,4 @@ const ScreenStyleSheet = StyleSheet.create({
     buttonText: {
         color: 'white',
     }
-})
+});
