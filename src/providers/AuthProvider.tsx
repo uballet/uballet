@@ -31,7 +31,7 @@ export default function AuthProvider({ children }: PropsWithChildren) {
         const loadStoredCredentials = async () => {
             const email = await SecureStore.getItemAsync('userEmail');
             if (email) {
-                setUser({ email });
+                setUser(null);
             }
         };
         loadStoredCredentials();
@@ -47,8 +47,8 @@ export default function AuthProvider({ children }: PropsWithChildren) {
 
     const isEmailSet = async () => {
         const email = await SecureStore.getItemAsync('userEmail');
-        return (email != null);
-    }
+        return email != null;
+    };
 
     const loginWithEmailAndPassword = useCallback(async (email: string, password: string) => {
         if (email.endsWith('@fi.uba.ar') && password === 'test') {
