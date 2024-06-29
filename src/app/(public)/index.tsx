@@ -21,7 +21,9 @@ export default function LoginScreen() {
           autoCapitalize="none"
           autoCorrect={false}
           placeholder="Email"
+          onSubmitEditing={() => { this.secondTextInput.focus(); }}
           onChangeText={(v) => setEmail(v)}
+          autoFocus={true}
         />
         <TextInput
           mode="outlined"
@@ -30,6 +32,7 @@ export default function LoginScreen() {
           autoCorrect={false}
           keyboardType="visible-password"
           placeholder="Password"
+          ref={(input) => { this.secondTextInput = input; }}
           onChangeText={(v) => setPassword(v)}
         />
       </View>
