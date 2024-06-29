@@ -1,13 +1,31 @@
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Button, TextInput } from "react-native-paper";
-import useEmailAndPasswordAuth from "../../hooks/useEmailAndPasswordAuth";
 import { View, Image } from "react-native";
+import { AuthContext } from "../../providers/AuthProvider";
 import styles from "../../styles/styles";
 
 export default function LoginScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const login = useEmailAndPasswordAuth();
+  const { user, isEmailSet, loginWithEmailAndPassword, loginWithBiometrics } =
+    useContext(AuthContext);
+
+  useEffect(() => {
+    const checkEmailAndLogin = async () => {
+      const emailSet = await isEmailSet();
+      if (emailSet) {
+        loginWithBiometrics();
+      }
+    };
+
+    checkEmailAndLogin();
+  }, [user, isEmailSet, loginWithBiometrics]);
+
+  const handleLogin = () => {
+    loginWithEmailAndPassword(email, password);
+    loginWithBiometrics();
+  };
+
   return (
     <View style={styles.containerLogin}>
       <View style={styles.item}>
@@ -32,11 +50,12 @@ export default function LoginScreen() {
           autoCorrect={false}
           keyboardType="visible-password"
           placeholder="Password"
+          secureTextEntry={true}
           ref={(input) => { this.secondTextInput = input; }}
           onChangeText={(v) => setPassword(v)}
         />
       </View>
-      <Button mode="contained-tonal" onPress={() => login(email, password)}>
+      <Button mode="contained-tonal" onPress={handleLogin}>
         Login
       </Button>
     </View>

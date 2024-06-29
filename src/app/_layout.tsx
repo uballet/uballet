@@ -1,14 +1,12 @@
 import { Slot } from "expo-router";
-import React from "react";
-import { useNotificationObserver } from "../notifications/observer";
-import { registerForPushNotificationsAsync } from "../notifications/register";
 import {
   MD3LightTheme as DefaultTheme,
   PaperProvider,
 } from "react-native-paper";
-import AuthProvider from "../providers/AuthProvider";
+import { useNotificationObserver } from "../notifications/observer";
+import { registerForPushNotificationsAsync } from "../notifications/register";
 import { AccountProvider } from "../providers/AccountProvider";
-import { SafeAreaView } from "react-native";
+import AuthProvider from "../providers/AuthProvider";
 
 const theme = {
   ...DefaultTheme,

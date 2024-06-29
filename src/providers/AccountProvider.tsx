@@ -5,6 +5,12 @@ import { LocalAccountSigner, sepolia } from "@alchemy/aa-core";
 import { createLightAccount, LightAccount } from "@alchemy/aa-accounts";
 import { custom, sha256  } from "viem";
 import { entropyToMnemonic } from "bip39";
+import { Alchemy, Network } from "alchemy-sdk";
+
+const sdkClient = new Alchemy({
+    url: process.env.EXPO_PUBLIC_ALCHEMY_API_URL!!,
+    network: Network.ETH_SEPOLIA
+})
 
 const client = createAlchemySmartAccountClient({
     rpcUrl: process.env.EXPO_PUBLIC_ALCHEMY_API_URL!!,
@@ -16,9 +22,11 @@ const client = createAlchemySmartAccountClient({
 
 export const AccountContext = createContext<{
     client: AlchemySmartAccountClient,
+    sdkClient: Alchemy,
     account: LightAccount | null
 }>({
     client,
+    sdkClient,
     account: null
 })
 
@@ -26,13 +34,11 @@ export function AccountProvider({ children }: PropsWithChildren) {
     const [account, setAccount] = useState<LightAccount | null>(null);
     
     const user = useUser()
-    console.log({ env: process.env })
     useEffect(() => {
         if (user) {
             const hash = sha256(Buffer.from(user.email, 'utf-8'))
             const entropy = Buffer.from(new Uint8Array(hash.match(/.{1,2}/g)?.map(byte => parseInt(byte, 16)) || []).slice(0, 28))
 
-            console.log({ bufferLen: entropy.length })
             const mnemonic = entropyToMnemonic(Buffer.from(entropy));
 
             createLightAccount({
@@ -43,12 +49,11 @@ export function AccountProvider({ children }: PropsWithChildren) {
         }
     }, [user])
 
-    console.log({ user, account: account?.address })
-
     return (
         <AccountContext.Provider
             value={{
                 client,
+                sdkClient,
                 account
             }}
         >
