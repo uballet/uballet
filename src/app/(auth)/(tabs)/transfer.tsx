@@ -121,7 +121,7 @@ function TransferScreen() {
                             borderRadius: 8,
                             backgroundColor: (loading || !toAddress || !amount) ? '#CCCCCC' : 'black' 
                         }}
-                        onPress={() => transferTokenToAddress(tokenAddresses.currency, `0x${toAddress}`, amount)}
+                        onPress={() => transferTokenToAddress(tokenAddresses[currency], `0x${toAddress}`, amount)}
                         disabled={loading}
                     >
                         <Text style={{ color: 'white' }}>Transfer!</Text>
