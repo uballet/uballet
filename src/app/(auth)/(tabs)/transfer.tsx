@@ -1,22 +1,36 @@
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, Pressable, Text, TextInput, View } from "react-native";
-import { Picker } from "@react-native-picker/picker";
+import { Picker } from '@react-native-picker/picker';
 import { useSafeLightAccount } from '../../../hooks/useLightAccount';
 import { useTransfer } from '../../../hooks/useTransfer';
 import { useCheckTransferSponsorship } from '../../../hooks/useCheckTransferSponsorship';
-import tokensData from '../../../../erc20sepolia.json'; // Import the JSON file
+import tokensData from '../../../../erc20sepolia.json';
+
+type Token = {
+    name: string;
+    symbol: string;
+    address: string;
+};
+
+type TokensData = {
+    tokens: Token[];
+};
 
 function TransferScreen() {
     const account = useSafeLightAccount();
     const [toAddress, setAddress] = useState('');
     const [amount, setAmount] = useState('');
     const [currency, setCurrency] = useState('ETH');
-    const { transferToAddress, loading, error, txHash } = useTransfer();
+    const { transferToAddress, transferTokenToAddress, loading, error, txHash } = useTransfer();
     const { checkTransferSponsorship, loading: loadingSponsorship, setIsSponsored, isSponsored } = useCheckTransferSponsorship();
     const sponsorshipCheckDisabled = loadingSponsorship || isSponsored !== null;
 
-    const tokens = tokensData.tokens; // Save the imported JSON as a constant
-    const currencies = ['ETH', ...tokens.map(token => token.name)];
+    const tokens: TokensData = tokensData;
+    const currencies = ['ETH', ...tokens.tokens.map(token => token.symbol)];
+    const tokenAddresses = tokens.tokens.reduce<{ [key: string]: `0x${string}` }>((acc, token) => {
+        acc[token.symbol] = token.address as `0x${string}`;
+        return acc;
+    }, {});
 
     useEffect(() => {
         setIsSponsored(null);
@@ -37,7 +51,7 @@ function TransferScreen() {
                     <Picker
                         selectedValue={currency}
                         style={{ height: 50, width: 150 }}
-                        onValueChange={(itemValue) => setCurrency(itemValue)}
+                        onValueChange={(itemValue: string) => setCurrency(itemValue)}
                     >
                         {currencies.map((curr, index) => (
                             <Picker.Item key={index} label={curr} value={curr} />
@@ -99,7 +113,19 @@ function TransferScreen() {
                 </>
             ) : (
                 <View>
-                    {/* Future implementation for non-ETH values */}
+                    <Pressable
+                        style={{
+                            alignSelf: 'center',
+                            margin: 16,
+                            padding: 8,
+                            borderRadius: 8,
+                            backgroundColor: (loading || !toAddress || !amount) ? '#CCCCCC' : 'black' 
+                        }}
+                        onPress={() => transferTokenToAddress(tokenAddresses.currency, `0x${toAddress}`, amount)}
+                        disabled={loading}
+                    >
+                        <Text style={{ color: 'white' }}>Transfer!</Text>
+                    </Pressable>
                 </View>
             )}
             {txHash && <Text selectable>{txHash}</Text>}
