@@ -1,16 +1,23 @@
-import { Redirect, Slot } from "expo-router";
+import { Redirect, router, Slot } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useIsLoggedIn } from "../../hooks/useIsLoggedIn";
+import { useAuthContext } from "../../providers/AuthProvider";
+import { useEffect } from "react";
 
 export default function PublicLayout() {
-    const isLoggedIn = useIsLoggedIn()
+    const { user } = useAuthContext()
 
-    if (isLoggedIn) {
-        return <Redirect href="/(auth)" />
+    if (user?.verified) {
+        return <Redirect href={'/(auth)'} />
     }
 
+    useEffect(() => {
+        if (user && !user.verified) {
+            router.navigate('/(public)/verify-email')
+        }
+    }, [user, user?.verified])
+
     return (
-        <SafeAreaView>
+        <SafeAreaView style={{ flex: 1 }}>
             <Slot />
         </SafeAreaView>
     )

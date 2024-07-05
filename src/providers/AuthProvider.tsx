@@ -1,19 +1,30 @@
-import { createContext, PropsWithChildren, useCallback, useState } from "react";
+import { createContext, PropsWithChildren, useCallback, useContext, useState } from "react";
 
+type User = {
+    id: string;
+    email: string;
+    verified: boolean;
+}
 export const AuthContext = createContext<{
-    user: {
-        email: string;
-    } | null,
-    loginWithEmailAndPassword: (email: string, password: string) => void,
-    logout: () => void
-}>({ user: null, loginWithEmailAndPassword: () => {}, logout: () => {} })
+    user: User | null,
+    setUser: (user: User | null) => void,
+    logout: () => void,
+    passkeysOnboarded: boolean,
+    skipPasskeys: () => void
+}>({
+    user: null,
+    setUser: () => {},
+    logout: () => {},
+    passkeysOnboarded: false,
+    skipPasskeys: () => {},
+})
 
 export default function AuthProvider({ children }: PropsWithChildren) {
-    const [user, setUser] = useState<{ email: string } | null>(null)
-    const loginWithEmailAndPassword = useCallback((email: string, password: string) => {
-        if (email.endsWith('@fi.uba.ar'))
-            if (password === 'test')
-                setUser({ email })
+    const [user, setUser] = useState<User | null>(null)
+    const [passkeysOnboarded, setPasskeysOnboarded] = useState(false)
+
+    const skipPasskeys = useCallback(() => {
+        setPasskeysOnboarded(true)
     }, [])
 
     const logout = useCallback(() => {
@@ -24,13 +35,19 @@ export default function AuthProvider({ children }: PropsWithChildren) {
         <AuthContext.Provider
             value={{
                 user,
-                loginWithEmailAndPassword,
-                logout
+                setUser,
+                logout,
+                passkeysOnboarded,
+                skipPasskeys
             }}
         >
             {children}
         </AuthContext.Provider>
     )
+}
 
+export function useAuthContext() {
+    const context = useContext(AuthContext)
 
+    return context
 }

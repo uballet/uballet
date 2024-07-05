@@ -1,11 +1,11 @@
 import { createContext, PropsWithChildren, useEffect, useMemo, useState } from "react";
-import useUser from "../hooks/useUser";
 import { type AlchemySmartAccountClient, createAlchemySmartAccountClient } from "@alchemy/aa-alchemy";
 import { LocalAccountSigner, sepolia } from "@alchemy/aa-core";
 import { createLightAccount, LightAccount } from "@alchemy/aa-accounts";
 import { custom, sha256  } from "viem";
 import { entropyToMnemonic } from "bip39";
 import { Alchemy, Network } from "alchemy-sdk";
+import { useAuthContext } from "./AuthProvider";
 
 const sdkClient = new Alchemy({
     url: process.env.EXPO_PUBLIC_ALCHEMY_API_URL!!,
@@ -33,9 +33,9 @@ export const AccountContext = createContext<{
 export function AccountProvider({ children }: PropsWithChildren) {
     const [account, setAccount] = useState<LightAccount | null>(null);
     
-    const user = useUser()
+    const { user } = useAuthContext();
     useEffect(() => {
-        if (user) {
+        if (user?.verified) {
             const hash = sha256(Buffer.from(user.email, 'utf-8'))
             const entropy = Buffer.from(new Uint8Array(hash.match(/.{1,2}/g)?.map(byte => parseInt(byte, 16)) || []).slice(0, 28))
 
