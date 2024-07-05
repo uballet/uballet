@@ -27,12 +27,12 @@ export default function AuthProvider({ children }: PropsWithChildren) {
     };
 
     useEffect(() => {
-        checkBiometricAvailability();
+        //checkBiometricAvailability();
         const loadStoredCredentials = async () => {
             const email = await SecureStore.getItemAsync('userEmail');
-            if (email) {
-                setUser(null);
-            }
+    
+            console.log('Stored email:', email);
+            setUser({ email } );
         };
         loadStoredCredentials();
     }, []);
