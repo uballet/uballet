@@ -3,6 +3,7 @@ import AuthProvider from '../providers/AuthProvider';
 import { AccountProvider } from '../providers/AccountProvider';
 import { useNotificationObserver } from '../notifications/observer';
 import { registerForPushNotificationsAsync } from '../notifications/register';
+import { QueryProvider } from '../providers/QueryProvider';
 
 export default function App() {
   if (process.env.EXPO_PUBLIC_STORYBOOK === "true") {
@@ -14,10 +15,12 @@ export default function App() {
   registerForPushNotificationsAsync()
   useNotificationObserver();
   return (
-    <AuthProvider>
-      <AccountProvider>
-        <Slot />
-      </AccountProvider>
-    </AuthProvider>
+    <QueryProvider>
+      <AuthProvider>
+        <AccountProvider>
+          <Slot />
+        </AccountProvider>
+      </AuthProvider>
+    </QueryProvider>
   );
 }
