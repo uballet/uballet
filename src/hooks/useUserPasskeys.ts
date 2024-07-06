@@ -16,7 +16,7 @@ export function useUserPasskeys() {
             const passkeys = await uballet.getUserPasskeys({ userId: user?.id!! })
             return passkeys
         },
-        queryKey: ['passkeys', user?.id],
+        queryKey: ['passkeys'],
         enabled: !!user
     })
 

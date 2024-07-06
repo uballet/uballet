@@ -48,7 +48,7 @@ export function usePasskeyRegistration() {
         mutationFn: registerCb,
         mutationKey: ['register', user?.id],
         onSuccess: async (passkey) => {
-            queryClient.setQueryData(['passkeys', user?.id], passkey)
+            queryClient.setQueryData(['passkeys'], (passkeys: any) => [...(passkeys ?? []), passkey])
         }
     })
 
