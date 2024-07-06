@@ -4,7 +4,8 @@ import { Passkey, PasskeyAuthenticationResult } from "react-native-passkey"
 import base64url from "base64url"
 import { PublicKeyCredentialRequestOptionsJSON } from '@simplewebauthn/typescript-types'
 import uballet from "../api/uballet"
-import { setUballetToken, useAuthContext } from "../providers/AuthProvider"
+import { useAuthContext } from "../providers/AuthProvider"
+import { setUballetToken } from "../api/uballet"
 
 const serverToClientPasskeyAuthenticationnOptions = (options: PublicKeyCredentialRequestOptionsJSON) => {
     return {
