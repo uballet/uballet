@@ -1,4 +1,7 @@
-import { createContext, PropsWithChildren, useCallback, useContext, useState } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { createContext, PropsWithChildren, useCallback, useContext, useEffect, useState } from "react";
+import uballet, { getUballetToken, removeUballetToken } from "../api/uballet";
+import { ActivityIndicator, View } from "react-native";
 
 type User = {
     id: string;
@@ -22,14 +25,43 @@ export const AuthContext = createContext<{
 export default function AuthProvider({ children }: PropsWithChildren) {
     const [user, setUser] = useState<User | null>(null)
     const [passkeysOnboarded, setPasskeysOnboarded] = useState(false)
+    const [isReady, setIsReady] = useState(false)
+
+    useEffect(() => {
+        async function initAuth() {
+            const token = await getUballetToken()
+            try {
+                if (token) {
+                    console.log('GETTING TOKEN')
+                    const user = await uballet.getCurrentUser()
+                    setUser(user)
+                }
+            } catch (error) {
+                
+            } finally {
+                setIsReady(true)
+            }
+        }
+        initAuth()
+    }, [])
 
     const skipPasskeys = useCallback(() => {
         setPasskeysOnboarded(true)
     }, [])
 
-    const logout = useCallback(() => {
-        setUser(null)
+    const logout = useCallback(async () => {
+        await removeUballetToken().then(() => {
+            setUser(null)
+        })
     }, [])
+
+    if (!isReady) {
+        return (
+            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+                <ActivityIndicator />
+            </View>
+        )
+    }
 
     return (
         <AuthContext.Provider

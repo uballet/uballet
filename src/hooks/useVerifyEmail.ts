@@ -1,23 +1,24 @@
 import { useMutation } from "@tanstack/react-query"
-import { useAuthContext } from "../providers/AuthProvider"
+import { setUballetToken, useAuthContext } from "../providers/AuthProvider"
 import { useEffect } from "react"
 import uballet from "../api/uballet"
 
 export function useVerifyEmail() {
     const { user, setUser } = useAuthContext()
-    const { mutate: verifyEmail, isPending, isError, isSuccess } = useMutation({
+    const { mutate: verifyEmail, isPending, isError, isSuccess, data } = useMutation({
         mutationFn: async ({ code }: { code: string }) => {
-            await uballet.verifyEmail({ email: user!.email, code })
+            const { token } = await uballet.verifyEmail({ email: user!.email, code })
+            await setUballetToken(token)
             return true
         },
         mutationKey: ['verify-email', user?.email]
     })
 
     useEffect(() => {
-        if (isSuccess) {
+        if (data) {
             setUser({ ...user!, verified: true })
         }
-    }, [isSuccess])
+    }, [data])
 
     return { verifyEmail, isPending, isSuccess, isError }
 }

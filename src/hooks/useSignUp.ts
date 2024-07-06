@@ -5,7 +5,7 @@ import UballetAPI from '../api/uballet'
 
 export function useSignUp() {
     const { setUser } = useAuthContext()
-    const { mutate: signup, isPending, isError, isSuccess, data: user } = useMutation({
+    const { mutate: signup, isPending, isError, error, isSuccess, data: user } = useMutation({
         mutationFn: async ({ email }: { email: string }) => {
             const { data: user } = await UballetAPI.signUp({ email })
             return user
@@ -18,5 +18,10 @@ export function useSignUp() {
         }
     }, [user])
 
+    useEffect(() => {
+        if (error) {
+            console.error(error)
+        }
+    }, [error])
     return { signup, isPending, isError, isSuccess }
 }

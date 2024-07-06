@@ -4,7 +4,7 @@ import { Passkey, PasskeyAuthenticationResult } from "react-native-passkey"
 import base64url from "base64url"
 import { PublicKeyCredentialRequestOptionsJSON } from '@simplewebauthn/typescript-types'
 import uballet from "../api/uballet"
-import { useAuthContext } from "../providers/AuthProvider"
+import { setUballetToken, useAuthContext } from "../providers/AuthProvider"
 
 const serverToClientPasskeyAuthenticationnOptions = (options: PublicKeyCredentialRequestOptionsJSON) => {
     return {
@@ -37,7 +37,8 @@ export function usePasskeySignIn() {
             withSecurityKey: false
         })
         const credentials = clientToServerCredentialsResponse(cred)
-        const user  = await uballet.verifyPasskeyAuthentication({ credentials, challenge })
+        const { user, token }  = await uballet.verifyPasskeyAuthentication({ credentials, challenge })
+        await setUballetToken(token)
         return user
     }, [])
 
