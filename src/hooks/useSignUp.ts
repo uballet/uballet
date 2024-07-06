@@ -1,23 +1,22 @@
 import { useMutation } from "@tanstack/react-query";
-import axios from "axios";
 import { useAuthContext } from "../providers/AuthProvider";
 import { useEffect } from "react";
-import { UBALLET_API_URL } from "../constants";
+import UballetAPI from '../api/uballet'
 
 export function useSignUp() {
     const { setUser } = useAuthContext()
-    const { mutate: signup, isPending, isError, isSuccess, data } = useMutation({
+    const { mutate: signup, isPending, isError, isSuccess, data: user } = useMutation({
         mutationFn: async ({ email }: { email: string }) => {
-            return axios.post(`${UBALLET_API_URL}/signup`, { email })
+            const { data: user } = await UballetAPI.signUp({ email })
+            return user
         }
     })
 
     useEffect(() => {
-        if (data?.data) {
-            console.log({ data: data.data })
-            setUser(data.data.user)
+        if (user) {
+            setUser(user)
         }
-    }, [data])
+    }, [user])
 
     return { signup, isPending, isError, isSuccess }
 }

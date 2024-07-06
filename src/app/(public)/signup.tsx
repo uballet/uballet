@@ -20,7 +20,7 @@ export default function SignUpScreen() {
                 <Text style={styles.buttonText}>Sign up</Text>
             </Pressable>
             <Link href={'/(public)/login'}>
-                Already have an account? Login!
+                Already have an account? Sign In!
             </Link>
         </View>
     )

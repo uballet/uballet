@@ -1,12 +1,15 @@
-import { useCallback, useContext } from "react";
-import { AuthContext } from "../providers/AuthProvider";
+import { useCallback } from "react";
 import { useMutation } from "@tanstack/react-query";
-import axios from "axios";
+import uballet from "../api/uballet";
 
 export default function useEmailSignIn() {
-    const { mutate: login, isError, isSuccess, isPending } = useMutation({ mutationFn: ({ email }: { email: string }) => {
-        return axios.post(`${process.env.UBALLET_API_URL}/email-login`, { email })
-    } })
+    const startEmailSignIn = useCallback(async ({ email }: { email: string }) => {
+        await uballet.startEmailLogin({ email })
+    }, [])
 
-    return { login, isError, isSuccess, isPending }
+    const { mutate: signIn, isError, isSuccess, isPending } = useMutation({
+        mutationFn: startEmailSignIn
+    })
+
+    return { signIn, isError, isSuccess, isPending }
 }

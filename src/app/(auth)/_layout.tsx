@@ -3,12 +3,12 @@ import { Redirect, router, Slot, usePathname } from "expo-router";
 import { ActivityIndicator } from "react-native";
 import { useLightAccount } from "../../hooks/useLightAccount";
 import { useAuthContext } from "../../providers/AuthProvider";
-import { useWebAuthnCredentials } from "../../hooks/useWebAuthnCredentials";
+import { useUserPasskeys } from "../../hooks/useUserPasskeys";
 
 export default function AuthenticatedLayout() {
     const { user } = useAuthContext()
     const account = useLightAccount()
-    const { passkeysOnboarded, isSuccess } = useWebAuthnCredentials()
+    const { passkeysOnboarded, isSuccess } = useUserPasskeys()
 
     const pathname = usePathname()
     const isRegisterPasskeys = pathname.includes('/register-passkey')

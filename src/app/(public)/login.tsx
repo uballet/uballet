@@ -8,7 +8,7 @@ import { usePasskeySignIn } from "../../hooks/usePasskeySignIn";
 export default function LogInScreen() {
     const [email, setEmail] = useState<string>('');
 
-    const { login, isPending: isEmailPending } = useEmailSignIn()
+    const { signIn, isPending: isEmailPending } = useEmailSignIn()
     const { signIn: loginWithPasskey, isPending: isPendingPasskey } = usePasskeySignIn()
 
     const isLoading = isEmailPending || isPendingPasskey
@@ -26,7 +26,7 @@ export default function LogInScreen() {
                 value={email}
                 onChangeText={setEmail}
             />
-            <Pressable style={styles.button} disabled={isLoading} onPress={() => login({ email })}>
+            <Pressable style={styles.button} disabled={isLoading} onPress={() => signIn({ email })}>
                 <Text style={styles.buttonText}>Sign in with email</Text>
             </Pressable>
             <Link href={'/(public)/signup'}>

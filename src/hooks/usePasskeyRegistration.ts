@@ -1,11 +1,10 @@
-import axios from "axios";
-import { useCallback, useEffect } from "react";
-import { UBALLET_API_URL } from "../constants";
+import { useCallback } from "react";
 import base64url from "base64url";
 import { Passkey, type PasskeyRegistrationResult } from "react-native-passkey";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuthContext } from "../providers/AuthProvider";
 import { PublicKeyCredentialCreationOptionsJSON } from '@simplewebauthn/typescript-types'
+import uballet from "../api/uballet";
 
 const serverToClientPasskeyRegistrationOptions = (options: PublicKeyCredentialCreationOptionsJSON) => {
     return {
@@ -30,33 +29,28 @@ const clientToServerCredentialsResponse = (result: PasskeyRegistrationResult) =>
 }
 
 export function usePasskeyRegistration() {
-    const { user, skipPasskeys } = useAuthContext()
-    const registerCb = useCallback(async () => {
-        console.log('HERE')
-        const { data: options }  = await axios.get(`${UBALLET_API_URL}/passkey-registration-options`, { params: { userId: user?.id } })
-        const formattedOptions = serverToClientPasskeyRegistrationOptions(options)
+    const { user } = useAuthContext()
+    const queryClient = useQueryClient();
 
+    const registerCb = useCallback(async () => {
+        const options  = await uballet.getPasskeyRegistrationOptions({ userId: user?.id!! })
+        const formattedOptions = serverToClientPasskeyRegistrationOptions(options)
         const challenge = options.challenge
         // @ts-expect-error
         const result = await Passkey.register(formattedOptions)
 
         const credentials = clientToServerCredentialsResponse(result)
-        const registration = await axios.post(`${UBALLET_API_URL}/verify-passkey-registration`, { userId: user?.id, credentials, challenge })
-        return registration
+        const passkey = await uballet.verifyPasskeyRegistration({ userId: user?.id!!, credentials, challenge })
+        return passkey
     }, [user?.id])
 
     const { mutate: register, isError, isSuccess, isPending } = useMutation({
         mutationFn: registerCb,
         mutationKey: ['register', user?.id],
-    })
-
-    useEffect(() => {
-        if (isSuccess) {
-            skipPasskeys()
+        onSuccess: async (passkey) => {
+            queryClient.setQueryData(['passkeys', user?.id], passkey)
         }
-    }, [isSuccess])
-
-    console.log({ isError, isPending, isSuccess })
+    })
 
     return { register, isError, isSuccess, isPending }
 }

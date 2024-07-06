@@ -1,10 +1,10 @@
 import { useMutation } from "@tanstack/react-query"
-import axios from "axios"
-import { useCallback } from "react"
-import { UBALLET_API_URL } from "../constants"
+import { useCallback, useEffect } from "react"
 import { Passkey, PasskeyAuthenticationResult } from "react-native-passkey"
 import base64url from "base64url"
 import { PublicKeyCredentialRequestOptionsJSON } from '@simplewebauthn/typescript-types'
+import uballet from "../api/uballet"
+import { useAuthContext } from "../providers/AuthProvider"
 
 const serverToClientPasskeyAuthenticationnOptions = (options: PublicKeyCredentialRequestOptionsJSON) => {
     return {
@@ -18,6 +18,7 @@ const clientToServerCredentialsResponse = (result: PasskeyAuthenticationResult) 
         id: base64url.fromBase64(result.id),
         rawId: base64url.fromBase64(result.rawId),
         response: {
+            ...result.response,
             clientDataJSON: base64url.fromBase64(result.response.clientDataJSON),
             authenticatorData: base64url.fromBase64(result.response.authenticatorData),
             signature: base64url.fromBase64(result.response.signature),                
@@ -29,22 +30,27 @@ const clientToServerCredentialsResponse = (result: PasskeyAuthenticationResult) 
 
 export function usePasskeySignIn() {
     const signInCb = useCallback(async () => {
-        const { data: options } = await axios.get(`${UBALLET_API_URL}/passkey-authentication-options`)
-            const challenge = options.challenge
-            const formattedOptions = serverToClientPasskeyAuthenticationnOptions(options)
-            const cred = await Passkey.authenticate(formattedOptions as any, {
-                withSecurityKey: false
-            })
-            const credentials = clientToServerCredentialsResponse(cred)
-
-            const verificationResponse = await axios.post(`${UBALLET_API_URL}/verify-passkey-authentication`, { credentials, challenge })
-
-            return verificationResponse
+        const options = await uballet.getPasskeyAuthenticationOptions()
+        const challenge = options.challenge
+        const formattedOptions = serverToClientPasskeyAuthenticationnOptions(options)
+        const cred = await Passkey.authenticate(formattedOptions as any, {
+            withSecurityKey: false
+        })
+        const credentials = clientToServerCredentialsResponse(cred)
+        const user  = await uballet.verifyPasskeyAuthentication({ credentials, challenge })
+        return user
     }, [])
 
-    const { mutate: signIn, isError, isSuccess, isPending } = useMutation({
+    const { mutate: signIn, isError, isSuccess, isPending, data: user } = useMutation({
         mutationFn: signInCb
     })
+    const { setUser } = useAuthContext()
+
+    useEffect(() => {
+        if (user) {
+            setUser(user)
+        }
+    }, [user])
 
     return { signIn, isError, isSuccess, isPending }
 }
