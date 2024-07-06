@@ -32,13 +32,6 @@ export const removeUballetToken = async () => {
     return await AsyncStorage.removeItem(UBALLET_JWT_KEY)
 }
 
-
-const withData = async (resultPromise: Promise<AxiosResponse>) => {
-    const res = await resultPromise
-
-    return res.data
-}
-
 const signUp = ({ email }: { email: string }) => {
     return uballetAxios.post<{ id: string, email: string, verified: boolean }>(`/signup`, { email })
 }
