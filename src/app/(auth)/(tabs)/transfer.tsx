@@ -5,6 +5,7 @@ import { useSafeLightAccount } from '../../../hooks/useLightAccount';
 import { useTransfer } from '../../../hooks/useTransfer';
 import { useCheckTransferSponsorship } from '../../../hooks/useCheckTransferSponsorship';
 import tokensData from '../../../../erc20sepolia.json';
+import EstimateGasFees from '../../../components/EstimateGasFees';
 
 type Token = {
     name: string;
@@ -59,6 +60,7 @@ function TransferScreen() {
                     </Picker>
                 </View>
                 <Text>From: {account.address}</Text>
+                <EstimateGasFees apiUrl="placeholder, hardcode params for now" />
             </View>
             <Text>To Address: </Text>
             <View style={{ flexDirection: 'row', alignItems: 'center', width: '100%', padding: 2, borderWidth: 1, borderRadius: 8 }}>
