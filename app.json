@@ -16,7 +16,8 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.uballet.wallet"
+      "bundleIdentifier": "com.flperez.uballet",
+      "associatedDomains": ["webcredentials:uballet-backend-dot-outstanding-map-428001-f5.uc.r.appspot.com"]
     },
     "android": {
       "package": "com.uballet.wallet",

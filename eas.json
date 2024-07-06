@@ -5,7 +5,12 @@
         "distribution": "internal",
         "android": {
           "buildType": "apk"
-       }
+        },
+        "env": {
+        "NODE_ENV": "development",
+        "BUILD_ENV": "development",
+        "APP_BUNDLE_IDENTIFIER": "com.flperez.uballet"
+      }
       },
       "preview": {
         "distribution": "internal"
