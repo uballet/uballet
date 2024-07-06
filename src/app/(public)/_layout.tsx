@@ -5,6 +5,7 @@ import { useIsLoggedIn } from "../../hooks/useIsLoggedIn";
 export default function PublicLayout() {
     const isLoggedIn = useIsLoggedIn()
 
+    console.log('isLoggedIn', isLoggedIn)
     if (isLoggedIn) {
         return <Redirect href="/(auth)" />
     }
