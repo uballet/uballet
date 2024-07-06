@@ -1,11 +1,7 @@
 import { AssetTransfersResult } from "alchemy-sdk";
 import { Link } from "expo-router";
 import React, { Key } from "react";
-import {
-  ColorValue,
-  ScrollView,
-  View
-} from "react-native";
+import { ColorValue, ScrollView, View } from "react-native";
 import {
   ActivityIndicator,
   Avatar,
@@ -43,41 +39,60 @@ const HomeScreen: React.FC = () => {
 
   return (
     <ScrollView>
-      <Avatar.Icon style={styles.userSettings} size={30} icon="account" />
-      <View style={styles.balanceContainer}>
-        <Text style={styles.balanceHeader}>Balance</Text>
-        {balance !== null ? (
-          <Text style={styles.balance}>{balance?.toString()} eth</Text>
-        ) : (
-          <ActivityIndicator />
-        )}
-        <Link href="balance" style={styles.seeAll}>
-          <Text>See all</Text>
-        </Link>
-      </View>
-      <View style={styles.keyFeatures}>
-        <FAB size="small" icon="bank-transfer" />
-        <FAB size="small" icon="cash-plus" />
-        <FAB size="small" icon="cash-minus" />
-        <FAB size="small" icon="account-cash-outline" />
-      </View>
-      <Card style={styles.movementsContainer}>
-        <List.Section>
-          <List.Subheader key={"Movements"}>Movements</List.Subheader>
-          <List.Subheader key={"Received"}>Received</List.Subheader>
-          {!toTransfers && <ActivityIndicator />}
-          {toTransfers &&
-            toTransfers.map((transfer, index) =>
-              EthereumTransactionItem(transfer, `to_transfer_${index}`, "green")
+      <View style={styles.container}>
+        <View style={styles.horizontalContainer}>
+          <Avatar.Icon style={styles.userSettings} size={30} icon="account" />
+          <Text variant="titleLarge">Hola fulanito</Text>
+        </View>
+        <Card style={styles.movementsCard} mode="contained">
+          <Card.Content>
+            <Text variant="titleLarge">Balance</Text>
+            {balance !== null ? (
+              <Text style={styles.balance}>{balance?.toString()} eth</Text>
+            ) : (
+              <ActivityIndicator />
             )}
-          <List.Subheader key={"Sent"}>Sent</List.Subheader>
-          {!fromTransfers && <ActivityIndicator />}
-          {fromTransfers &&
-            fromTransfers.map((transfer, index) =>
-              EthereumTransactionItem(transfer, `from_transfer_${index}`, "red")
-            )}
-        </List.Section>
-      </Card>
+
+            <Link href="balance" style={styles.seeAll}>
+              <Text variant="titleSmall">See all</Text>
+            </Link>
+          </Card.Content>
+        </Card>
+
+        <View style={styles.horizontalContainer}>
+          <FAB size="small" icon="bank-transfer" variant="tertiary" />
+          <FAB size="small" icon="cash-plus" variant="tertiary" />
+          <FAB size="small" icon="cash-minus" variant="tertiary" />
+          <FAB size="small" icon="account-cash-outline" variant="tertiary" />
+        </View>
+        <Card style={styles.movementsCard} mode="elevated">
+          <Card.Content>
+            <Card.Title title="Movements" />
+            <List.Section>
+              <List.Subheader key={"Received"}>Received</List.Subheader>
+              {!toTransfers && <ActivityIndicator />}
+              {toTransfers &&
+                toTransfers.map((transfer, index) =>
+                  EthereumTransactionItem(
+                    transfer,
+                    `to_transfer_${index}`,
+                    "green"
+                  )
+                )}
+              <List.Subheader key={"Sent"}>Sent</List.Subheader>
+              {!fromTransfers && <ActivityIndicator />}
+              {fromTransfers &&
+                fromTransfers.map((transfer, index) =>
+                  EthereumTransactionItem(
+                    transfer,
+                    `from_transfer_${index}`,
+                    "red"
+                  )
+                )}
+            </List.Section>
+          </Card.Content>
+        </Card>
+      </View>
     </ScrollView>
   );
 };

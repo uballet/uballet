@@ -1,138 +1,164 @@
-import { useEffect, useState } from 'react';
-import { ActivityIndicator, TextInput, View } from "react-native";
-import { Picker } from '@react-native-picker/picker';
-import { useSafeLightAccount } from '../../../hooks/useLightAccount';
-import { useTransfer } from '../../../hooks/useTransfer';
-import { useCheckTransferSponsorship } from '../../../hooks/useCheckTransferSponsorship';
-import tokensData from '../../../../erc20sepolia.json';
-import { Text, Button } from 'react-native-paper';
+import { useEffect, useState } from "react";
+import { View } from "react-native";
+import { Picker } from "@react-native-picker/picker";
+import { useSafeLightAccount } from "../../../hooks/useLightAccount";
+import { useTransfer } from "../../../hooks/useTransfer";
+import { useCheckTransferSponsorship } from "../../../hooks/useCheckTransferSponsorship";
+import tokensData from "../../../../erc20sepolia.json";
+import {
+  ActivityIndicator,
+  Text,
+  Button,
+  TextInput,
+  Card,
+} from "react-native-paper";
+import styles from "../../../styles/styles";
 
 type Token = {
-    name: string;
-    symbol: string;
-    address: string;
+  name: string;
+  symbol: string;
+  address: string;
 };
 
 type TokensData = {
-    tokens: Token[];
+  tokens: Token[];
 };
 
 function TransferScreen() {
-    const account = useSafeLightAccount();
-    const [toAddress, setAddress] = useState('');
-    const [amount, setAmount] = useState('');
-    const [currency, setCurrency] = useState('ETH');
-    const { transferToAddress, transferTokenToAddress, loading, error, txHash } = useTransfer();
-    const { checkTransferSponsorship, loading: loadingSponsorship, setIsSponsored, isSponsored } = useCheckTransferSponsorship();
-    const sponsorshipCheckDisabled = loadingSponsorship || isSponsored !== null;
+  const account = useSafeLightAccount();
+  const [toAddress, setAddress] = useState("");
+  const [amount, setAmount] = useState("");
+  const [currency, setCurrency] = useState("ETH");
+  const { transferToAddress, transferTokenToAddress, loading, error, txHash } =
+    useTransfer();
+  const {
+    checkTransferSponsorship,
+    loading: loadingSponsorship,
+    setIsSponsored,
+    isSponsored,
+  } = useCheckTransferSponsorship();
+  const sponsorshipCheckDisabled = loadingSponsorship || isSponsored !== null;
 
-    const tokens: TokensData = tokensData;
-    const currencies = ['ETH', ...tokens.tokens.map(token => token.symbol)];
-    const tokenAddresses = tokens.tokens.reduce<{ [key: string]: `0x${string}` }>((acc, token) => {
-        acc[token.symbol] = token.address as `0x${string}`;
-        return acc;
-    }, {});
+  const tokens: TokensData = tokensData;
+  const currencies = ["ETH", ...tokens.tokens.map((token) => token.symbol)];
+  const tokenAddresses = tokens.tokens.reduce<{ [key: string]: `0x${string}` }>(
+    (acc, token) => {
+      acc[token.symbol] = token.address as `0x${string}`;
+      return acc;
+    },
+    {}
+  );
 
-    useEffect(() => {
-        setIsSponsored(null);
-    }, [toAddress]);
+  useEffect(() => {
+    setIsSponsored(null);
+  }, [toAddress]);
 
-    return (
-        <View style={{ flex: 1, alignItems: 'flex-start', paddingHorizontal: 8 }}>
-            <View style={{ margin: 8 }}>
-                <Text>Transfer Amount: </Text>
-                <View style={{ flexDirection: 'row', alignItems: 'center', width: '100%' }}>
-                    <TextInput
-                        placeholder='0.00001'
-                        value={amount}
-                        onChangeText={setAmount}
-                        style={{ padding: 8, borderWidth: 1, borderRadius: 8, flex: 1 }}
-                        keyboardType="numeric"
-                    />
-                    <Picker
-                        selectedValue={currency}
-                        style={{ height: 50, width: 150 }}
-                        onValueChange={(itemValue: string) => setCurrency(itemValue)}
-                    >
-                        {currencies.map((curr, index) => (
-                            <Picker.Item key={index} label={curr} value={curr} />
-                        ))}
-                    </Picker>
-                </View>
-                <Text>From: {account.address}</Text>
-            </View>
-            <Text>To Address: </Text>
-            <View style={{ flexDirection: 'row', alignItems: 'center', width: '100%', padding: 2, borderWidth: 1, borderRadius: 8 }}>
-                <Text style={{ marginLeft: 8 }}>0x</Text>
-                <TextInput
-                    placeholder='Address without 0x prefix'
-                    value={toAddress}
-                    onChangeText={setAddress}
-                    style={{ padding: 8, flex: 1 }}
-                />
-            </View>
-            {currency === 'ETH' ? (
-                <>
-                    <Button
-                        style={{
-                            alignSelf: 'center',
-                            margin: 16,
-                            padding: 8,
-                            borderRadius: 8,
-                            backgroundColor: !sponsorshipCheckDisabled
-                                ? 'black'
-                                : loadingSponsorship
-                                    ? '#CCCCCC'
-                                    : isSponsored
-                                        ? 'green'
-                                        : 'red'
-                        }}
-                        disabled={sponsorshipCheckDisabled}
-                        onPress={() => checkTransferSponsorship(`0x${toAddress}`, amount)}
-                    >
-                        {loadingSponsorship
-                            ? <ActivityIndicator />
-                            : <Text style={{ color: 'white' }}>{isSponsored ? "We'll pay for gas!"
-                                : isSponsored === null
-                                    ? 'Check sponsorship'
-                                    : "You'll pay for gas"
-                        }</Text>}
-                    </Button>
-                    <Button
-                        style={{
-                            alignSelf: 'center',
-                            margin: 16,
-                            padding: 8,
-                            borderRadius: 8,
-                            backgroundColor: (loading || !toAddress || !amount) ? '#CCCCCC' : 'black' 
-                        }}
-                        onPress={() => transferToAddress(`0x${toAddress}`, amount)}
-                        disabled={loading}
-                    >
-                        Transfer ETH!
-                    </Button>
-                </>
-            ) : (
-                <View>
-                    <Button
-                        style={{
-                            alignSelf: 'center',
-                            margin: 16,
-                            padding: 8,
-                            borderRadius: 8,
-                            backgroundColor: (loading || !toAddress || !amount) ? '#CCCCCC' : 'black' 
-                        }}
-                        onPress={() => transferTokenToAddress(tokenAddresses[currency], `0x${toAddress}`, amount)}
-                        disabled={loading}
-                    >
-                        Transfer!
-                    </Button>
-                </View>
-            )}
-            {txHash && <Text selectable>{txHash}</Text>}
-            {error && <Text style={{ color: 'red' }}>Something went wrong!</Text>}
-        </View>
-    );
+  return (
+    <View style={styles.container}>
+      <Card>
+        <Card.Content>
+          <Text variant="titleMedium">Transfer Amount: </Text>
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              width: "100%",
+            }}
+          >
+            <TextInput
+                mode="outlined"
+              placeholder="0.00001"
+              value={amount}
+              onChangeText={setAmount}
+              style={{ margin: 8, flex: 1 }}
+              keyboardType="numeric"
+            />
+            <Picker
+              selectedValue={currency}
+              style={{width: 150 }}
+              onValueChange={(itemValue: string) => setCurrency(itemValue)}
+            >
+              {currencies.map((curr, index) => (
+                <Picker.Item key={index} label={curr} value={curr} />
+              ))}
+            </Picker>
+          </View>
+          <Text variant="bodyMedium" style={{ margin: 8 }}>
+            {`From:\n${account.address}`}
+          </Text>
+          <Text variant="titleMedium" style={{ margin: 8 }}>
+            To Address:{" "}
+          </Text>
+          <TextInput
+            mode="outlined"
+            style={{ margin: 8 }}
+            placeholder="Address without 0x prefix"
+            value={toAddress}
+            left={<TextInput.Affix text="0x"/>}
+            onChangeText={setAddress}
+          />
+        </Card.Content>
+      </Card>
+      {currency === "ETH" ? (
+        <>
+          <Button
+            style={{
+              ...styles.button,
+              backgroundColor: !sponsorshipCheckDisabled
+                ? "black"
+                : loadingSponsorship
+                ? "#CCCCCC"
+                : isSponsored
+                ? "green"
+                : "red",
+            }}
+            loading={loadingSponsorship}
+            disabled={sponsorshipCheckDisabled}
+            onPress={() => checkTransferSponsorship(`0x${toAddress}`, amount)}
+            textColor="white"
+          >
+            {isSponsored
+              ? "We'll pay for gas!"
+              : isSponsored === null
+              ? "Check sponsorship"
+              : "You'll pay for gas"}
+          </Button>
+          <Button
+            mode="contained"
+            style={{
+              ...styles.button,
+              backgroundColor:
+                loading || !toAddress || !amount ? "#CCCCCC" : "black",
+            }}
+            onPress={() => transferToAddress(`0x${toAddress}`, amount)}
+            disabled={loading}
+          >Transfer ETH!</Button>
+        </>
+      ) : (
+        <Button
+          mode="contained"
+          style={{
+            ...styles.button,
+
+            backgroundColor:
+              loading || !toAddress || !amount ? "#CCCCCC" : "black",
+          }}
+          onPress={() =>
+            transferTokenToAddress(
+              tokenAddresses[currency],
+              `0x${toAddress}`,
+              amount
+            )
+          }
+          disabled={loading}
+        >
+          Transfer!
+        </Button>
+      )}
+      {txHash && <Text selectable>{txHash}</Text>}
+      {error && <Text style={{ color: "red" }}>Something went wrong!</Text>}
+    </View>
+  );
 }
 
 export default TransferScreen;

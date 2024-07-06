@@ -39,7 +39,9 @@ export default function LoginScreen() {
           autoCapitalize="none"
           autoCorrect={false}
           placeholder="Email"
-          onSubmitEditing={() => { this.secondTextInput.focus(); }}
+          onSubmitEditing={() => {
+            this.secondTextInput.focus();
+          }}
           onChangeText={(v) => setEmail(v)}
           autoFocus={true}
         />
@@ -51,11 +53,13 @@ export default function LoginScreen() {
           keyboardType="visible-password"
           placeholder="Password"
           secureTextEntry={true}
-          ref={(input) => { this.secondTextInput = input; }}
+          ref={(input) => {
+            this.secondTextInput = input;
+          }}
           onChangeText={(v) => setPassword(v)}
         />
       </View>
-      <Button mode="contained-tonal" onPress={handleLogin}>
+      <Button mode="contained" style={styles.button} onPress={handleLogin}>
         Login
       </Button>
     </View>

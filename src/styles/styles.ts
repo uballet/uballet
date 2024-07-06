@@ -3,9 +3,9 @@ import { StyleSheet } from 'react-native';
 const globalStyles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'flex-start',
     alignItems: 'center',
     padding: 16,
+    marginTop: 40,
   },
   containerLogin: {
     height: '100%',
@@ -24,72 +24,34 @@ const globalStyles = StyleSheet.create({
   },
   userSettings: {
     position: 'absolute',
-    top: 50,
-    left: 20,
-  },
-  balanceContainer: {
-    alignItems: 'center',
-    marginTop: 40,
-  },
-  balanceHeader: {
-    fontSize: 16,
-    color: '#333',
-    marginTop: 25,
+    left: '5%',
+    top: '5%',
   },
   balance: {
     fontSize: 32,
-    marginVertical: 0,
-    color: '#007ACC',
+    color: '#277ca5',
     fontWeight: 'bold',
   },
   seeAll: {
     fontSize: 14,
     color: '#007ACC',
     textDecorationLine: 'underline',
-    marginBottom: 20,
   },
-  keyFeatures: {
+  horizontalContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     width: '100%',
     marginVertical: 20,
   },
-  movementsContainer: {
-    borderRadius: 10,
+  movementsCard: {
     margin: 16,
-    marginTop: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 5,
+    width: '100%',
   },
-  movementsHeader: {
-    fontSize: 18,
-    marginBottom: 10,
-  },
-  movementRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 10,
-  },
-  amount: {
-    color: 'red',
-  },
-  balanceScreenContainer: {
-    flex: 1,
-    padding: 20,
-  },
-  balanceScreenHeader: {
+  screenHeader: {
     fontSize: 24,
     fontWeight: 'bold',
     textAlign: 'center',
     marginVertical: 20,
-  },
-  balanceItem: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginVertical: 10,
   },
   currency: {
     fontSize: 18,
@@ -98,6 +60,13 @@ const globalStyles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
   },
+  button: {
+    alignSelf: "center",
+    margin: 16,
+    padding: 8,
+    borderRadius: 8,
+    width: '100%',
+  }
 });
 
 export default globalStyles;

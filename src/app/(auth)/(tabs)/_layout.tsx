@@ -15,7 +15,11 @@ export const MaterialBottomTabs = withLayoutContext<
 
 function TabsLayout() {
   return (
-    <MaterialBottomTabs initialRouteName="index">
+    <MaterialBottomTabs initialRouteName="index" 
+    activeColor="#f0edf6"
+    inactiveColor="#113547"
+    barStyle={{ backgroundColor: '#277ca5' }}
+  >
       <MaterialBottomTabs.Screen
         name="index"
         options={{
