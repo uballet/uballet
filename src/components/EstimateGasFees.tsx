@@ -70,6 +70,8 @@ const getMaxPriorityFeePerGas = async () => {
 };
 
 const getEstimateUserOperationGas = async () => {
+  const nonce = await getNonce(); // For now we are not using this nonce beacuse we are hardcoding the nonce in getEstimateUserOperationGas
+
   const url =
     "https://eth-sepolia.g.alchemy.com/v2/TID2J0HPVvfYlp1TCsXE3ysXmVYOcpjf";
   const headers = {
@@ -118,10 +120,8 @@ const EstimateGasFees: React.FC<EstimateGasFeesProps> = ({ apiUrl }) => {
 
   const fetchData = async () => {
     try {
-      const nonce = await getNonce(); // For now we are not using this nonce beacuse we are hardcoding the nonce in getEstimateUserOperationGas
       const maxPriorityFeePerGas = await getMaxPriorityFeePerGas();
       const estimateUserOperationGas = await getEstimateUserOperationGas();
-
       setMaxPriorityFeePerGasData(maxPriorityFeePerGas);
       setEstimateUserOperationGasData(estimateUserOperationGas);
     } catch (error) {
