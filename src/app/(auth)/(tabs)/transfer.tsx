@@ -13,6 +13,7 @@ import {
   Card,
 } from "react-native-paper";
 import styles from "../../../styles/styles";
+import EstimateGasFees from "../../../components/EstimateGasFees";
 
 type Token = {
   name: string;
@@ -86,6 +87,7 @@ function TransferScreen() {
           <Text variant="bodyMedium" style={{ margin: 8 }}>
             {`From:\n${account.address}`}
           </Text>
+          <EstimateGasFees apiUrl="placeholder, hardcode params for now" />
           <Text variant="titleMedium" style={{ margin: 8 }}>
             To Address:{" "}
           </Text>
