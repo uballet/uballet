@@ -12,7 +12,7 @@ export function useVerifyEmail() {
             console.log({ data })
             return data
         },
-        mutationKey: ['verify-email2', user?.email]
+        mutationKey: ['verify-email', user?.email]
     })
 
     useEffect(() => {
