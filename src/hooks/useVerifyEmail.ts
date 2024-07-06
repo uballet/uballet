@@ -1,7 +1,7 @@
 import { useMutation } from "@tanstack/react-query"
-import { setUballetToken, useAuthContext } from "../providers/AuthProvider"
+import { useAuthContext } from "../providers/AuthProvider"
 import { useEffect } from "react"
-import uballet from "../api/uballet"
+import uballet, { setUballetToken } from "../api/uballet"
 
 export function useVerifyEmail() {
     const { user, setUser } = useAuthContext()
