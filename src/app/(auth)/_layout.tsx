@@ -17,7 +17,7 @@ export default function AuthenticatedLayout() {
         if (isSuccess && !passkeys?.length && !isRegisterPasskeys) {
             router.navigate('/(auth)/register-passkey')
         }
-    }, [isSuccess, router, isRegisterPasskeys])
+    }, [isSuccess, router, isRegisterPasskeys, passkeys])
 
     if (!user?.verified) {
         return <Redirect href={'/(public)'} />

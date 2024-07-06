@@ -1,8 +1,15 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { usePasskeyRegistration } from "../../hooks/usePasskeyRegistration";
+import { Redirect } from "expo-router";
 
 export default function RegisterPasskey() {
-    const { register, isPending, isError } = usePasskeyRegistration()
+    const { register, isPending, isError, isSuccess } = usePasskeyRegistration()
+
+    if (isSuccess) {
+        return (
+            <Redirect href={'/(auth)'} />
+        )
+    }
     
     return (
         <View style={styles.screenContainer}>
