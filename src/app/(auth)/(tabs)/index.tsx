@@ -13,6 +13,7 @@ import {
 import { useBalance } from "../../../hooks/useBalance";
 import { useRecentTransactions } from "../../../hooks/useRecentTransactions";
 import styles from "../../../styles/styles";
+import useUser from "../../../hooks/useUser";
 
 const formatTxAddress = (address: string) => {
   return `${address.slice(0, 5)}...${address.slice(36)}`;
@@ -42,7 +43,7 @@ const HomeScreen: React.FC = () => {
       <View style={styles.container}>
         <View style={styles.horizontalContainer}>
           <Avatar.Icon style={styles.userSettings} size={30} icon="account" />
-          <Text variant="titleLarge">Hola fulanito</Text>
+          <Text variant="titleLarge">{`Hola ${useUser()?.email}`}</Text>
         </View>
         <Card style={styles.movementsCard} mode="contained">
           <Card.Content>

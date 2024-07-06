@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, Button } from "react-native";
+import { View } from "react-native";
+import { Text, Button } from "react-native-paper";
 import { createPublicClient, http } from "viem";
 import { sepolia } from "viem/chains";
+import styles from "../styles/styles";
 
 interface EstimateGasFeesProps {
   apiUrl: string; // URL of the API endpoint
@@ -146,18 +148,18 @@ const EstimateGasFees: React.FC<EstimateGasFeesProps> = ({ apiUrl }) => {
   const maxPriorityFeePerGas: string =
     maxPriorityFeePerGasData && maxPriorityFeePerGasData.result;
   return (
-    <View>
-      <Text>
+    <View style={{margin: 8}}>
+      <Text variant="labelLarge">
         Pre Verification Gas Estimated: {parseInt(preVerificationGas)}{" "}
       </Text>
-      <Text>Call Gas Limit Estimated: {parseInt(callGasLimit)} </Text>
-      <Text>
+      <Text variant="labelLarge">Call Gas Limit Estimated: {parseInt(callGasLimit)} </Text>
+      <Text variant="labelLarge">
         Verification Gas Limit Estimated: {parseInt(verificationGasLimit)}{" "}
-      </Text>
-      <Text>
+      </Text >
+      <Text variant="labelLarge">
         Max Priority Fee Per Gas in wei: {parseInt(maxPriorityFeePerGas)}{" "}
       </Text>
-      <Button title="Fetch Data Again" onPress={fetchData} />
+      <Button style={styles.button} mode="contained" onPress={fetchData}>Fetch Data Again</Button>
     </View>
   );
 };
