@@ -14,6 +14,7 @@ import {
 } from "react-native-paper";
 import styles from "../../../styles/styles";
 import EstimateGasFees from "../../../components/EstimateGasFees";
+import { ethers } from "ethers";
 
 type Token = {
   name: string;
@@ -30,6 +31,7 @@ function TransferScreen() {
   const [toAddress, setAddress] = useState("");
   const [amount, setAmount] = useState("");
   const [currency, setCurrency] = useState("ETH");
+  const [isAddressValid, setIsAddressValid] = useState(true);
   const { transferToAddress, transferTokenToAddress, loading, error, txHash } =
     useTransfer();
   const {
@@ -53,6 +55,12 @@ function TransferScreen() {
   useEffect(() => {
     setIsSponsored(null);
   }, [toAddress]);
+
+  const handleAddressChange = (address: string) => {
+    const fullAddress = `0x${address}`;
+    setAddress(address);
+    setIsAddressValid(ethers.isAddress(fullAddress));
+  };
 
   return (
     <View style={styles.container}>
@@ -97,8 +105,14 @@ function TransferScreen() {
             placeholder="Address without 0x prefix"
             value={toAddress}
             left={<TextInput.Affix text="0x"/>}
-            onChangeText={setAddress}
+            onChangeText={handleAddressChange}
+            error={!isAddressValid}
           />
+          {!isAddressValid && (
+            <Text style={{ color: "red", marginLeft: 8 }}>
+              Invalid Ethereum address
+            </Text>
+          )}
         </Card.Content>
       </Card>
       {currency === "ETH" ? (
@@ -115,7 +129,7 @@ function TransferScreen() {
                 : "red",
             }}
             loading={loadingSponsorship}
-            disabled={sponsorshipCheckDisabled}
+            disabled={sponsorshipCheckDisabled || !isAddressValid}
             onPress={() => checkTransferSponsorship(`0x${toAddress}`, amount)}
             textColor="white"
           >
@@ -130,20 +144,25 @@ function TransferScreen() {
             style={{
               ...styles.button,
               backgroundColor:
-                loading || !toAddress || !amount ? "#CCCCCC" : "black",
+                loading || !toAddress || !amount || !isAddressValid
+                  ? "#CCCCCC"
+                  : "black",
             }}
             onPress={() => transferToAddress(`0x${toAddress}`, amount)}
-            disabled={loading}
-          >Transfer ETH!</Button>
+            disabled={loading || !isAddressValid}
+          >
+            Transfer ETH! {loading ? 'Sending...' : ''}
+          </Button>
         </>
       ) : (
         <Button
           mode="contained"
           style={{
             ...styles.button,
-
             backgroundColor:
-              loading || !toAddress || !amount ? "#CCCCCC" : "black",
+              loading || !toAddress || !amount || !isAddressValid
+                ? "#CCCCCC"
+                : "black",
           }}
           onPress={() =>
             transferTokenToAddress(
@@ -152,7 +171,7 @@ function TransferScreen() {
               amount
             )
           }
-          disabled={loading}
+          disabled={loading || !isAddressValid}
         >
           Transfer!
         </Button>
