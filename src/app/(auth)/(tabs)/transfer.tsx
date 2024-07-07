@@ -32,8 +32,14 @@ function TransferScreen() {
   const [amount, setAmount] = useState("");
   const [currency, setCurrency] = useState("ETH");
   const [isAddressValid, setIsAddressValid] = useState(true);
-  const { transferToAddress, transferTokenToAddress, loading, error, txHash } =
-    useTransfer();
+  const { 
+    transferToAddress,
+    transferTokenToAddress,
+    loading,
+    error,
+    setError,
+    txHash,
+    } = useTransfer();
   const {
     checkTransferSponsorship,
     loading: loadingSponsorship,
@@ -56,6 +62,12 @@ function TransferScreen() {
     setIsSponsored(null);
   }, [toAddress]);
 
+  useEffect(() => {
+    if (txHash) {
+      setError(false);
+    }
+  }, [txHash]);
+
   const handleAddressChange = (address: string) => {
     const fullAddress = `0x${address}`;
     setAddress(address);
@@ -76,7 +88,7 @@ function TransferScreen() {
           >
             <TextInput
                 mode="outlined"
-              placeholder="0.00001"
+              placeholder="0.0000"
               value={amount}
               onChangeText={setAmount}
               style={{ margin: 8, flex: 1 }}
