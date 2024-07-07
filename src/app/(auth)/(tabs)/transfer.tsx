@@ -32,6 +32,7 @@ function TransferScreen() {
   const [amount, setAmount] = useState("");
   const [currency, setCurrency] = useState("ETH");
   const [isAddressValid, setIsAddressValid] = useState(true);
+  const [isAmountValid, setIsAmountValid] = useState(true);
   const { 
     transferToAddress,
     transferTokenToAddress,
@@ -74,6 +75,15 @@ function TransferScreen() {
     setIsAddressValid(ethers.isAddress(fullAddress));
   };
 
+  const handleAmountChange = (amount: string) => {
+    // Allow only numbers and a single dot
+    const validAmount = amount.match(/^\d*\.?\d*$/);
+    if (validAmount) {
+      setAmount(amount);
+      setIsAmountValid(parseFloat(amount) > 0);
+    }
+  };
+
   return (
     <View style={styles.container}>
       <Card>
@@ -87,16 +97,17 @@ function TransferScreen() {
             }}
           >
             <TextInput
-                mode="outlined"
+              mode="outlined"
               placeholder="0.0000"
               value={amount}
-              onChangeText={setAmount}
+              onChangeText={handleAmountChange}
               style={{ margin: 8, flex: 1 }}
               keyboardType="numeric"
+              error={!isAmountValid}
             />
             <Picker
               selectedValue={currency}
-              style={{width: 150 }}
+              style={{ width: 150 }}
               onValueChange={(itemValue: string) => setCurrency(itemValue)}
             >
               {currencies.map((curr, index) => (
@@ -104,6 +115,11 @@ function TransferScreen() {
               ))}
             </Picker>
           </View>
+          {!isAmountValid && (
+            <Text style={{ color: "red", marginLeft: 8 }}>
+              Amount must be greater than 0
+            </Text>
+          )}
           <Text variant="bodyMedium" style={{ margin: 8 }}>
             {`From:\n${account.address}`}
           </Text>
@@ -116,7 +132,7 @@ function TransferScreen() {
             style={{ margin: 8 }}
             placeholder="Address without 0x prefix"
             value={toAddress}
-            left={<TextInput.Affix text="0x"/>}
+            left={<TextInput.Affix text="0x" />}
             onChangeText={handleAddressChange}
             error={!isAddressValid}
           />
@@ -141,7 +157,9 @@ function TransferScreen() {
                 : "red",
             }}
             loading={loadingSponsorship}
-            disabled={sponsorshipCheckDisabled || !isAddressValid}
+            disabled={
+              sponsorshipCheckDisabled || !isAddressValid || !isAmountValid
+            }
             onPress={() => checkTransferSponsorship(`0x${toAddress}`, amount)}
             textColor="white"
           >
@@ -156,12 +174,12 @@ function TransferScreen() {
             style={{
               ...styles.button,
               backgroundColor:
-                loading || !toAddress || !amount || !isAddressValid
+                loading || !toAddress || !amount || !isAddressValid || !isAmountValid
                   ? "#CCCCCC"
                   : "black",
             }}
             onPress={() => transferToAddress(`0x${toAddress}`, amount)}
-            disabled={loading || !isAddressValid}
+            disabled={loading || !isAddressValid || !isAmountValid}
           >
             Transfer ETH! {loading ? 'Sending...' : ''}
           </Button>
@@ -172,7 +190,7 @@ function TransferScreen() {
           style={{
             ...styles.button,
             backgroundColor:
-              loading || !toAddress || !amount || !isAddressValid
+              loading || !toAddress || !amount || !isAddressValid || !isAmountValid
                 ? "#CCCCCC"
                 : "black",
           }}
@@ -183,7 +201,7 @@ function TransferScreen() {
               amount
             )
           }
-          disabled={loading || !isAddressValid}
+          disabled={loading || !isAddressValid || !isAmountValid}
         >
           Transfer!
         </Button>
