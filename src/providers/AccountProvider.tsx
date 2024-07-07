@@ -1,3 +1,4 @@
+global.Buffer = global.Buffer || require('buffer').Buffer
 import { createContext, PropsWithChildren, useEffect, useMemo, useState } from "react";
 import useUser from "../hooks/useUser";
 import { type AlchemySmartAccountClient, createAlchemySmartAccountClient } from "@alchemy/aa-alchemy";

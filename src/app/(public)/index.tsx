@@ -23,7 +23,7 @@ export default function LoginScreen() {
 
   const handleLogin = () => {
     loginWithEmailAndPassword(email, password);
-    //loginWithBiometrics();
+    loginWithBiometrics();
   };
 
   return (

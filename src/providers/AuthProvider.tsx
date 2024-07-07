@@ -47,6 +47,7 @@ export default function AuthProvider({ children }: PropsWithChildren) {
 
     const isEmailSet = async () => {
         const email = await SecureStore.getItemAsync('userEmail');
+        console.log(`Email retrieved from SecureStore: ${email}`);
         return email != null;
     };
 
@@ -60,7 +61,7 @@ export default function AuthProvider({ children }: PropsWithChildren) {
         if (!isBiometricAvailable) {
             console.log('Biometric authentication is not available');
             return;
-        }
+        }        
 
         try {
             const result = await LocalAuthentication.authenticateAsync({
@@ -71,6 +72,7 @@ export default function AuthProvider({ children }: PropsWithChildren) {
             if (result.success) {
                 console.log('Authentication successful');
                 const email = await SecureStore.getItemAsync('userEmail');
+                console.log(`Email retrieved from SecureStore by biometrics: ${email}`);
                 if (email) {
                     setUser({ email });
                 } else {
