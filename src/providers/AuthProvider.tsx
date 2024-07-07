@@ -1,4 +1,3 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createContext, PropsWithChildren, useCallback, useContext, useEffect, useState } from "react";
 import uballet, { getUballetToken, removeUballetToken } from "../api/uballet";
 import { ActivityIndicator, View } from "react-native";

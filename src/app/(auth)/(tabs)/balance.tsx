@@ -1,27 +1,39 @@
-import React from 'react';
-import { View, Text } from 'react-native';
-import styles from '../../../styles/styles';
+import React from "react";
+import { View } from "react-native";
+import { Card, List, Text } from "react-native-paper";
+import { useBalance } from "../../../hooks/useBalance";
+import { useTokenBalance } from "../../../hooks/useTokenBalance";
+import styles from "../../../styles/styles";
 
 const BalanceScreen: React.FC = () => {
+  const balance = useBalance();
+  const tokenBalances = useTokenBalance();
+
   return (
-    <View style={styles.balanceScreenContainer}>
-      <Text style={styles.balanceScreenHeader}>Balance</Text>
-      <View style={styles.balanceItem}>
-        <Text style={styles.currency}>Ethereum</Text>
-        <Text style={styles.balanceAmount}>0.0023 ETH</Text>
-      </View>
-      <View style={styles.balanceItem}>
-        <Text style={styles.currency}>Zarazeum</Text>
-        <Text style={styles.balanceAmount}>0.0023 ZAR</Text>
-      </View>
-      <View style={styles.balanceItem}>
-        <Text style={styles.currency}>Cualquierum</Text>
-        <Text style={styles.balanceAmount}>0.0023 CUA</Text>
-      </View>
-      <View style={styles.balanceItem}>
-        <Text style={styles.currency}>Otromaseum</Text>
-        <Text style={styles.balanceAmount}>0.0023 OTM</Text>
-      </View>
+    <View style={{ ...styles.container, alignItems: "stretch" }}>
+      <Text style={styles.screenHeader}>Balance</Text>
+      <Card>
+        <Card.Content>
+          <List.Section>
+            <List.Item
+              title={"Ethereum"}
+              titleStyle={styles.currency}
+              key={"Ethereum"}
+              right={() => (
+                <Text style={styles.balanceAmount}>{balance?.toString()}</Text>
+              )}
+            />
+            {Object.entries(tokenBalances).map(([symbol, amount]) => (
+              <List.Item
+                title={`${symbol}`}
+                titleStyle={styles.currency}
+                key={symbol}
+                right={() => <Text style={styles.balanceAmount}>{amount}</Text>}
+              />
+            ))}
+          </List.Section>
+        </Card.Content>
+      </Card>
     </View>
   );
 };
