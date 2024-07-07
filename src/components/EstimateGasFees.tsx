@@ -119,15 +119,21 @@ const EstimateGasFees: React.FC<EstimateGasFeesProps> = ({ apiUrl }) => {
     useState<any>(null);
   const [estimateUserOperationGasData, setEstimateUserOperationGasData] =
     useState<any>(null);
+  const [isFetchButtonDisabled, setIsFetchButtonDisabled] = useState(false);
 
   const fetchData = async () => {
     try {
+      setIsFetchButtonDisabled(true);
       const maxPriorityFeePerGas = await getMaxPriorityFeePerGas();
       const estimateUserOperationGas = await getEstimateUserOperationGas();
       setMaxPriorityFeePerGasData(maxPriorityFeePerGas);
       setEstimateUserOperationGasData(estimateUserOperationGas);
     } catch (error) {
       console.error("Error fetching data:", error);
+    } finally {
+      setTimeout(() => {
+        setIsFetchButtonDisabled(false);
+      }, 10000);
     }
   };
 
@@ -159,7 +165,14 @@ const EstimateGasFees: React.FC<EstimateGasFeesProps> = ({ apiUrl }) => {
       <Text variant="labelLarge">
         Max Priority Fee Per Gas in wei: {parseInt(maxPriorityFeePerGas)}{" "}
       </Text>
-      <Button style={styles.button} mode="contained" onPress={fetchData}>Fetch Data Again</Button>
+      <Button
+        style={styles.button}
+        mode="contained"
+        onPress={fetchData}
+        disabled={isFetchButtonDisabled}
+      >
+        Fetch Data Again
+      </Button>
     </View>
   );
 };

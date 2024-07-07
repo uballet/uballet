@@ -62,6 +62,7 @@ export function useTransfer() {
         transferTokenToAddress,
         txHash,
         error,
+        setError,
         loading
     }
 }
