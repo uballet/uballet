@@ -32,12 +32,20 @@ export const removeUballetToken = async () => {
     return await AsyncStorage.removeItem(UBALLET_JWT_KEY)
 }
 
+type User = {
+    id: string
+    email: string
+    verified: boolean
+}
+
+type UserAndToken = User & { token: string }
+
 const signUp = ({ email }: { email: string }) => {
-    return uballetAxios.post<{ id: string, email: string, verified: boolean }>(`/signup`, { email })
+    return uballetAxios.post<User>(`/signup`, { email })
 }
 
 const verifyEmail = async ({ email, code }: { email: string, code: string }) => {
-    const { data: { token, ...user } } = await uballetAxios.post<{ id: string, email: string, verified: boolean, token: string }>(`/verify-email`, { email, code })
+    const { data: { token, ...user } } = await uballetAxios.post<UserAndToken>(`/verify-email`, { email, code })
 
     return {
         user,
@@ -61,7 +69,7 @@ const getPasskeyAuthenticationOptions = async () => {
 }
 
 const verifyPasskeyAuthentication = async ({ credentials, challenge }: { credentials: PasskeyAuthenticationResult, challenge: string }) => {
-    const { data: { token, ...user} } = await uballetAxios.post<{ id: string, email: string, verified: boolean, token: string }>(`/verify-passkey-authentication`, { credentials, challenge })
+    const { data: { token, ...user} } = await uballetAxios.post<UserAndToken>(`/verify-passkey-authentication`, { credentials, challenge })
     return { user, token }
 }
 
@@ -70,16 +78,25 @@ const getUserPasskeys = async ({ userId }: { userId: string }) => {
     return passkeys
 }
 
-const startEmailLogin = async ({ email }: { email: string }) => {
-    await uballetAxios.post(`/email-login`, { email })
+const startEmailLogin = async ({ email, targetPublicKey }: { email: string, targetPublicKey: string }) => {
+    await uballetAxios.post(`/email-sign-in`, { email, targetPublicKey })
 }
 
 const getCurrentUser = async () => {
-    const { data: user } = await uballetAxios.get<{ id: string, email: string, verified: boolean }>(`/user`)
+    const { data: user } = await uballetAxios.get<User>(`/user`)
     return user
 }
 
+const completeSignIn = async ({ email, stampedEmail }: { email: string, stampedEmail: string }) => {
+    const { data: { token, ...user } } = await uballetAxios.post<UserAndToken>(`/complete-sign-in`, { email, stampedEmail })
+    return {
+        token,
+        user
+    }
+}
+
 export default {
+    completeSignIn,
     getPasskeyAuthenticationOptions,
     getPasskeyRegistrationOptions,
     getCurrentUser,

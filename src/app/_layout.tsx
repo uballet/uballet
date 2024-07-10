@@ -8,6 +8,8 @@ import { registerForPushNotificationsAsync } from "../notifications/register";
 import { AccountProvider } from "../providers/AccountProvider";
 import AuthProvider from "../providers/AuthProvider";
 import { theme } from "../styles/color";
+import "node-libs-react-native/globals.js";
+import "react-native-get-random-values";
 
 export default function App() {
   if (process.env.EXPO_PUBLIC_STORYBOOK === "true") {

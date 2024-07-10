@@ -13,7 +13,7 @@ import {
 import { useBalance } from "../../../hooks/useBalance";
 import { useRecentTransactions } from "../../../hooks/useRecentTransactions";
 import styles from "../../../styles/styles";
-import useUser from "../../../hooks/useUser";
+import { useAuthContext } from "../../../providers/AuthProvider";
 
 const formatTxAddress = (address: string) => {
   return `${address.slice(0, 5)}...${address.slice(36)}`;
@@ -37,13 +37,14 @@ const EthereumTransactionItem = (
 const HomeScreen: React.FC = () => {
   const balance = useBalance();
   const { fromTransfers, toTransfers } = useRecentTransactions();
+  const { user } = useAuthContext()
 
   return (
     <ScrollView>
       <View style={styles.container}>
         <View style={styles.horizontalContainer}>
           <Avatar.Icon style={styles.userSettings} size={30} icon="account" />
-          <Text variant="titleLarge">{`Hola ${useUser()?.email}`}</Text>
+          <Text variant="titleLarge">{`Hola ${user?.email}`}</Text>
         </View>
         <Card style={styles.movementsCard} mode="contained">
           <Card.Content>

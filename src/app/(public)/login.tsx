@@ -1,19 +1,24 @@
-import { useState } from "react";
-import { Link } from "expo-router";
+import { useEffect, useState } from "react";
+import { Link, Redirect, router } from "expo-router";
 import { Button, TextInput } from "react-native-paper";
 import { View, Image, Pressable, Text } from "react-native";
 import { useEmailSignIn } from "../../hooks/useEmailSignIn";
 import { usePasskeySignIn } from "../../hooks/usePasskeySignIn";
 import styles from "../../styles/styles";
-import { MaterialIcons } from '@expo/vector-icons';
 
 export default function LoginScreen() {
-    const [email, setEmail] = useState<string>('');
+    const [email, setEmail] = useState<string>('fpondarts@gmail.com');
 
-    const { signIn, isPending: isEmailPending } = useEmailSignIn()
+    const { signIn, isPending: isEmailPending, isSuccess } = useEmailSignIn()
     const { signIn: loginWithPasskey, isPending: isPendingPasskey } = usePasskeySignIn()
 
     const isLoading = isEmailPending || isPendingPasskey
+
+    if (isSuccess) {
+        return (
+            <Redirect href={'/(public)/email-sign-in?email=' + email} />
+        )
+    }
 
   return (
     <View style={styles.containerLogin}>
@@ -22,16 +27,16 @@ export default function LoginScreen() {
           style={styles.image}
           source={require("../../assets/logo.webp")}
         />
-        <Pressable style={styles.button} disabled={isLoading} onPress={() => loginWithPasskey()}>
-            <Text style={{ color: 'white' }}>Sign in with passkey</Text>
-            <MaterialIcons name="key" size={24} color="white" />
-        </Pressable>
+        <Button style={{ ...styles.button, marginTop: 64 }} onPress={() => loginWithPasskey()} mode="contained">
+            <Text>Sign in with passkey</Text>
+        </Button>
         <TextInput
           mode="outlined"
           style={styles.item}
           autoCapitalize="none"
           autoCorrect={false}
           placeholder="Email"
+          value={email}
           onChangeText={setEmail}
           autoFocus={true}
         />

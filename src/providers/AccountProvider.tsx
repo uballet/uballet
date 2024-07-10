@@ -6,6 +6,7 @@ import { custom, sha256  } from "viem";
 import { entropyToMnemonic } from "bip39";
 import { Alchemy, Network } from "alchemy-sdk";
 import { useAuthContext } from "./AuthProvider";
+global.Buffer = global.Buffer || require('buffer').Buffer;
 
 const sdkClient = new Alchemy({
     url: process.env.EXPO_PUBLIC_ALCHEMY_API_URL!!,
