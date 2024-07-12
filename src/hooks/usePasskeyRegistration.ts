@@ -5,6 +5,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuthContext } from "../providers/AuthProvider";
 import { PublicKeyCredentialCreationOptionsJSON } from '@simplewebauthn/typescript-types'
 import uballet from "../api/uballet";
+import { useUserPasskeys } from "./useUserPasskeys";
 
 const serverToClientPasskeyRegistrationOptions = (options: PublicKeyCredentialCreationOptionsJSON) => {
     return {

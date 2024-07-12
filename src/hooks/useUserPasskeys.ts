@@ -10,7 +10,6 @@ export type UserPasskey = {
 
 export function useUserPasskeys() {
     const { user } = useAuthContext()
-    const { passkeysOnboarded } = useAuthContext()
     const { data: passkeys, isLoading, isError, isSuccess } = useQuery({
         queryFn: async () => {
             const passkeys = await uballet.getUserPasskeys({ userId: user?.id!! })
@@ -24,7 +23,6 @@ export function useUserPasskeys() {
         passkeys,
         isLoading,
         isError,
-        isSuccess,
-        passkeysOnboarded
+        isSuccess
     }
 }

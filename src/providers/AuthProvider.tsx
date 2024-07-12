@@ -54,6 +54,12 @@ export default function AuthProvider({ children }: PropsWithChildren) {
         })
     }, [])
 
+    useEffect(() => {
+        if (!user) {
+            setPasskeysOnboarded(false)
+        }
+    }, [user])
+
     if (!isReady) {
         return (
             <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>

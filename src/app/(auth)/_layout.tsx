@@ -6,15 +6,15 @@ import { useAuthContext } from "../../providers/AuthProvider";
 import { useUserPasskeys } from "../../hooks/useUserPasskeys";
 
 export default function AuthenticatedLayout() {
-    const { user } = useAuthContext()
+    const { user, passkeysOnboarded } = useAuthContext()
     const account = useLightAccount()
-    const { isSuccess, passkeys } = useUserPasskeys()
+    const { isSuccess, isLoading, passkeys } = useUserPasskeys()
 
     const pathname = usePathname()
     const isRegisterPasskeys = pathname.includes('/register-passkey')
 
     useEffect(() => {
-        if (isSuccess && !passkeys?.length && !isRegisterPasskeys) {
+        if (isSuccess && !passkeys?.length && !isRegisterPasskeys && !passkeysOnboarded) {
             router.navigate('/(auth)/register-passkey')
         }
     }, [isSuccess, router, isRegisterPasskeys, passkeys])
@@ -23,7 +23,7 @@ export default function AuthenticatedLayout() {
         return <Redirect href={'/(public)'} />
     }
 
-    if (!account) {
+    if (!account || isLoading) {
         return <ActivityIndicator />
     }
 

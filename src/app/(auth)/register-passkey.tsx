@@ -1,9 +1,17 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { usePasskeyRegistration } from "../../hooks/usePasskeyRegistration";
-import { Redirect } from "expo-router";
+import { Redirect, router } from "expo-router";
+import { useUserPasskeys } from "../../hooks/useUserPasskeys";
+import { useAuthContext } from "../../providers/AuthProvider";
 
 export default function RegisterPasskey() {
-    const { register, isPending, isError, isSuccess } = usePasskeyRegistration()
+    const { register, isPending, isSuccess } = usePasskeyRegistration()
+    const { skipPasskeys } = useAuthContext()
+
+    const skipPasskeyRegistration = () => {
+        skipPasskeys();
+        router.navigate('/(auth)');
+    }
 
     if (isSuccess) {
         return (
@@ -16,7 +24,7 @@ export default function RegisterPasskey() {
             <Pressable onPress={() => register()} disabled={isPending} style={styles.button}>
                 <Text style={styles.buttonText}>Register passkey</Text>
             </Pressable>
-            <Pressable style={styles.skipButton}>
+            <Pressable style={styles.skipButton} onPress={skipPasskeyRegistration}>
                 <Text style={styles.skipText}>Skip Passkeys</Text>
             </Pressable>
         </View>
