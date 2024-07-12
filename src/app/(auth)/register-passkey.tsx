@@ -1,8 +1,9 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { usePasskeyRegistration } from "../../hooks/usePasskeyRegistration";
 import { Redirect, router } from "expo-router";
-import { useUserPasskeys } from "../../hooks/useUserPasskeys";
 import { useAuthContext } from "../../providers/AuthProvider";
+import { ActivityIndicator } from "react-native-paper";
+import { theme } from "../../styles/color";
 
 export default function RegisterPasskey() {
     const { register, isPending, isSuccess } = usePasskeyRegistration()
@@ -18,14 +19,26 @@ export default function RegisterPasskey() {
             <Redirect href={'/(auth)'} />
         )
     }
+
+    const disabled = isPending
     
     return (
         <View style={styles.screenContainer}>
-            <Pressable onPress={() => register()} disabled={isPending} style={styles.button}>
-                <Text style={styles.buttonText}>Register passkey</Text>
+            <Pressable onPress={() => register()} disabled={disabled} style={{
+                ...styles.button,
+                ...(disabled ? styles.buttonDisabled : {}),
+            }}>
+                <Text style={disabled ? styles.textDisabled : styles.buttonText}>Register passkey</Text>
+                {disabled && <ActivityIndicator style={{ position: 'absolute', right: 12 }} />}
             </Pressable>
-            <Pressable style={styles.skipButton} onPress={skipPasskeyRegistration}>
-                <Text style={styles.skipText}>Skip Passkeys</Text>
+            <Pressable
+                style={{
+                    ...styles.skipButton,
+                    ...(disabled ? styles.buttonDisabled : {}),
+                }}
+                onPress={skipPasskeyRegistration}
+            >
+                <Text style={disabled ? styles.textDisabled : styles.skipText}>Skip Passkeys</Text>
             </Pressable>
         </View>
     )
@@ -37,34 +50,39 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
     },
-    textInput: {
-        width: '50%',
-        margin: 8,
-        marginTop: 64,
-        padding: 2,
-        paddingHorizontal: 8,
-        backgroundColor: '#EEEEEE',
-        height: 32,
-        borderRadius: 4
-    },
     button: {
         flexDirection: 'row',
         justifyContent: 'space-evenly',
         margin: 8,
-        backgroundColor: 'black',
+        backgroundColor: theme.colors.primaryContainer,
         width: '50%',
         padding: 8,
+        paddingVertical: 12,
         alignItems: 'center',
         borderRadius: 8
     },
     buttonText: {
-        color: 'white',
+        color: theme.colors.onPrimary,
     },
     skipButton: {
+        flexDirection: 'row',
+        justifyContent: 'space-evenly',
+        borderWidth: 1,
+        borderColor: theme.colors.primary,
+        width: '50%',
         marginTop: 32,
-        padding: 4
+        padding: 8,
+        paddingVertical: 12,
+        borderRadius: 8
+    },
+    buttonDisabled: {
+        backgroundColor: theme.colors.surfaceDisabled,
+        borderWidth: 0
     },
     skipText: {
-        color: 'black',
+        color: theme.colors.primary,
+    },
+    textDisabled: {
+        color: theme.colors.onSurfaceDisabled
     }
 })
