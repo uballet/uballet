@@ -15,7 +15,10 @@ export default {
     ios: {
       supportsTablet: true,
       bundleIdentifier: "com.flperez.uballet",
-      associatedDomains: ["webcredentials:uballet-backend-dot-outstanding-map-428001-f5.uc.r.appspot.com"]
+      associatedDomains: [
+        "webcredentials:uballet-backend-dot-outstanding-map-428001-f5.uc.r.appspot.com",
+        "webcredentials:uballet-server.onrender.com"
+      ]
     },
     android: {
       package: "com.uballet.wallet",

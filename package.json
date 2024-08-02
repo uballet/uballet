@@ -11,6 +11,10 @@
     "storybook:ios": "STORYBOOK=true expo start --ios",
     "storybook-generate": "sb-rn-get-stories",
     "test": "jest",
+    "build:ios:simulator": "eas build -p ios --profile simulator",
+    "build:android:simulator": "eas build -p android --profile simulator",
+    "run:ios": "eas build:run -p ios --profile simulator",
+    "run:android": "eas build:run -p android",
     "ts:check": "tsc"
   },
   "dependencies": {

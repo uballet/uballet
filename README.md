@@ -50,3 +50,21 @@ Tu run a build command  you have to push your local changes to the remote repoit
 > eas build -p PLATFLORM --profile PROFILE
 
 where PLATFLORM options are `ios` or `android` and PROFILE options are `development`, `preview` o `production`
+
+There are dedicated scripts in the package.json in order to build for specific profiles or platforms
+
+### Android
+
+#### Build for emulator/device
+  `npm run build:android:simulator`
+
+#### Run an existing build in android emulator
+  `npm run run:android`
+
+### iOS
+
+#### Build for simulator
+  `npm run build:ios:simulator`
+
+#### Run an existing build in iOS simulator
+  `npm run run:ios`
