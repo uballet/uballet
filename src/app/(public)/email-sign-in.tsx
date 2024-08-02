@@ -3,36 +3,29 @@ import { useSignUp } from "../../hooks/useSignUp";
 import { useState } from "react";
 import { Link, Redirect, useLocalSearchParams } from "expo-router";
 import { useCompleteEmailSignIn } from "../../hooks/useCompleteEmailSignIn";
+import { Button, ButtonText } from "../../components/Button";
 
 export default function EmailSignInScreen() {
     const { complete, isPending, isError, isSuccess } = useCompleteEmailSignIn()
     const { email } = useLocalSearchParams() as { email: string }
-    const [pubkeyEncrypted, setPubkeyEncrypted] = useState('03684e9b3f3284b8f48a9832ede36bb2b9a9f14d57ade949bad9ce66c437c5860aa3ed5345092ec66e0465c9e2c45af21d996a66dd4ebbcd28')
+    const [pubkeyEncrypted, setPubkeyEncrypted] = useState('')
 
     if (!email) {
         return <Redirect href={'/(public)/login'} />
     }
 
-    // return (
-    //     <Redirect href={'/(public)/login'} />
-    // )
-
     return (
         <View style={styles.screenContainer}>
-            <TextInput
-                style={styles.textInput}
-                value={email}
-                editable={false}
-            />
+            <Text>Login: {email}</Text>
             <TextInput
                 style={styles.textInput}
                 value={pubkeyEncrypted}
                 onChangeText={setPubkeyEncrypted}
                 placeholder="Input the code sent to your email"
             />
-            <Pressable style={styles.button} disabled={isPending} onPress={() => complete({ email, hexCode: pubkeyEncrypted })}>
-                <Text style={styles.buttonText}>Verify Code</Text>
-            </Pressable>
+            <Button disabled={isPending} onPress={() => complete({ email, hexCode: pubkeyEncrypted })}>
+                <ButtonText>Verify Code</ButtonText>
+            </Button>
         </View>
     )
 }
