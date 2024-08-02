@@ -5,7 +5,6 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuthContext } from "../providers/AuthProvider";
 import { PublicKeyCredentialCreationOptionsJSON } from '@simplewebauthn/typescript-types'
 import uballet from "../api/uballet";
-import { useUserPasskeys } from "./useUserPasskeys";
 
 const serverToClientPasskeyRegistrationOptions = (options: PublicKeyCredentialCreationOptionsJSON) => {
     return {
@@ -49,9 +48,10 @@ export function usePasskeyRegistration() {
         mutationFn: registerCb,
         mutationKey: ['register', user?.id],
         onSuccess: async (passkey) => {
-            queryClient.setQueryData(['passkeys'], (passkeys: any) => [...(passkeys ?? []), passkey])
+            const registeredAt = new Date(passkey.registeredAt)
+            queryClient.setQueryData(['passkeys'], (passkeys: any) => [...(passkeys ?? []), { ...passkey, registeredAt }])
         }
     })
 
-    return { register, isError, isSuccess, isPending }
+    return { register, isError, isSuccess, isPending, isSupported: Passkey.isSupported() }
 }

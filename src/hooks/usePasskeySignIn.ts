@@ -54,5 +54,5 @@ export function usePasskeySignIn() {
         }
     }, [user])
 
-    return { signIn, isError, isSuccess, isPending }
+    return { signIn, isError, isSuccess, isPending, isSupported: Passkey.isSupported() }
 }

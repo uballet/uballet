@@ -1,12 +1,12 @@
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { usePasskeyRegistration } from "../../hooks/usePasskeyRegistration";
 import { Redirect, router } from "expo-router";
 import { useAuthContext } from "../../providers/AuthProvider";
 import { ActivityIndicator } from "react-native-paper";
-import { theme } from "../../styles/color";
+import { Button, ButtonText } from "../../components/Button";
 
 export default function RegisterPasskey() {
-    const { register, isPending, isSuccess } = usePasskeyRegistration()
+    const { register, isPending, isSuccess, isSupported } = usePasskeyRegistration()
     const { skipPasskeys } = useAuthContext()
 
     const skipPasskeyRegistration = () => {
@@ -20,26 +20,31 @@ export default function RegisterPasskey() {
         )
     }
 
+    if (!isSupported) {
+        skipPasskeyRegistration();
+    }
+
     const disabled = isPending
     
     return (
         <View style={styles.screenContainer}>
-            <Pressable onPress={() => register()} disabled={disabled} style={{
-                ...styles.button,
-                ...(disabled ? styles.buttonDisabled : {}),
-            }}>
-                <Text style={disabled ? styles.textDisabled : styles.buttonText}>Register passkey</Text>
-                {disabled && <ActivityIndicator style={{ position: 'absolute', right: 12 }} />}
-            </Pressable>
-            <Pressable
-                style={{
-                    ...styles.skipButton,
-                    ...(disabled ? styles.buttonDisabled : {}),
-                }}
-                onPress={skipPasskeyRegistration}
+            <Button
+                onPress={() => register()}
+                disabled={disabled}
+                variant="primary"
+                style={[styles.button]}
             >
-                <Text style={disabled ? styles.textDisabled : styles.skipText}>Skip Passkeys</Text>
-            </Pressable>
+                <ButtonText disabled={disabled} variant="primary">Register passkey</ButtonText>
+                {disabled && <ActivityIndicator style={{ position: 'absolute', right: 12 }} />}
+            </Button>
+            <Button
+                variant="inverse"
+                disabled={disabled}
+                onPress={skipPasskeyRegistration}
+                style={[styles.button]}
+            >
+                <ButtonText variant="inverse" disabled={disabled}>Not now</ButtonText>
+            </Button>
         </View>
     )
 }
@@ -51,38 +56,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     button: {
-        flexDirection: 'row',
-        justifyContent: 'space-evenly',
-        margin: 8,
-        backgroundColor: theme.colors.primaryContainer,
-        width: '50%',
-        padding: 8,
-        paddingVertical: 12,
-        alignItems: 'center',
-        borderRadius: 8
-    },
-    buttonText: {
-        color: theme.colors.onPrimary,
-    },
-    skipButton: {
-        flexDirection: 'row',
-        justifyContent: 'space-evenly',
-        borderWidth: 1,
-        borderColor: theme.colors.primary,
-        width: '50%',
-        marginTop: 32,
-        padding: 8,
-        paddingVertical: 12,
-        borderRadius: 8
-    },
-    buttonDisabled: {
-        backgroundColor: theme.colors.surfaceDisabled,
-        borderWidth: 0
-    },
-    skipText: {
-        color: theme.colors.primary,
-    },
-    textDisabled: {
-        color: theme.colors.onSurfaceDisabled
+        marginVertical: 8,
+        width: '70%',
     }
 })
