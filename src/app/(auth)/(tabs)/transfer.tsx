@@ -15,6 +15,7 @@ import {
 import styles from "../../../styles/styles";
 import EstimateGasFees from "../../../components/EstimateGasFees";
 import { ethers } from "ethers";
+import { useAlchemyClient } from "../../../hooks/useAlchemyClient";
 
 type Token = {
   name: string;
@@ -28,19 +29,20 @@ type TokensData = {
 
 function TransferScreen() {
   const account = useSafeLightAccount();
+  const client = useAlchemyClient();
   const [toAddress, setAddress] = useState("");
   const [amount, setAmount] = useState("");
   const [currency, setCurrency] = useState("ETH");
   const [isAddressValid, setIsAddressValid] = useState(true);
   const [isAmountValid, setIsAmountValid] = useState(true);
-  const { 
+  const {
     transferToAddress,
     transferTokenToAddress,
     loading,
     error,
     setError,
     txHash,
-    } = useTransfer();
+  } = useTransfer();
   const {
     checkTransferSponsorship,
     loading: loadingSponsorship,
@@ -123,7 +125,12 @@ function TransferScreen() {
           <Text variant="bodyMedium" style={{ margin: 8 }}>
             {`From:\n${account.address}`}
           </Text>
-          <EstimateGasFees apiUrl="placeholder, hardcode params for now" />
+          <EstimateGasFees
+            client={client}
+            account={account}
+            target={`0x${toAddress}`}
+            data={"0x"}
+          />
           <Text variant="titleMedium" style={{ margin: 8 }}>
             To Address:{" "}
           </Text>
@@ -174,14 +181,18 @@ function TransferScreen() {
             style={{
               ...styles.button,
               backgroundColor:
-                loading || !toAddress || !amount || !isAddressValid || !isAmountValid
+                loading ||
+                !toAddress ||
+                !amount ||
+                !isAddressValid ||
+                !isAmountValid
                   ? "#CCCCCC"
                   : "black",
             }}
             onPress={() => transferToAddress(`0x${toAddress}`, amount)}
             disabled={loading || !isAddressValid || !isAmountValid}
           >
-            Transfer ETH! {loading ? 'Sending...' : ''}
+            Transfer ETH! {loading ? "Sending..." : ""}
           </Button>
         </>
       ) : (
@@ -190,7 +201,11 @@ function TransferScreen() {
           style={{
             ...styles.button,
             backgroundColor:
-              loading || !toAddress || !amount || !isAddressValid || !isAmountValid
+              loading ||
+              !toAddress ||
+              !amount ||
+              !isAddressValid ||
+              !isAmountValid
                 ? "#CCCCCC"
                 : "black",
           }}
