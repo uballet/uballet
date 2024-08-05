@@ -39,16 +39,18 @@ const EstimateGasFees: React.FC<EstimateGasFeesProps> = ({
   const [uoBuilded, setuoBuilded] = useState<any>(null);
   const [isFetchButtonDisabled, setIsFetchButtonDisabled] = useState(false);
 
-  console.log(
-    "Building UserOperation with the following target:",
-    target,
-    "and callData:",
-    data
-  );
   if (target == "0x") {
     console.log("Please provide a target address");
-    target = "0x784A0F24925F126dB2d33A4800230B371f8dee05";
+    target = "0x784A0F24925F126dB2d33A4800230B371f8dee05"; // Default target for testing
+  } else {
+    console.log(
+      "Building UserOperation with the following target:",
+      target,
+      "and callData:",
+      data
+    );
   }
+
   const fetchData = async () => {
     try {
       setIsFetchButtonDisabled(true);
@@ -72,6 +74,9 @@ const EstimateGasFees: React.FC<EstimateGasFeesProps> = ({
   const verificationGasLimit = uoBuilded && uoBuilded.verificationGasLimit;
   const maxPriorityFeePerGas = uoBuilded && uoBuilded.maxPriorityFeePerGas;
   const maxFeePerGas = uoBuilded && uoBuilded.maxFeePerGas;
+  const nonce = uoBuilded && uoBuilded.nonce;
+  const initCode = uoBuilded && uoBuilded.initCode;
+  const sender = uoBuilded && uoBuilded.sender;
 
   return (
     <View style={{ margin: 8 }}>

@@ -16,9 +16,9 @@ const BalanceScreen: React.FC = () => {
         <Card.Content>
           <List.Section>
             <List.Item
-              title={"Ethereum"}
+              title={"ETH"}
               titleStyle={styles.currency}
-              key={"Ethereum"}
+              key={"ETH"}
               right={() => (
                 <Text style={styles.balanceAmount}>{balance?.toString()}</Text>
               )}
