@@ -31,7 +31,6 @@ export default function AuthProvider({ children }: PropsWithChildren) {
             const token = await getUballetToken()
             try {
                 if (token) {
-                    console.log('GETTING TOKEN')
                     const user = await uballet.getCurrentUser()
                     setUser(user)
                 }
