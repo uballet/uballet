@@ -1,12 +1,11 @@
 import { useEffect, useState } from "react";
-import { View } from "react-native";
+import { ScrollView, View } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import { useSafeLightAccount } from "../../../hooks/useLightAccount";
 import { useTransfer } from "../../../hooks/useTransfer";
 import { useCheckTransferSponsorship } from "../../../hooks/useCheckTransferSponsorship";
 import tokensData from "../../../../erc20sepolia.json";
 import {
-  ActivityIndicator,
   Text,
   Button,
   TextInput,
@@ -14,6 +13,7 @@ import {
 } from "react-native-paper";
 import styles from "../../../styles/styles";
 import EstimateGasFees from "../../../components/EstimateGasFees";
+import { Link, useLocalSearchParams } from "expo-router";
 
 type Token = {
   name: string;
@@ -27,7 +27,8 @@ type TokensData = {
 
 function TransferScreen() {
   const account = useSafeLightAccount();
-  const [toAddress, setAddress] = useState("");
+  const { address } = useLocalSearchParams<{ address: string }>()
+  const [toAddress, setAddress] = useState(address?.startsWith("0x") ? address.slice(2) : "");
   const [amount, setAmount] = useState("");
   const [currency, setCurrency] = useState("ETH");
   const { transferToAddress, transferTokenToAddress, loading, error, txHash } =
@@ -55,7 +56,7 @@ function TransferScreen() {
   }, [toAddress]);
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.container}>
       <Card>
         <Card.Content>
           <Text variant="titleMedium">Transfer Amount: </Text>
@@ -84,13 +85,17 @@ function TransferScreen() {
               ))}
             </Picker>
           </View>
-          <Text variant="bodyMedium" style={{ margin: 8 }}>
-            {`From:\n${account.address}`}
-          </Text>
           <EstimateGasFees apiUrl="placeholder, hardcode params for now" />
-          <Text variant="titleMedium" style={{ margin: 8 }}>
-            To Address:{" "}
-          </Text>
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <Text variant="titleMedium" style={{ margin: 8 }}>
+              To Address:{" "}
+            </Text>
+            <Link href="/(auth)/contacts" push>
+              <Text variant="bodyMedium" style={{ margin: 8 }}>
+                Select Contact
+              </Text>
+            </Link>
+          </View>
           <TextInput
             mode="outlined"
             style={{ margin: 8 }}
@@ -159,7 +164,7 @@ function TransferScreen() {
       )}
       {txHash && <Text selectable>{txHash}</Text>}
       {error && <Text style={{ color: "red" }}>Something went wrong!</Text>}
-    </View>
+    </ScrollView>
   );
 }
 
