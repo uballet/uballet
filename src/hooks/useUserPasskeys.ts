@@ -2,12 +2,6 @@ import { useQuery } from "@tanstack/react-query";
 import { useAuthContext } from "../providers/AuthProvider";
 import uballet from "../api/uballet";
 
-export type UserPasskey = {
-    id: string
-    name: string
-    registeredAt: Date
-}
-
 export function useUserPasskeys() {
     const { user } = useAuthContext()
     const { data: passkeys, isLoading, isError, isSuccess } = useQuery({

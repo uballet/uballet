@@ -28,15 +28,17 @@ const decodeHexCode = async (hexCode: string) => {
 }
 
 export function useCompleteEmailSignIn() {
-    const completeCb = useCallback(async ({ email, hexCode  }: { email: string, hexCode: string }) => {
+    const completeCb = useCallback(async ({ email, code  }: { email: string, code: string }) => {
         try {
 
-            const { secret, nonce } = await decodeHexCode(hexCode)
-            const secretHash = sha256(secret)
-            const aes = gcm(secretHash, nonce);
-            const encryptedEmail = aes.encrypt(new Uint8Array(Buffer.from(email, 'utf-8')))
-            const stampedEmail = Buffer.from(encryptedEmail).toString('base64')
-            const { token, user } = await uballet.completeSignIn({ email, stampedEmail })
+            // const { secret, nonce } = await decodeHexCode(hexCode)
+            // const secretHash = sha256(secret)
+            // const aes = gcm(secretHash, nonce);
+            // const encryptedEmail = aes.encrypt(new Uint8Array(Buffer.from(email, 'utf-8')))
+            // const stampedEmail = Buffer.from(encryptedEmail).toString('base64')
+
+
+            const { token, user } = await uballet.completeSignIn({ email, code })
             await setUballetToken(token)
             return user
         } catch (error) {

@@ -1,9 +1,9 @@
-import axios, { AxiosResponse } from "axios"
-import { UBALLET_API_URL } from "../constants"
+import axios from "axios"
+import { UBALLET_API_URL } from "../../constants"
 import { PublicKeyCredentialCreationOptionsJSON } from "@simplewebauthn/typescript-types"
 import { PasskeyAuthenticationResult, PasskeyRegistrationResult } from "react-native-passkey"
-import { UserPasskey } from "../hooks/useUserPasskeys"
 import AsyncStorage from "@react-native-async-storage/async-storage"
+import { Contact, type User, type UserAndToken, type UserPasskey } from "./types"
 
 const uballetAxios = axios.create({
     baseURL: UBALLET_API_URL,
@@ -31,14 +31,6 @@ export const setUballetToken = async (token: string) => {
 export const removeUballetToken = async () => {
     return await AsyncStorage.removeItem(UBALLET_JWT_KEY)
 }
-
-type User = {
-    id: string
-    email: string
-    verified: boolean
-}
-
-type UserAndToken = User & { token: string }
 
 const signUp = ({ email }: { email: string }) => {
     return uballetAxios.post<User>(`/signup`, { email })
@@ -78,8 +70,8 @@ const getUserPasskeys = async ({ userId }: { userId: string }) => {
     return passkeys
 }
 
-const startEmailLogin = async ({ email, targetPublicKey }: { email: string, targetPublicKey: string }) => {
-    await uballetAxios.post(`/email-sign-in`, { email, targetPublicKey })
+const startEmailLogin = async ({ email }: { email: string }) => {
+    await uballetAxios.post(`/email-sign-in`, { email })
 }
 
 const getCurrentUser = async () => {
@@ -87,18 +79,30 @@ const getCurrentUser = async () => {
     return user
 }
 
-const completeSignIn = async ({ email, stampedEmail }: { email: string, stampedEmail: string }) => {
-    const { data: { token, ...user } } = await uballetAxios.post<UserAndToken>(`/complete-sign-in`, { email, stampedEmail })
+const completeSignIn = async ({ email, code}: { email: string, code: string }) => {
+    const { data: { token, ...user } } = await uballetAxios.post<UserAndToken>(`/complete-sign-in`, { email, code })
     return {
         token,
         user
     }
 }
 
+async function getContacts() {
+    const { data } = await uballetAxios.get<Contact[]>('/contacts')
+    return data
+}
+
+async function addContact({ name, address }: { name: string, address: string }) {
+    const { data } = await uballetAxios.post<Contact>('/contacts', { name, address })
+    return data
+}
+
 export default {
+    addContact,
     completeSignIn,
     getPasskeyAuthenticationOptions,
     getPasskeyRegistrationOptions,
+    getContacts,
     getCurrentUser,
     getUserPasskeys,
     signUp,
