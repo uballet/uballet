@@ -138,13 +138,13 @@ const EstimateGasFees: React.FC<EstimateGasFeesProps> = ({ apiUrl }) => {
 
   const preVerificationGas: string =
     estimateUserOperationGasData &&
-    estimateUserOperationGasData.result.preVerificationGas;
+    estimateUserOperationGasData.result?.preVerificationGas;
   const callGasLimit: string =
     estimateUserOperationGasData &&
-    estimateUserOperationGasData.result.callGasLimit;
+    estimateUserOperationGasData.result?.callGasLimit;
   const verificationGasLimit: string =
     estimateUserOperationGasData &&
-    estimateUserOperationGasData.result.verificationGasLimit;
+    estimateUserOperationGasData.result?.verificationGasLimit;
   const maxPriorityFeePerGas: string =
     maxPriorityFeePerGasData && maxPriorityFeePerGasData.result;
   return (
