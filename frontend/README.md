@@ -55,7 +55,10 @@ There are dedicated scripts in the package.json in order to build for specific p
 
 ### Android
 
-#### Build for emulator/device
+#### Build for emulator/device0
+
+  Correr unicamente al agregar nuevas dependencias nativas, o en caso de que no haya ningún build válido disponible.
+
   `npm run build:android:simulator`
 
 #### Run an existing build in android emulator
@@ -64,6 +67,8 @@ There are dedicated scripts in the package.json in order to build for specific p
 ### iOS
 
 #### Build for simulator
+  Correr unicamente al agregar nuevas dependencias nativas, o en caso de que no haya ningún build válido disponible.
+  
   `npm run build:ios:simulator`
 
 #### Run an existing build in iOS simulator

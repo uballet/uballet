@@ -8,7 +8,6 @@ const useAddContact = () => {
 
     const addContact = useCallback(async ({ name, address }: { name: string, address: `0x${string}`}) => {
         const contact = await uballet.addContact({ name, address });
-        console.log({ contact })
         return contact
     }, [])
 
