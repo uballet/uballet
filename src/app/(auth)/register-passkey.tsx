@@ -4,6 +4,7 @@ import { Redirect, router } from "expo-router";
 import { useAuthContext } from "../../providers/AuthProvider";
 import { ActivityIndicator } from "react-native-paper";
 import { Button, ButtonText } from "../../components/Button";
+import { useEffect } from "react";
 
 export default function RegisterPasskey() {
     const { register, isPending, isSuccess, isSupported } = usePasskeyRegistration()
@@ -14,14 +15,20 @@ export default function RegisterPasskey() {
         router.navigate('/(auth)');
     }
 
+    useEffect(() => {
+        if (!isSupported) {
+            skipPasskeyRegistration();
+        }
+    }, [isSupported])
+
+    if (!isSupported) {
+        return null
+    }
+
     if (isSuccess) {
         return (
             <Redirect href={'/(auth)'} />
         )
-    }
-
-    if (!isSupported) {
-        skipPasskeyRegistration();
     }
 
     const disabled = isPending
