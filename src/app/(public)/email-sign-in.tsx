@@ -1,14 +1,13 @@
-import { Pressable, Text, TextInput, View, StyleSheet } from "react-native";
-import { useSignUp } from "../../hooks/useSignUp";
+import { Text, TextInput, View, StyleSheet } from "react-native";
 import { useState } from "react";
-import { Link, Redirect, useLocalSearchParams } from "expo-router";
+import { Redirect, useLocalSearchParams } from "expo-router";
 import { useCompleteEmailSignIn } from "../../hooks/useCompleteEmailSignIn";
 import { Button, ButtonText } from "../../components/Button";
 
 export default function EmailSignInScreen() {
-    const { complete, isPending, isError, isSuccess } = useCompleteEmailSignIn()
+    const { complete, isPending } = useCompleteEmailSignIn()
     const { email } = useLocalSearchParams() as { email: string }
-    const [pubkeyEncrypted, setPubkeyEncrypted] = useState('')
+    const [code, setCode ] = useState('')
 
     if (!email) {
         return <Redirect href={'/(public)/login'} />
@@ -19,11 +18,12 @@ export default function EmailSignInScreen() {
             <Text>Login: {email}</Text>
             <TextInput
                 style={styles.textInput}
-                value={pubkeyEncrypted}
-                onChangeText={setPubkeyEncrypted}
+                value={code}
+                onChangeText={setCode}
+                textContentType="oneTimeCode"
                 placeholder="Input the code sent to your email"
             />
-            <Button disabled={isPending} onPress={() => complete({ email, hexCode: pubkeyEncrypted })}>
+            <Button disabled={isPending} onPress={() => complete({ email, code })}>
                 <ButtonText>Verify Code</ButtonText>
             </Button>
         </View>
