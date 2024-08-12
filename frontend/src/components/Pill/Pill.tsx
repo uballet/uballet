@@ -24,4 +24,6 @@ const PillStyles = StyleSheet.create({
     }
 })
 
+
+
 export { Pill }

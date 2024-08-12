@@ -16,7 +16,7 @@ import styles from "../../../styles/styles";
 import { useAuthContext } from "../../../providers/AuthProvider";
 
 const formatTxAddress = (address: string) => {
-  return `${address.slice(0, 5)}...${address.slice(36)}`;
+  return `${address.slice(0, 10)}...${address.slice(30)}`;
 };
 
 const EthereumTransactionItem = (
@@ -27,7 +27,11 @@ const EthereumTransactionItem = (
   <List.Item
     title={`From: ${formatTxAddress(transfer.from)}`}
     titleStyle={{ fontSize: 12 }}
-    description={`To block: ${transfer.blockNum}`}
+    description={
+      `In block: ${transfer.blockNum}` +
+      "\n" +
+      `Tx ID: ${formatTxAddress(transfer.uniqueId)}`
+    }
     descriptionStyle={{ fontSize: 12 }}
     key={index}
     right={() => <Text style={{ color: color }}>{transfer.value}</Text>}
@@ -50,7 +54,7 @@ const HomeScreen: React.FC = () => {
           <Card.Content>
             <Text variant="titleLarge">Balance</Text>
             {balance !== null ? (
-              <Text style={styles.balance}>{balance?.toString()} eth</Text>
+              <Text style={styles.balance}>{balance?.toString()} ETH</Text>
             ) : (
               <ActivityIndicator />
             )}
