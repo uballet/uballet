@@ -1,5 +1,4 @@
 import express from 'express'
-import { authenticateToken } from '../jwt-authentication';
 import ContactsService from '../services/contacts'
 
 const router = express.Router();

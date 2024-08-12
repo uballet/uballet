@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken'
+import { JWT_SECRET } from './env'
 
 // @ts-ignore
 export function authenticateToken(req, res, next) {
@@ -7,7 +8,7 @@ export function authenticateToken(req, res, next) {
   
     if (token == null) return res.sendStatus(401)
   
-    jwt.verify(token, process.env.JWT_SECRET as string, (err: any, payload: any) => {
+    jwt.verify(token, JWT_SECRET as string, (err: any, payload: any) => {
       if (err) return res.sendStatus(403)
   
       req.user = payload

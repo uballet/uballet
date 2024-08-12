@@ -10,6 +10,7 @@ import { gcm } from '@noble/ciphers/aes';
 import { sha256 } from '@noble/hashes/sha256';
 import { createEmailVerificationCode } from "./sign-up";
 import { EmailVerificationCode } from "../entity/EmailVerificationCode";
+import { BUILD_ENV } from "../env";
 
 function encryptStamperValues({ secret, nonce }: { secret: Uint8Array, nonce: Uint8Array }) {
     const nonceHex = Buffer.from(nonce).toString('hex')
@@ -43,7 +44,7 @@ async function signInWithEmail({ email, targetPublicKey: targetPublicKeyBase64 }
     stamper.value = encryptStamperValues({ secret: sharedSecret, nonce })
 
     await stamper.save();
-    if (process.env.BUILD_ENV === 'testing') {
+    if (BUILD_ENV === 'testing') {
         await EmailService.sendEmail(email, 'UBALLET - Sign In Code', `Sign In With the Following Code: ${pubKeyHex+nonceHex}`)
     }
 }

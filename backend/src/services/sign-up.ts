@@ -1,10 +1,11 @@
 import { EmailVerificationCode } from "../entity/EmailVerificationCode"
 import { User } from "../entity/User"
+import { BUILD_ENV } from "../env"
 import email from "./email"
 
 
 async function sendUserVerificationEmail(user: User, code: string) {
-    if (process.env.BUILD_ENV === 'testing') {
+    if (BUILD_ENV === 'testing') {
         return email.sendEmail(user.email, 'UBALLET - Verify your email', `Your verification code is: ${code}`)
     }
     console.log('Your verification code is: ', code)

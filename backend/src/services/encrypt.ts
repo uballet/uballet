@@ -1,7 +1,8 @@
 import crypto from 'crypto'
+import { AES_IV_HEX, AES_SECRET_HEX } from '../env';
 
-const SECRET = Buffer.from(process.env.AES_SECRET_HEX as string, 'hex');
-const IV = Buffer.from(process.env.AES_IV_HEX as string, 'hex');
+const SECRET = Buffer.from(AES_SECRET_HEX as string, 'hex');
+const IV = Buffer.from(AES_IV_HEX as string, 'hex');
 const ALGORITHM = 'aes-128-cbc';
 
 export function encryptValue(text: string) {

@@ -5,12 +5,13 @@ import { PasskeyChallenge } from "../entity/PasskeyChallenge";
 import base64url from "base64url";
 import { Passkey } from "../entity/Passkey";
 import { createAccessToken } from "./token";
+import { WEBAUTHN_ORIGIN, WEBAUTHN_RP_ID } from "../env";
 
 async function getRegistrationOptions(userId: string) {
     const user = await User.findOneOrFail({ where: { id: userId } })
     const options = await generateRegistrationOptions({
         rpName: 'uballet',
-        rpID: process.env.WEBAUTHN_RP_ID!!,
+        rpID: WEBAUTHN_RP_ID!!,
         userDisplayName: user.email,
         userName: 'uballet-user',
         attestationType: 'none',
@@ -43,7 +44,7 @@ const verifyRegistration = async (userId: string, credential: RegistrationRespon
     const { verified, registrationInfo } = await verifyRegistrationResponse({
         response: { ...credential, type: 'public-key' },
         expectedChallenge: challenge,
-        expectedOrigin: process.env.WEBAUTHN_ORIGIN!!,
+        expectedOrigin: WEBAUTHN_ORIGIN!!,
         requireUserVerification: true
     })
 
@@ -84,7 +85,7 @@ const verifyRegistration = async (userId: string, credential: RegistrationRespon
 
 async function getAuthenticationOptions() {
     const options = await generateAuthenticationOptions({
-        rpID: process.env.WEBAUTHN_RP_ID!!,
+        rpID: WEBAUTHN_RP_ID!!,
         timeout: 1000 * 60 * 5,
         userVerification: 'preferred',
         allowCredentials: []
@@ -116,8 +117,8 @@ async function verifyAuthentication(
     const { verified, authenticationInfo } = await verifyAuthenticationResponse({
         response: authentication,
         expectedChallenge: challenge,
-        expectedRPID: process.env.WEBAUTHN_RP_ID!!,
-        expectedOrigin: process.env.WEBAUTHN_ORIGIN!!,
+        expectedRPID: WEBAUTHN_RP_ID!!,
+        expectedOrigin: WEBAUTHN_ORIGIN!!,
         requireUserVerification: true,
         authenticator: {
             credentialPublicKey: new Uint8Array(base64url.toBuffer(userCredential.publicKey)),

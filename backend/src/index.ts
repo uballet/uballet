@@ -9,6 +9,7 @@ import UserService from './services/user'
 import signIn from './services/sign-in';
 import { authenticateToken } from './jwt-authentication';
 import contactsRouter from './routes/contacts';
+import { ANDROID_SHA_HEX_VALUE, PORT } from './env';
 // For env File 
 dotenv.config();
 
@@ -25,7 +26,7 @@ const checkNodeVersion = (version: number) => {
 checkNodeVersion(20)
 
 const app: Application = express();
-const port = process.env.PORT || 8000;
+const port = PORT || 8000;
 
 app.use(bodyParser.json()); // <--- Here
 app.use('/contacts', authenticateToken, contactsRouter)
@@ -45,7 +46,7 @@ app.get('/.well-known/assetlinks.json', (req: Request, res: Response) => {
         "namespace" : "android_app",
         "package_name" : "com.uballet.wallet",
         "sha256_cert_fingerprints" : [
-          process.env.ANDROID_SHA_HEX_VALUE
+          ANDROID_SHA_HEX_VALUE
         ]
       }
     }
