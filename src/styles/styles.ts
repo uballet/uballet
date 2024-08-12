@@ -1,4 +1,5 @@
 import { StyleSheet } from 'react-native';
+import {theme} from "./color"
 
 const globalStyles = StyleSheet.create({
   container: {
@@ -53,11 +54,39 @@ const globalStyles = StyleSheet.create({
     textAlign: 'center',
     marginVertical: 20,
   },
+  cardBalance:{
+    // backgroundColor: theme.colors.primary,
+    shadowRadius: 10,
+   
+  },
+
+  saldo:{
+display: 'flex',
+flexDirection: "column",
+alignItems: 'flex-end',
+  },
+  balanceAmountInUSD: {
+    fontSize: 14,
+    color: 'gray'
+    },
+      card:{
+    // backgroundColor: theme.colors.primary,
+    shadowRadius: 10,
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 32,
+    paddingTop: 10,
+    paddingLeft:50,
+  },
   currency: {
-    fontSize: 18,
+    fontSize: 28,
+        
   },
   balanceAmount: {
-    fontSize: 18,
+    fontSize: 28,
+    color: "#277ca5",
     fontWeight: 'bold',
   },
   button: {
