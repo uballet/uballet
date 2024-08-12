@@ -2,7 +2,6 @@ import {
   createContext,
   PropsWithChildren,
   useEffect,
-  useMemo,
   useState,
 } from "react";
 import {
@@ -15,18 +14,19 @@ import { custom, sha256 } from "viem";
 import { entropyToMnemonic } from "bip39";
 import { Alchemy, Network } from "alchemy-sdk";
 import { useAuthContext } from "./AuthProvider";
+import { ALCHEMY_API_URL, ALCHEMY_POLICY_ID } from "../env";
 global.Buffer = global.Buffer || require('buffer').Buffer;
 
 const sdkClient = new Alchemy({
-  url: process.env.EXPO_PUBLIC_ALCHEMY_API_URL!!,
+  url: ALCHEMY_API_URL!!,
   network: Network.ETH_SEPOLIA,
 });
 
 const client = createAlchemySmartAccountClient({
-  rpcUrl: process.env.EXPO_PUBLIC_ALCHEMY_API_URL!!,
+  rpcUrl: ALCHEMY_API_URL!!,
   chain: sepolia,
   gasManagerConfig: {
-    policyId: process.env.EXPO_PUBLIC_ALCHEMY_POLICY_ID!!,
+    policyId: ALCHEMY_POLICY_ID!!,
   },
 });
 

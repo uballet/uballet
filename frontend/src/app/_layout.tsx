@@ -10,9 +10,10 @@ import AuthProvider from "../providers/AuthProvider";
 import { theme } from "../styles/color";
 import "node-libs-react-native/globals.js";
 import "react-native-get-random-values";
+import { IS_STORYBOOK } from "../env";
 
 export default function App() {
-  if (process.env.EXPO_PUBLIC_STORYBOOK === "true") {
+  if (IS_STORYBOOK) {
     const Storybook = require("./../../.storybook").default;
 
     return <Storybook />;

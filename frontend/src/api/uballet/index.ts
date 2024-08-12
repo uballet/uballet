@@ -1,5 +1,5 @@
 import axios from "axios"
-import { UBALLET_API_URL } from "../../constants"
+import { UBALLET_API_URL } from "../../env"
 import { PublicKeyCredentialCreationOptionsJSON } from "@simplewebauthn/typescript-types"
 import { PasskeyAuthenticationResult, PasskeyRegistrationResult } from "react-native-passkey"
 import AsyncStorage from "@react-native-async-storage/async-storage"
