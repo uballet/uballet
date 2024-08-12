@@ -6,7 +6,8 @@ const tokens = [
     {
         name: "DAI",
         symbol: "DAI",
-        address: "0xf5c142292B85253e4D071812c84f05ec42828fdB"
+        address: "0xf5c142292B85253e4D071812c84f05ec42828fdB",
+        cmcid: "4945"
     },
     {
         name: "Tether USD",
