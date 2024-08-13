@@ -1,5 +1,5 @@
 import { AssetTransfersResult } from "alchemy-sdk";
-import { Link } from "expo-router";
+import { Link, router } from "expo-router";
 import React, { Key } from "react";
 import { ColorValue, ScrollView, View } from "react-native";
 import {
@@ -34,6 +34,12 @@ const EthereumTransactionItem = (
     }
     descriptionStyle={{ fontSize: 12 }}
     key={index}
+    onPress={() =>
+      router.push({
+        pathname: `transaction`,
+        params: { txHash: transfer.hash },
+      })
+    }
     right={() => <Text style={{ color: color }}>{transfer.value}</Text>}
   />
 );
