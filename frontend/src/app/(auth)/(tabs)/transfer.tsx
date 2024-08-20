@@ -131,7 +131,7 @@ function TransferScreen() {
               Amount must be greater than 0
             </Text>
           )}
-          <Text variant="bodyMedium" style={{ margin: 8 }}>
+          <Text variant="bodyMedium" selectable={true} style={{ margin: 8 }}>
             {`From:\n${account.address}`}
           </Text>
           <EstimateGasFees

@@ -16,6 +16,7 @@ const TransactionScreen: React.FC = () => {
           headerStyle: { backgroundColor: "#277ca5" },
           headerShown: true,
           headerTintColor: "#fff",
+          headerBackTitleVisible: false,
           headerTitleStyle: {
             fontWeight: "bold",
           },
