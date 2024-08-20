@@ -1,3 +1,5 @@
+import { CMC_API_KEY } from "../env";
+
 const isStableCoin = (coin: string) => {
   return coin === "DAI" || coin === "USDC" || coin === "USDT";
 };
@@ -54,7 +56,7 @@ async function getQuote(coin: string) {
     method: "GET",
     headers: {
       Accepts: "application/json",
-      "X-CMC_PRO_API_KEY": "b6d57d00-f3d3-4a64-ab6b-0d85b1340c84",
+      "X-CMC_PRO_API_KEY": CMC_API_KEY,
     },
   });
 
