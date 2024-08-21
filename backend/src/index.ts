@@ -10,6 +10,7 @@ import signIn from "./services/sign-in";
 import { authenticateToken } from "./jwt-authentication";
 import contactsRouter from "./routes/contacts";
 import quotesRouter from "./routes/quotes";
+import portfolioRouter from "./routes/portfolio";
 import { ANDROID_SHA_HEX_VALUE, PORT } from "./env";
 // For env File
 dotenv.config();
@@ -32,6 +33,7 @@ const port = PORT || 8000;
 app.use(bodyParser.json()); // <--- Here
 app.use("/contacts", authenticateToken, contactsRouter);
 app.use("/quotes", quotesRouter); // Add authenticateToken later...
+app.use("/portfolio", portfolioRouter); // Add authenticateToken later...
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Welcome to Express & TypeScript Server");
