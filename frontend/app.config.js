@@ -37,7 +37,17 @@ export default {
       },
     },
     owner: "uballet",
-    plugins: ["expo-router"],
+    plugins: [
+      "expo-router",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow Uballet to access your camera",
+          "microphonePermission": "Allow Uballet to access your microphone",
+          "recordAudioAndroid": true
+        }
+      ]
+    ],
     scheme: "uballet",
   },
 };
