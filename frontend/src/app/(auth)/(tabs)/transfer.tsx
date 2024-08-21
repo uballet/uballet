@@ -16,6 +16,7 @@ import EstimateGasFees from "../../../components/EstimateGasFees";
 import { Link, useLocalSearchParams } from "expo-router";
 import { ethers } from "ethers";
 import { useAlchemyClient } from "../../../hooks/useAlchemyClient";
+import { router } from "expo-router";
 
 type Token = {
   name: string;
@@ -69,6 +70,13 @@ function TransferScreen() {
   useEffect(() => {
     if (txHash) {
       setError(false);
+      setAddress("");
+      setAmount("");
+      setCurrency("ETH");
+      router.push({
+        pathname: `transaction`,
+        params: { txHash: txHash },
+      });
     }
   }, [txHash]);
 
@@ -123,7 +131,7 @@ function TransferScreen() {
               Amount must be greater than 0
             </Text>
           )}
-          <Text variant="bodyMedium" style={{ margin: 8 }}>
+          <Text variant="bodyMedium" selectable={true} style={{ margin: 8 }}>
             {`From:\n${account.address}`}
           </Text>
           <EstimateGasFees
@@ -229,7 +237,6 @@ function TransferScreen() {
           Transfer!
         </Button>
       )}
-      {txHash && <Text selectable>{txHash}</Text>}
       {error && <Text style={{ color: "red" }}>Something went wrong!</Text>}
     </ScrollView>
   );
