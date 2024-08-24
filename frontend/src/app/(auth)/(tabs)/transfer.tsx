@@ -5,12 +5,7 @@ import { useSafeLightAccount } from "../../../hooks/useLightAccount";
 import { useTransfer } from "../../../hooks/useTransfer";
 import { useCheckTransferSponsorship } from "../../../hooks/useCheckTransferSponsorship";
 import tokensData from "../../../../erc20sepolia.json";
-import {
-  Text,
-  Button,
-  TextInput,
-  Card,
-} from "react-native-paper";
+import { Text, Button, TextInput, Card } from "react-native-paper";
 import styles from "../../../styles/styles";
 import EstimateGasFees from "../../../components/EstimateGasFees";
 import { Link, useLocalSearchParams } from "expo-router";
@@ -30,8 +25,13 @@ type TokensData = {
 
 function TransferScreen() {
   const account = useSafeLightAccount();
-  const { address } = useLocalSearchParams<{ address: string }>()
-  const [toAddress, setAddress] = useState(address?.startsWith("0x") ? address.slice(2) : "");
+  const currencyScanned = useLocalSearchParams<{ currency: string }>()?.currency;
+  const addressScanned = useLocalSearchParams<{ address: string }>()?.address;
+  const amountScanned = useLocalSearchParams<{ amount: string }>()?.amount;
+  const { address } = useLocalSearchParams<{ address: string }>();
+  const [toAddress, setAddress] = useState(
+    address?.startsWith("0x") ? address.slice(2) : ""
+  );
   const client = useAlchemyClient();
   const [amount, setAmount] = useState("");
   const [currency, setCurrency] = useState("ETH");
@@ -78,7 +78,18 @@ function TransferScreen() {
         params: { txHash: txHash },
       });
     }
-  }, [txHash]);
+
+    if (currencyScanned) {
+      setCurrency(currencyScanned);
+    }
+
+    if (addressScanned) {
+      handleAddressChange(addressScanned.slice(2));
+    }
+    if (amountScanned) {
+      handleAmountChange(amountScanned);
+    }
+  }, [txHash, currencyScanned, addressScanned, amountScanned]);
 
   const handleAddressChange = (address: string) => {
     const fullAddress = `0x${address}`;
@@ -96,7 +107,8 @@ function TransferScreen() {
   };
 
   return (
-    <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.container}>
+    <ScrollView >
+      <View style={styles.container}>
       <Card>
         <Card.Content>
           <Text variant="titleMedium">Transfer Amount: </Text>
@@ -118,6 +130,7 @@ function TransferScreen() {
             />
             <Picker
               selectedValue={currency}
+              
               style={{ width: 150 }}
               onValueChange={(itemValue: string) => setCurrency(itemValue)}
             >
@@ -126,6 +139,13 @@ function TransferScreen() {
               ))}
             </Picker>
           </View>
+          <Button
+            mode="contained"
+            style={{ margin: 8 }}
+            onPress={() => router.push({ pathname: "scanner" })}
+          >
+            Scan QR
+          </Button>
           {!isAmountValid && (
             <Text style={{ color: "red", marginLeft: 8 }}>
               Amount must be greater than 0
@@ -145,9 +165,9 @@ function TransferScreen() {
               To Address:{" "}
             </Text>
             <Link href="/(auth)/contacts" push>
-                <Text variant="bodyMedium" style={{ margin: 8 }}>
-                  Select Contact
-                </Text>
+              <Text variant="bodyMedium" style={{ margin: 8 }}>
+                Select Contact
+              </Text>
             </Link>
           </View>
           <TextInput
@@ -237,7 +257,7 @@ function TransferScreen() {
           Transfer!
         </Button>
       )}
-      {error && <Text style={{ color: "red" }}>Something went wrong!</Text>}
+      </View>
     </ScrollView>
   );
 }
