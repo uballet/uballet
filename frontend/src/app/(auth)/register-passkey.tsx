@@ -7,7 +7,7 @@ import { Button, ButtonText } from "../../components/Button";
 import { useEffect } from "react";
 
 export default function RegisterPasskey() {
-    const { register, isPending, isSuccess, isSupported } = usePasskeyRegistration()
+    const { register, isPending, isSuccess } = usePasskeyRegistration()
     const { skipPasskeys } = useAuthContext()
 
     const skipPasskeyRegistration = () => {
@@ -15,19 +15,9 @@ export default function RegisterPasskey() {
         router.navigate('/(auth)');
     }
 
-    useEffect(() => {
-        if (!isSupported) {
-            skipPasskeyRegistration();
-        }
-    }, [isSupported])
-
-    if (!isSupported) {
-        return null
-    }
-
     if (isSuccess) {
         return (
-            <Redirect href={'/(auth)'} />
+            <Redirect href={'/(auth)'}/>
         )
     }
 
