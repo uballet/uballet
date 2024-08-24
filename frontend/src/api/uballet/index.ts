@@ -97,6 +97,11 @@ async function addContact({ name, address }: { name: string, address: string }) 
     return data
 }
 
+async function setUserWalletAddress({ walletAddress }: { walletAddress: string }) {
+    const { data } = await uballetAxios.post<User>('/user/wallet-address', { walletAddress })
+    return data
+}
+
 export default {
     addContact,
     completeSignIn,
@@ -107,6 +112,7 @@ export default {
     getUserPasskeys,
     signUp,
     startEmailLogin,
+    setUserWalletAddress,
     verifyEmail,
     verifyPasskeyRegistration,
     verifyPasskeyAuthentication,

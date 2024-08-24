@@ -3,6 +3,7 @@ export type User = {
     id: string
     email: string
     verified: boolean
+    walletAddress?: string | null
 }
 
 export type UserAndToken = User & { token: string }
