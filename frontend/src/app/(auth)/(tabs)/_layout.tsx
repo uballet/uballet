@@ -1,7 +1,7 @@
 import React from "react";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { MaterialIcons } from "@expo/vector-icons";
-import { withLayoutContext } from "expo-router";
+import { Stack, withLayoutContext } from "expo-router";
 import {
   createMaterialBottomTabNavigator,
   MaterialBottomTabNavigationOptions,
@@ -15,6 +15,12 @@ export const MaterialBottomTabs = withLayoutContext<
 
 function TabsLayout() {
   return (
+    <>
+    <Stack.Screen
+        options={{
+          headerShown: false,
+        }}
+      />
     <MaterialBottomTabs initialRouteName="index" 
     activeColor="#f0edf6"
     inactiveColor="#113547"
@@ -65,6 +71,7 @@ function TabsLayout() {
         }}
       />
     </MaterialBottomTabs>
+    </>
   );
 }
 

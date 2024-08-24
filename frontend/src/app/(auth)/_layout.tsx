@@ -6,15 +6,15 @@ export default function AuthenticatedLayout() {
     const pathname = usePathname()
     const isLockedScreen = pathname.includes('/locked')
 
-    if (!user?.verified) {
-        return <Redirect href={'/(public)'} />
-    }
+  if (!user?.verified) {
+    return <Redirect href={"/(public)"} />;
+  }
 
     if (requiresLocalAuthentication && !isLockedScreen) {
         return <Redirect href={'/(auth)/locked'} />        
     }
 
-    return (
-        <Slot />
-    )
+  return (
+    <Slot />
+  );
 }

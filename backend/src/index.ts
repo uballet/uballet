@@ -1,5 +1,6 @@
 import express, { Request, Response , Application } from 'express';
 import * as bodyParser from 'body-parser';
+import * as dotenv from "dotenv";
 import { AppDataSource } from "./data-source"
 import { authenticateToken } from './jwt-authentication';
 import contactsRouter from './routes/contacts';
@@ -8,6 +9,10 @@ import userRouter from './routes/user'
 import webAuthnRouter from './routes/webauthn'
 import wellKnownRouter from './routes/well-known'
 import { PORT } from './env';
+import quotesRouter from "./routes/quotes";
+import portfolioRouter from "./routes/portfolio";
+// For env File
+dotenv.config();
 
 const checkNodeVersion = (version: number) => {
   const versionRegex = new RegExp(`^${version}\\..*`);
@@ -19,7 +24,7 @@ const checkNodeVersion = (version: number) => {
   }
 };
 
-checkNodeVersion(20)
+checkNodeVersion(20);
 
 const app: Application = express();
 const port = PORT || 8000;
@@ -34,11 +39,22 @@ app.get('/', (req: Request, res: Response) => {
   res.send('Welcome to Express & TypeScript Server');
 });
 
+app.use("/contacts", authenticateToken, contactsRouter);
+app.use("/quotes", quotesRouter); // Add authenticateToken later...
+app.use("/portfolio", portfolioRouter); // Add authenticateToken later...
+
+app.get("/", (req: Request, res: Response) => {
+  res.send("Welcome to Express & TypeScript Server");
+});
+
 app.listen(port, () => {
   console.log(`Server is Fire at http://localhost:${port}`);
 });
 
-AppDataSource.initialize().then(async () => {
-    console.log("Here you can setup and run express / fastify / any other framework.")
-
-}).catch(error => console.log(error))
+AppDataSource.initialize()
+  .then(async () => {
+    console.log(
+      "Here you can setup and run express / fastify / any other framework."
+    );
+  })
+  .catch((error) => console.log(error));

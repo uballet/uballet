@@ -1,21 +1,20 @@
-
 export type User = {
-    id: string
-    email: string
-    verified: boolean
-    walletAddress?: string | null
-}
+  id: string
+  email: string
+  verified: boolean
+  walletAddress?: string | null
+};
 
-export type UserAndToken = User & { token: string }
+export type UserAndToken = User & { token: string };
 
 export type UserPasskey = {
-    id: string
-    name: string
-    registeredAt: Date
-}
+  id: string;
+  name: string;
+  registeredAt: Date;
+};
 
 export type Contact = {
-    id: string
-    name: string
-    address: string
-}
+  id: string;
+  name: string;
+  address: string;
+};
