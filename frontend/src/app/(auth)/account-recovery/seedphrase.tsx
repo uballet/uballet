@@ -26,20 +26,20 @@ export default function SeedPhraseRecoveryScreen() {
         return <Redirect href={'/(auth)/'} />
     }
     return (
-        <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
-            <Text style={{ margin: 4 }}>Recover with seedphrase</Text>
+        <View className="flex-1 items-center justify-center">
+            <Text className="m-2">Recover with seedphrase</Text>
             <TextInput
                 multiline={true}
                 numberOfLines={5}
                 mode="outlined"
-                style={{ width: "70%", height: 200, margin: 8 }}
+                className="w-3/4 h-40"
                 value={seedPhrase}
                 placeholder="Enter seed phrase"
                 onChangeText={setSeedphrase}
                 autoCapitalize="none"
             />
             <ErrorText isError={isError} />
-            <Button disabled={isPending} onPress={onButtonPress} style={{ width: "70%" }}>
+            <Button disabled={isPending} onPress={onButtonPress} mode="contained" className="m-2">
                 <Text>Recover</Text>
             </Button>
         </View>
