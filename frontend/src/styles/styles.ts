@@ -92,7 +92,7 @@ alignItems: 'flex-end',
   button: {
     alignSelf: "center",
     margin: 16,
-    padding: 8,
+    padding: 4,
     borderRadius: 8,
     width: '100%',
   }

@@ -111,7 +111,7 @@ function TransferScreen() {
       <View style={styles.container}>
       <Card>
         <Card.Content>
-          <Text variant="titleMedium">Transfer Amount: </Text>
+          <Card.Title title="Transfer Amount:" />
           <View
             style={{
               flexDirection: "row",
@@ -139,9 +139,10 @@ function TransferScreen() {
               ))}
             </Picker>
           </View>
+         
           <Button
-            mode="contained"
-            style={{ margin: 8 }}
+            mode="outlined"
+            style={styles.button}
             onPress={() => router.push({ pathname: "scanner" })}
           >
             Scan QR
@@ -151,7 +152,7 @@ function TransferScreen() {
               Amount must be greater than 0
             </Text>
           )}
-          <Text variant="bodyMedium" selectable={true} style={{ margin: 8 }}>
+          <Text variant="bodySmall" selectable={true} style={{ margin: 8 }}>
             {`From:\n${account.address}`}
           </Text>
           <EstimateGasFees
