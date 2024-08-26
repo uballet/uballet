@@ -10,6 +10,7 @@ export default function SignUpScreen() {
     const { signup, isPending } = useSignUp()
     const [email, setEmail] = useState<string>('');
 
+
     return (
         <View style={[styles.containerLogin, screenStyles.container]}>
             <TextInput

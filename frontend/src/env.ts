@@ -1,5 +1,5 @@
 // uballet api
-export const UBALLET_API_URL = process.env.EXPO_PUBLIC_UBALLET_API_URL
+export const UBALLET_API_URL = "http://192.168.0.8:3000"
 
 // alchemy api
 export const ALCHEMY_API_URL = process.env.EXPO_PUBLIC_ALCHEMY_API_URL
