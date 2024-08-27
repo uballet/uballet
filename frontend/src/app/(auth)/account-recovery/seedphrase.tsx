@@ -10,7 +10,7 @@ function ErrorText({ isError }: { isError: boolean }) {
         return null
     }
     return (
-        <Text style={{ color: "red", margin: 8 }}>
+        <Text className="text-red-700 m-2">
             Invalid seed phrase
         </Text>
     )

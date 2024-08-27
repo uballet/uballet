@@ -10,9 +10,9 @@ export default function AuthenticatedLayout() {
     return <Redirect href={"/(public)"} />;
   }
 
-    if (requiresLocalAuthentication && !isLockedScreen) {
-        return <Redirect href={'/(auth)/locked'} />        
-    }
+  if (requiresLocalAuthentication && !isLockedScreen) {
+      return <Redirect href={'/(auth)/locked'} />        
+  }
 
   return (
     <Slot />
