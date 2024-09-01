@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
-import { Link, Redirect, router } from "expo-router";
+import { useState } from "react";
+import { Link, Redirect } from "expo-router";
 import { Button, TextInput } from "react-native-paper";
-import { View, Image, Pressable, Text, KeyboardAvoidingView } from "react-native";
+import { View, Image, Text, KeyboardAvoidingView } from "react-native";
 import { useEmailSignIn } from "../../hooks/useEmailSignIn";
 import { usePasskeySignIn } from "../../hooks/usePasskeySignIn";
 import styles from "../../styles/styles";

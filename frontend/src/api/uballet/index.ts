@@ -180,18 +180,24 @@ async function getQuote({ coin }: { coin: string }) {
   return data;
 }
 
+async function setUserWalletAddress({ walletAddress }: { walletAddress: string }) {
+    const { data } = await uballetAxios.post<User>('/user/wallet-address', { walletAddress })
+    return data
+}
+
 export default {
-  addContact,
-  completeSignIn,
-  getPasskeyAuthenticationOptions,
-  getPasskeyRegistrationOptions,
-  getContacts,
-  getCurrentUser,
-  getUserPasskeys,
-  signUp,
-  startEmailLogin,
-  verifyEmail,
-  verifyPasskeyRegistration,
-  verifyPasskeyAuthentication,
-  getQuote,
+    addContact,
+    completeSignIn,
+    getPasskeyAuthenticationOptions,
+    getPasskeyRegistrationOptions,
+    getContacts,
+    getCurrentUser,
+    getUserPasskeys,
+    signUp,
+    startEmailLogin,
+    setUserWalletAddress,
+    verifyEmail,
+    verifyPasskeyRegistration,
+    verifyPasskeyAuthentication,
+    getQuote,
 };

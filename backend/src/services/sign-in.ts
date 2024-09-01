@@ -49,10 +49,19 @@ async function signInWithEmail({ email, targetPublicKey: targetPublicKeyBase64 }
     }
 }
 
+function sendSignInEmail({ email, code }: { email: string, code: string }) {
+    if (BUILD_ENV === 'development') {
+        console.log(`Sign In code for: ${email}: ${code}`)
+    }
+    return EmailService.sendEmail(email, 'UBALLET - Sign In Code', `Sign In With the Following Code: ${code}`)
+}
+
 async function signInWithEmailSimpler({ email }: { email: string }) {
     const user = await User.findOneOrFail({ where: { email } })
 
-    await createEmailVerificationCode(user.id, 'login')
+
+    const code = await createEmailVerificationCode(user.id, 'login')
+    await sendSignInEmail({ email, code: code.code })
 }
 
 async function completeSimplerEmailSignIn({ email, code }: { email: string, code: string }) {

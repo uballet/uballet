@@ -5,7 +5,7 @@ const isStableCoin = (coin: string) => {
 };
 
 async function getQuote(coin: string) {
-  const productionReady = false;
+  const productionReady = true;
 
   const criptoIds: { [key: string]: string } = {
     ETH: "1027",

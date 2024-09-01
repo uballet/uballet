@@ -1,30 +1,73 @@
-import { createContext, PropsWithChildren, useCallback, useContext, useEffect, useState } from "react";
+import { createContext, PropsWithChildren, useCallback, useContext, useEffect, useRef, useState } from "react";
 import uballet, { getUballetToken, removeUballetToken } from "../api/uballet";
-import { ActivityIndicator, View } from "react-native";
+import { ActivityIndicator, AppState, View } from "react-native";
+import * as LocalAuthentication from 'expo-local-authentication';
+import { type User } from "../api/uballet/types";
+import { isDevice } from "expo-device";
 
-type User = {
-    id: string;
-    email: string;
-    verified: boolean;
-}
 export const AuthContext = createContext<{
     user: User | null,
     setUser: (user: User | null) => void,
     logout: () => void,
     passkeysOnboarded: boolean,
+    requiresLocalAuthentication: boolean
     skipPasskeys: () => void
 }>({
     user: null,
     setUser: () => {},
     logout: () => {},
     passkeysOnboarded: false,
+    requiresLocalAuthentication: false,
     skipPasskeys: () => {},
 })
 
+let temporarilyMovedToBackground = false
+
 export default function AuthProvider({ children }: PropsWithChildren) {
     const [user, setUser] = useState<User | null>(null)
+    const [requiresLocalAuthentication, setRequiresLocalAuthentication] = useState(false)
     const [passkeysOnboarded, setPasskeysOnboarded] = useState(false)
     const [isReady, setIsReady] = useState(false)
+    const appState = useRef(AppState.currentState.valueOf())
+
+    const requestAuthentication = async () => {
+        const hasHardware = await LocalAuthentication.hasHardwareAsync()
+        if (hasHardware) {
+            const isEnrolled = await LocalAuthentication.isEnrolledAsync()
+            if (isEnrolled) {
+                temporarilyMovedToBackground = true
+                LocalAuthentication.authenticateAsync().then((result) => {
+                    if (result.success) {
+                        setTimeout(() => {
+                            temporarilyMovedToBackground = false
+                            setRequiresLocalAuthentication(false)
+                        }, 1000)
+                    } else {
+                        temporarilyMovedToBackground = false
+                    }
+                })
+            }
+        }
+    }
+
+    useEffect(() => {
+        if (user && isDevice) {
+            const handleAppStateChange = (nextAppState: string) => {
+                console.log({ current: appState.current, next: nextAppState, requiresLocalAuthentication })
+                const shouldAuthenticate = nextAppState === 'active' && appState.current.match(/inactive|background/) && !temporarilyMovedToBackground
+                if (shouldAuthenticate) {
+                    requestAuthentication();
+                } else {
+                    setRequiresLocalAuthentication(true)
+                }
+                appState.current = nextAppState;
+            
+            }
+            const subscription = AppState.addEventListener('change', handleAppStateChange)
+
+            return () => subscription.remove()
+        }
+    }, [user])
 
     useEffect(() => {
         async function initAuth() {
@@ -74,7 +117,8 @@ export default function AuthProvider({ children }: PropsWithChildren) {
                 setUser,
                 logout,
                 passkeysOnboarded,
-                skipPasskeys
+                skipPasskeys,
+                requiresLocalAuthentication
             }}
         >
             {children}

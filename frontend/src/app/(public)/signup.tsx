@@ -1,20 +1,19 @@
-import { View, StyleSheet } from "react-native";
+import { View } from "react-native";
 import { useSignUp } from "../../hooks/useSignUp";
 import { useState } from "react";
 import { Link } from "expo-router";
-import { TextInput } from "react-native-paper";
-import { Button, ButtonText } from "../../components/Button";
-import styles from "../../styles/styles";
+import { Button, Text, TextInput } from "react-native-paper";
 
 export default function SignUpScreen() {
     const { signup, isPending } = useSignUp()
     const [email, setEmail] = useState<string>('');
 
+
     return (
-        <View style={[styles.containerLogin, screenStyles.container]}>
+        <View className="flex-1 justify-center items-center">
             <TextInput
                 mode="outlined"
-                style={[styles.item, screenStyles.input]}
+                className="w-4/5 mb-2"
                 autoCapitalize="none"
                 autoCorrect={false}
                 placeholder="Email"
@@ -23,11 +22,12 @@ export default function SignUpScreen() {
                 autoFocus={true}
             />
             <Button
-                style={screenStyles.button}
+                mode="contained"
+                className="w-4/5 mb-2"
                 disabled={isPending}
                 onPress={() => signup({ email })}
             >
-                <ButtonText variant="primary">Sign up</ButtonText>
+                <Text className="text-white">Sign up</Text>
             </Button>
             <Link style={{ alignSelf: 'center' }} href={'/(public)/login'}>
                 Already have an account? Sign In!
@@ -35,21 +35,3 @@ export default function SignUpScreen() {
             </View>
     )
 }
-
-const screenStyles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: 'center',
-    },
-    input: {
-        marginVertical: 8,
-        padding: 2,
-        width: '90%',
-        alignSelf: 'center'
-    },
-    button: {
-        width: '90%',
-        alignSelf: 'center',
-        marginVertical: 8
-    }
-})

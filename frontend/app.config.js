@@ -12,6 +12,14 @@ export default {
       backgroundColor: "#ffffff",
     },
     assetBundlePatterns: ["**/*"],
+    plugins: [
+      [
+        "expo-local-authentication",
+        {
+          "faceIDPermission": "Allow $(PRODUCT_NAME) to use Face ID."
+        }
+      ]
+    ],
     ios: {
       supportsTablet: true,
       bundleIdentifier: "com.flperez.uballet",
