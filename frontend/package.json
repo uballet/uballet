@@ -44,11 +44,8 @@
     "expo-router": "~3.5.23",
     "expo-secure-store": "~13.0.2",
     "expo-status-bar": "~1.12.1",
-<<<<<<< HEAD
     "metro-config": "0.80.10",
-=======
     "nativewind": "^2.0.11",
->>>>>>> 79490e52baae1a27d0080c752f0b602732530f92
     "node-libs-react-native": "^1.2.1",
     "nvm": "^0.0.4",
     "react": "18.2.0",
