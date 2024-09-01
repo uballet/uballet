@@ -1,14 +1,15 @@
 import { EmailVerificationCode } from "../entity/EmailVerificationCode"
 import { User } from "../entity/User"
 import { BUILD_ENV } from "../env"
-import email from "./email"
+import EmailService from "./email"
 
 
 async function sendUserVerificationEmail(user: User, code: string) {
-    if (BUILD_ENV === 'testing') {
-        return email.sendEmail(user.email, 'UBALLET - Verify your email', `Your verification code is: ${code}`)
+    if (BUILD_ENV === 'development') {
+        console.log(`Verification code for: ${user.email}: ${code}`)
     }
-    console.log('Your verification code is: ', code)
+
+    return EmailService.sendEmail(user.email, 'UBALLET - Verify your email', `Your verification code is: ${code}`)
 }
 
 export async function createEmailVerificationCode(userId: string, type: string): Promise<EmailVerificationCode> {

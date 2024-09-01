@@ -1,6 +1,6 @@
 import { Pressable, SafeAreaView, ScrollView, Text, View } from "react-native";
 import { useContacts } from "../../../hooks/contacts/useContacts";
-import { ActivityIndicator, TextInput } from "react-native-paper";
+import { ActivityIndicator } from "react-native-paper";
 import { useCallback } from "react";
 import { router } from "expo-router";
 
@@ -12,7 +12,7 @@ function ContactsScreen() {
             return null
         }
         return (
-            <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+            <View className="flex-1 justify-center items-center">
                 <Text>No contacts</Text>
             </View>
         )
@@ -23,9 +23,9 @@ function ContactsScreen() {
             return null
         }
         return (
-            <View style={{ flex: 1, width: '100%', borderWidth: 1 }}>
+            <View className="flex-1 w-full border">
                 {contacts.map((contact) => (
-                    <Pressable style={{ padding: 8, width: '100%', borderWidth: 1, margin: 2 }} key={contact.id} onPress={() => router.navigate({pathname: '/(auth)/(tabs)/transfer', params: { address: contact.address }})}>
+                    <Pressable className="p-2 w-full border m-1" key={contact.id} onPress={() => router.navigate({pathname: '/(auth)/(tabs)/transfer', params: { address: contact.address }})}>
                         <Text>{contact.name}</Text>
                         <Text>{contact.address}</Text>
                     </Pressable>
@@ -39,19 +39,19 @@ function ContactsScreen() {
     }
 
     return (
-        <SafeAreaView style={{ flex: 1, padding: 8, width: '100%' }}>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '100%', paddingHorizontal: 16 }}>
+        <SafeAreaView className="w-full p-2 flex-1">
+            <View className="w-full flex-row justify-between px-4">
                 <Pressable onPress={() => router.back()}>
                     <Text>Back</Text>
                 </Pressable>
-                <Text style={{ fontWeight: 'bold' }}>
+                <Text className="font-bold">
                     Contacts
                 </Text>
                 <Pressable onPress={() => router.push('/(auth)/contacts/new')}>
                     <Text>New</Text>
                 </Pressable>
             </View>
-            <View style={{ flex: 1, width: '100%' }}>
+            <View className="flex-1 w-full">
             {renderContacts()}
             {renderNoContacts()}
             </View>

@@ -10,4 +10,7 @@ export class User extends BaseEntity {
 
     @Column({ type: 'boolean', default: false })
     verified: boolean
+
+    @Column({ nullable: true })
+    walletAddress: string
 }

@@ -1,30 +1,24 @@
-import { StyleSheet, View } from "react-native";
+import { Text, View } from "react-native";
 import { usePasskeyRegistration } from "../../hooks/usePasskeyRegistration";
 import { Redirect, router, Stack } from "expo-router";
 import { useAuthContext } from "../../providers/AuthProvider";
 import { ActivityIndicator } from "react-native-paper";
-import { Button, ButtonText } from "../../components/Button";
-import { useEffect } from "react";
+import { Button } from "react-native-paper";
 
 export default function RegisterPasskey() {
-  const { register, isPending, isSuccess, isSupported } =
-    usePasskeyRegistration();
-  const { skipPasskeys } = useAuthContext();
+    const { register, isPending, isSuccess } = usePasskeyRegistration()
+    const { skipPasskeys } = useAuthContext()
 
-  const skipPasskeyRegistration = () => {
-    skipPasskeys();
-    router.navigate("/(auth)");
-  };
-
-  useEffect(() => {
-    if (!isSupported) {
-      skipPasskeyRegistration();
+    const skipPasskeyRegistration = () => {
+        skipPasskeys();
+        router.navigate('/(auth)');
     }
-  }, [isSupported]);
 
-  if (!isSupported) {
-    return null;
-  }
+    if (isSuccess) {
+        return (
+            <Redirect href={'/(auth)'}/>
+        )
+    }
 
   if (isSuccess) {
     return <Redirect href={"/(auth)"} />;
@@ -33,47 +27,35 @@ export default function RegisterPasskey() {
   const disabled = isPending;
 
   return (
-    <View style={styles.screenContainer}>
+    <View className="flex-1 items-center justify-center">
       <Stack.Screen
         options={{
           headerShown: false,
         }}
       />
       <Button
+        mode="contained"
         onPress={() => register()}
         disabled={disabled}
-        variant="primary"
-        style={[styles.button]}
+        className="my-2 w-[70%]"
       >
-        <ButtonText disabled={disabled} variant="primary">
+        <Text>
           Register passkey
-        </ButtonText>
+        </Text>
         {disabled && (
           <ActivityIndicator style={{ position: "absolute", right: 12 }} />
         )}
       </Button>
       <Button
-        variant="inverse"
+        mode="outlined"
         disabled={disabled}
         onPress={skipPasskeyRegistration}
-        style={[styles.button]}
+        className="my-8 w-[70%]"
       >
-        <ButtonText variant="inverse" disabled={disabled}>
+        <Text>
           Not now
-        </ButtonText>
+        </Text>
       </Button>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  screenContainer: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  button: {
-    marginVertical: 8,
-    width: "70%",
-  },
-});
