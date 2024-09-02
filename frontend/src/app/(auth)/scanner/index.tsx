@@ -49,7 +49,7 @@ const QrScannerScreen = () => {
 
     return { currency, address, amount };
   };
-  0x271eb333ab9a4726be15b3e212b83225614db776;
+    
   if (hasPermission === null) {
     return (
       <View style={styles.container}>

@@ -1,7 +1,7 @@
 import { Slot, Stack } from "expo-router";
 import { SafeAreaView } from "react-native";
 
-function ContactsLayout() {
+function ScannerLayout() {
   return (
     <SafeAreaView
       style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
@@ -19,8 +19,9 @@ function ContactsLayout() {
         }}
       />
       <Slot />
+  
     </SafeAreaView>
   );
 }
 
-export default ContactsLayout;
+export default ScannerLayout;
