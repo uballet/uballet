@@ -10,7 +10,7 @@ import ETHLogo from "../../../../assets/eth.png";
 import USDTLogo from "../../../../assets/usdt.png";
 import DAILogo from "../../../../assets/dai.png";
 import USDCLogo from "../../../../assets/usdc.png";
-import arrowPNG from "../../../../assets/arrow2.png";
+import arrowPNG from "../../../../assets/arrow.png";
 import { Link, router } from "expo-router";
 
 const BalanceScreen: React.FC = () => {
@@ -115,7 +115,8 @@ const BalanceScreen: React.FC = () => {
                 {totalBalance.toFixed(2)}
               </Text>
               <Text className="mt-2"> USDT</Text>
-              <Image source={arrowPNG} className="w-4 h-4 mt-2" />
+              <Image source={arrowPNG} className="w-3 h-2 mt-2 ml-1" />
+              <Image source={arrowPNG} className="w-3 h-2 mt-2 -ml-1" />
             </View>
           </Card.Content>
         </Card>
