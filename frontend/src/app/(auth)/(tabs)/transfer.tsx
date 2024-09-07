@@ -4,7 +4,7 @@ import { Picker } from "@react-native-picker/picker";
 import { useSafeLightAccount } from "../../../hooks/useLightAccount";
 import { useTransfer } from "../../../hooks/useTransfer";
 import { useCheckTransferSponsorship } from "../../../hooks/useCheckTransferSponsorship";
-import tokensData from "../../../../erc20sepolia.json";
+
 import { Text, Button, TextInput, Card } from "react-native-paper";
 import styles from "../../../styles/styles";
 import EstimateGasFees from "../../../components/EstimateGasFees";
@@ -12,16 +12,7 @@ import { Link, useLocalSearchParams } from "expo-router";
 import { ethers } from "ethers";
 import { useAlchemyClient } from "../../../hooks/useAlchemyClient";
 import { router } from "expo-router";
-
-type Token = {
-  name: string;
-  symbol: string;
-  address: string;
-};
-
-type TokensData = {
-  tokens: Token[];
-};
+import config from "../../../../netconfig/blockchain.default.json";
 
 function TransferScreen() {
   const account = useSafeLightAccount();
@@ -53,9 +44,9 @@ function TransferScreen() {
   } = useCheckTransferSponsorship();
   const sponsorshipCheckDisabled = loadingSponsorship || isSponsored !== null;
 
-  const tokens: TokensData = tokensData;
-  const currencies = ["ETH", ...tokens.tokens.map((token) => token.symbol)];
-  const tokenAddresses = tokens.tokens.reduce<{ [key: string]: `0x${string}` }>(
+  const tokens = config.sepolia.erc20_tokens;;
+  const currencies = ["ETH", ...tokens.map((token) => token.symbol)];
+  const tokenAddresses = tokens.reduce<{ [key: string]: `0x${string}` }>(
     (acc, token) => {
       acc[token.symbol] = token.address as `0x${string}`;
       return acc;
