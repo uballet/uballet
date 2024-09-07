@@ -1,12 +1,19 @@
 import { useGetTransactioDetail } from "../../hooks/useGetTransactioDetail";
 import { Stack, useLocalSearchParams } from "expo-router";
-import { View } from "react-native";
-import { ActivityIndicator, Card, Text } from "react-native-paper";
+import { View, Linking } from "react-native";
+import { ActivityIndicator, Card, Text, FAB } from "react-native-paper";
 import styles from "../../styles/styles";
 
 const TransactionScreen: React.FC = () => {
   const { txHash } = useLocalSearchParams<{ txHash?: string }>();
   const { transaction, loading } = useGetTransactioDetail(txHash ? txHash : "");
+
+  const openEtherscan = () => {
+    if (txHash) {
+      const url = `https://sepolia.etherscan.io/tx/${txHash}`;
+      Linking.openURL(url);
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -25,6 +32,7 @@ const TransactionScreen: React.FC = () => {
       {loading ? (
         <ActivityIndicator size="large" />
       ) : transaction ? (
+        <View>
         <Card>
           <Card.Content>
             <Text variant="titleMedium" style={styles.item}>
@@ -71,6 +79,12 @@ const TransactionScreen: React.FC = () => {
             </Text>
           </Card.Content>
         </Card>
+        <FAB
+          size="medium"
+          icon="link-variant"
+          style={styles.fab}
+          onPress={openEtherscan} />
+        </View>
       ) : (
         <Text variant="titleMedium" style={styles.item}>
           No transaction found.
