@@ -41,9 +41,6 @@ function ContactsScreen() {
     return (
         <SafeAreaView className="w-full p-2 flex-1">
             <View className="w-full flex-row justify-between px-4">
-                <Pressable onPress={() => router.back()}>
-                    <Text>Back</Text>
-                </Pressable>
                 <Text className="font-bold">
                     Contacts
                 </Text>
