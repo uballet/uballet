@@ -174,30 +174,47 @@ async function addContact({
 
 async function getQuote({ coin }: { coin: string }) {
   // Make a GET request to /quote with the coin parameter as a query parameter
-  const { data } = await uballetAxios.get(`/quotes`, { params: { coin } });
+  const { data } = await uballetAxios.get("/quotes", { params: { coin } });
 
-  console.log("Fetched quote for", coin, ":", data);
+  console.log("[UBALLET API SERVICE] Fetched quote for", coin, ":", data);
   return data;
 }
 
-async function setUserWalletAddress({ walletAddress }: { walletAddress: string }) {
-    const { data } = await uballetAxios.post<User>('/user/wallet-address', { walletAddress })
-    return data
+async function getPortfolioData({ days }: { days: number }) {
+  // Make a GET request to /portfolio
+  const { data } = await uballetAxios.get("portfolio/historical_values", {
+    params: { last_days: days },
+  });
+
+  console.log("[UBALLET API SERVICE] Fetched portfolio data:", data);
+  return data;
+}
+
+async function setUserWalletAddress({
+  walletAddress,
+}: {
+  walletAddress: string;
+}) {
+  const { data } = await uballetAxios.post<User>("/user/wallet-address", {
+    walletAddress,
+  });
+  return data;
 }
 
 export default {
-    addContact,
-    completeSignIn,
-    getPasskeyAuthenticationOptions,
-    getPasskeyRegistrationOptions,
-    getContacts,
-    getCurrentUser,
-    getUserPasskeys,
-    signUp,
-    startEmailLogin,
-    setUserWalletAddress,
-    verifyEmail,
-    verifyPasskeyRegistration,
-    verifyPasskeyAuthentication,
-    getQuote,
+  addContact,
+  completeSignIn,
+  getPasskeyAuthenticationOptions,
+  getPasskeyRegistrationOptions,
+  getContacts,
+  getCurrentUser,
+  getUserPasskeys,
+  signUp,
+  startEmailLogin,
+  setUserWalletAddress,
+  verifyEmail,
+  verifyPasskeyRegistration,
+  verifyPasskeyAuthentication,
+  getQuote,
+  getPortfolioData,
 };

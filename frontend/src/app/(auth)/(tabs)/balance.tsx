@@ -1,21 +1,24 @@
-import React, { useEffect, useState } from "react";
-import { View, ScrollView, RefreshControl, Image } from "react-native";
+import {
+  View,
+  ScrollView,
+  ActivityIndicator,
+  Image,
+  RefreshControl,
+} from "react-native";
 import { Card, Text } from "react-native-paper";
 import { useBalance } from "../../../hooks/useBalance";
 import { useTokenBalance } from "../../../hooks/useTokenBalance";
+import { useBalanceInUSDT } from "../../../hooks/useBalanceInUSDT";
 import styles from "../../../styles/styles";
-import PortfolioValueChart from "../../../components/PortfolioValueChart/PortfolioValueChart";
-import UballetAPI from "../../../api/uballet";
 import ETHLogo from "../../../../assets/eth.png";
 import USDTLogo from "../../../../assets/usdt.png";
 import DAILogo from "../../../../assets/dai.png";
 import USDCLogo from "../../../../assets/usdc.png";
 import arrowPNG from "../../../../assets/arrow.png";
-import { Link, router } from "expo-router";
+import { router } from "expo-router";
+import { useState, useCallback } from "react";
 
-const BalanceScreen: React.FC = () => {
-  let balance = useBalance();
-  let tokenBalances = useTokenBalance();
+const BalanceScreen = () => {
   let tokenPNGs: { [key: string]: any } = {
     ETH: ETHLogo,
     USDT: USDTLogo,
@@ -29,69 +32,27 @@ const BalanceScreen: React.FC = () => {
     USDC: "USD Coin",
   };
 
-  // Hardcoded token balances for testing
-  balance = "0.75";
-  tokenBalances.DAI = "100";
-  tokenBalances.USDT = "10.5";
-  tokenBalances.USDC = "200";
-  tokenBalances.ETH = balance;
-
-  // Put ETH firt place in array
-  const ethBalance = tokenBalances.ETH;
-  delete tokenBalances.ETH;
-  tokenBalances = { ETH: ethBalance, ...tokenBalances };
-
-  // Parse all values in tokenBalances to float
-  const tokenBalancesParsed = Object.fromEntries(
-    Object.entries(tokenBalances).map(([key, value]) => [
-      key,
-      parseFloat(value),
-    ])
+  const { data, loading, error, refetch } = useBalanceInUSDT();
+  const tokenBalancesInUSDT = data;
+  const balance = useBalance() || "0";
+  let tokenBalances = useTokenBalance();
+  tokenBalances["ETH"] = balance;
+  const totalTokensBalance = Object.values(data || {}).reduce(
+    (a, b) => a + b,
+    0
   );
-  tokenBalancesParsed["ETH"] = parseFloat(balance);
+  const totalSum = totalTokensBalance;
 
-  const [refreshing, setRefreshing] = useState<boolean>(false);
-  const [tokensBalancesInUSD, setTokensBalancesInUSD] = useState<{
-    [key: string]: number;
-  }>({});
-  const [totalBalance, setTotalBalance] = useState(0);
-
-  const fetchData = async () => {
-    let query = "ETH";
-    for (const token in tokenBalancesParsed) {
-      if (token === "ETH") continue;
-      query += `,${token}`;
-    }
-    const response = await UballetAPI.getQuote({ coin: query });
-
-    // Convert token balances in USD
-    const tokenBalancesInUSD: { [key: string]: number } = {};
-    for (const token in tokenBalancesParsed) {
-      tokenBalancesInUSD[token] = response[token] * tokenBalancesParsed[token];
-    }
-    setTokensBalancesInUSD(tokenBalancesInUSD);
-
-    // Sum all balance
-    const totalTokensBalance = Object.values(tokenBalancesInUSD).reduce(
-      (a, b) => a + b,
-      0
-    );
-    setTotalBalance(totalTokensBalance);
-
-    console.log("tokenBalancesInUSD:", tokenBalancesInUSD);
-  };
-
-  const onRefresh = () => {
+  const [refreshing, setRefreshing] = useState(false);
+  const onRefresh = useCallback(() => {
     setRefreshing(true);
-    setTimeout(() => {
-      fetchData();
-      setRefreshing(false);
-    }, 2000);
-  };
+    refetch();
+    setRefreshing(false);
+  }, [refetch]);
 
-  useEffect(() => {
-    fetchData();
-  }, []);
+  if (error) {
+    return <Text>No data available</Text>;
+  }
 
   return (
     <ScrollView
@@ -105,58 +66,70 @@ const BalanceScreen: React.FC = () => {
         <Card
           className="mb-4"
           onPress={() => {
-            router.push("/portfolio");
+            router.push("/(auth)/portfolio");
           }}
         >
           <Card.Content>
             <Text>Total Balance</Text>
-            <View className="flex flex-row justify-start w-50 items-center mt-2">
-              <Text className="text-3xl font-bold">
-                {totalBalance.toFixed(2)}
-              </Text>
-              <Text className="mt-2"> USDT</Text>
-              <Image source={arrowPNG} className="w-3 h-2 mt-2 ml-1" />
-              <Image source={arrowPNG} className="w-3 h-2 mt-2 -ml-1" />
-            </View>
+            {loading ? (
+              <View className="flex justify-center items-center m-5">
+                <ActivityIndicator size="small" color="#0000ff" />
+              </View>
+            ) : (
+              <View className="flex flex-row justify-start w-50 items-center mt-2">
+                <Text className="text-3xl font-bold">
+                  {totalSum.toFixed(2)}
+                </Text>
+                <Text className="mt-2"> USDT</Text>
+                <Image source={arrowPNG} className="w-3 h-2 mt-2 ml-1" />
+                <Image source={arrowPNG} className="w-3 h-2 mt-2 -ml-1" />
+              </View>
+            )}
           </Card.Content>
         </Card>
 
         <Card>
           <Card.Content>
             <Text>Balance by Token</Text>
-            <View className="flex flex-col justify-between items-center text-center w-[400px]">
-              {Object.entries(tokensBalancesInUSD).map(([symbol, amount]) => (
-                <View className="flex flex-row mr-5">
-                  <View className="flex flex-row w-[200px] text-center items-center">
-                    <Image source={tokenPNGs[symbol]} className="w-6 h-6" />
-                    <View className="flex flex-col ml-2 w-20 justify-start">
-                      <Text className="font-bold text-xl text-[#277ca5] ">
-                        {symbol}
-                      </Text>
-                      <Text className="text-gray-500">
-                        {tokensNames[symbol]}
-                      </Text>
-                    </View>
-                  </View>
+            {loading ? (
+              <View className="flex justify-center items-center m-5">
+                <ActivityIndicator size="small" color="#0000ff" />
+              </View>
+            ) : (
+              <View className="flex flex-col justify-between items-center text-center w-[400px]">
+                {Object.entries(tokenBalancesInUSDT ?? {}).map(
+                  ([symbol, amount]) => (
+                    <View className="flex flex-row mr-5">
+                      <View className="flex flex-row w-[200px] text-center items-center">
+                        <Image source={tokenPNGs[symbol]} className="w-6 h-6" />
+                        <View className="flex flex-col ml-2 w-20 justify-start">
+                          <Text className="font-bold text-xl text-[#277ca5] ">
+                            {symbol}
+                          </Text>
+                          <Text className="text-gray-500">
+                            {tokensNames[symbol]}
+                          </Text>
+                        </View>
+                      </View>
 
-                  <View className="flex flex-col justify-center items-end  w-[170px] ml-2 text-center">
-                    <Text className="text-center text-2xl font-bold">
-                      {tokenBalances[symbol]?.toString()}
-                    </Text>
-                    <Text>
-                      {tokensBalancesInUSD[symbol] === undefined
-                        ? "-"
-                        : tokensBalancesInUSD[symbol].toFixed(2)}{" "}
-                      USDT
-                    </Text>
-                  </View>
-                </View>
-              ))}
-            </View>
+                      <View className="flex flex-col justify-center items-end  w-[170px] ml-2 text-center">
+                        <Text className="text-center text-2xl font-bold">
+                          {tokenBalances[symbol].toString()}
+                        </Text>
+                        <Text>
+                          {tokenBalancesInUSDT?.[symbol] === undefined
+                            ? "-"
+                            : tokenBalancesInUSDT[symbol].toFixed(2)}{" "}
+                          USDT
+                        </Text>
+                      </View>
+                    </View>
+                  )
+                )}
+              </View>
+            )}
           </Card.Content>
         </Card>
-
-        <PortfolioValueChart />
       </View>
     </ScrollView>
   );
