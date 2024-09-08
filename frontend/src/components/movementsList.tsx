@@ -1,12 +1,12 @@
-import { AssetTransfersWithMetadataResponse } from "alchemy-sdk";
+import { AssetTransfersWithMetadataResult } from "alchemy-sdk";
 import React, { Key } from "react";
 import { ColorValue, View } from "react-native";
 import { ActivityIndicator, List, Text } from "react-native-paper";
 import { router } from "expo-router";
 
 interface MovementsListProps {
-  toTransfers: AssetTransfersWithMetadataResponse[] | null;
-  fromTransfers: AssetTransfersWithMetadataResponse[] | null;
+  toTransfers: AssetTransfersWithMetadataResult[] | null;
+  fromTransfers: AssetTransfersWithMetadataResult[] | null;
 }
 
 const formatTxAddress = (address: string | null) => {
@@ -14,21 +14,22 @@ const formatTxAddress = (address: string | null) => {
 };
 
 const EthereumTransactionItem = (
-  transfer: AssetTransfersWithMetadataResponse,
+  transfer: AssetTransfersWithMetadataResult,
   index: Key,
   color: ColorValue,
   addressField: "from" | "to",
-  isOutgoing: boolean // Add this flag to indicate if it's an outgoing transaction
+  isOutgoing: boolean
 ) => {
   const address = transfer[addressField] || "N/A";
-
-  // Add a "-" sign for outgoing transactions (sent transfers)
   const displayValue = isOutgoing ? `-${transfer.value}` : transfer.value;
+
+  const timestamp = transfer.metadata?.blockTimestamp || "Unknown";
 
   return (
     <List.Item
       title={`${formatTxAddress(address)}`}
       titleStyle={{ fontSize: 12 }}
+      description={`Timestamp: ${timestamp}`} // Show metadata like timestamp
       descriptionStyle={{ fontSize: 12 }}
       key={index}
       onPress={() =>
