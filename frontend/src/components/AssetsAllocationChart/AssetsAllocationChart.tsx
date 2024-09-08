@@ -2,10 +2,11 @@ import { PieChart } from "react-native-chart-kit";
 import { View, Text, ActivityIndicator } from "react-native";
 import styles from "../../styles/styles";
 import { useBalanceInUSDT } from "../../hooks/useBalanceInUSDT";
+import { useEffect, useState } from "react";
 
 const AssetsAllocationChart = () => {
   const title = "Assets Allocation";
-  const subtitle = "In USDT values";
+  const [subtitle, setSubtitle] = useState("");
   let colors: { [key: string]: string } = {
     Ethereum: "black",
     USDC: "blue",
@@ -14,6 +15,11 @@ const AssetsAllocationChart = () => {
   };
 
   const { data, loading, error } = useBalanceInUSDT();
+  useEffect(() => {
+    if (data) {
+      setSubtitle("In USDT values");
+    }
+  }, [data]);
 
   const parsedData = Object.entries(data || {}).map(([key, value]) => ({
     name: key,

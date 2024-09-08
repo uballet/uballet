@@ -10,7 +10,7 @@ const PortfolioValueChart = () => {
   const [data, setData] = useState<any>(null); // Use appropriate type if needed
   const [loading, setLoading] = useState(true); // State for loading indicator
   const title = "Portafolio Value";
-  const [subtitle, setSubtitle] = useState("Valor del Portafolio");
+  const [subtitle, setSubtitle] = useState("");
 
   useEffect(() => {
     const fetchData = async () => {
