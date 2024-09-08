@@ -1,42 +1,46 @@
-import { AssetTransfersResult } from "alchemy-sdk";
+import { AssetTransfersWithMetadataResponse } from "alchemy-sdk";
 import React, { Key } from "react";
 import { ColorValue, View } from "react-native";
 import { ActivityIndicator, List, Text } from "react-native-paper";
 import { router } from "expo-router";
 
 interface MovementsListProps {
-  toTransfers: AssetTransfersResult[] | null;
-  fromTransfers: AssetTransfersResult[] | null;
+  toTransfers: AssetTransfersWithMetadataResponse[] | null;
+  fromTransfers: AssetTransfersWithMetadataResponse[] | null;
 }
 
-const formatTxAddress = (address: string) => {
-  return `${address.slice(0, 10)}...${address.slice(30)}`;
+const formatTxAddress = (address: string | null) => {
+  return address ? `${address.slice(0, 10)}...${address.slice(30)}` : "N/A";
 };
 
 const EthereumTransactionItem = (
-  transfer: AssetTransfersResult,
+  transfer: AssetTransfersWithMetadataResponse,
   index: Key,
-  color: ColorValue
-) => (
-  <List.Item
-    title={`From: ${formatTxAddress(transfer.from)}`}
-    titleStyle={{ fontSize: 12 }}
-    description={
-      `In block: ${transfer.blockNum}` +
-      "\n" +
-      `Tx ID: ${formatTxAddress(transfer.uniqueId)}`
-    }
-    descriptionStyle={{ fontSize: 12 }}
-    key={index}
-    onPress={() =>
-      router.push({
-        pathname: `transaction`,
-        params: { txHash: transfer.hash },
-      })
-    }
-    right={() => <Text style={{ color: color }}>{transfer.value}</Text>}
-  />
-);
+  color: ColorValue,
+  addressField: "from" | "to",
+  isOutgoing: boolean // Add this flag to indicate if it's an outgoing transaction
+) => {
+  const address = transfer[addressField] || "N/A";
+
+  // Add a "-" sign for outgoing transactions (sent transfers)
+  const displayValue = isOutgoing ? `-${transfer.value}` : transfer.value;
+
+  return (
+    <List.Item
+      title={`${formatTxAddress(address)}`}
+      titleStyle={{ fontSize: 12 }}
+      descriptionStyle={{ fontSize: 12 }}
+      key={index}
+      onPress={() =>
+        router.push({
+          pathname: `transaction`,
+          params: { txHash: transfer.hash },
+        })
+      }
+      right={() => <Text style={{ color: color }}>{displayValue}</Text>} // Apply the displayValue
+    />
+  );
+};
 
 const MovementsList: React.FC<MovementsListProps> = ({ toTransfers, fromTransfers }) => {
   return (
@@ -46,16 +50,16 @@ const MovementsList: React.FC<MovementsListProps> = ({ toTransfers, fromTransfer
         <ActivityIndicator />
       ) : (
         toTransfers.map((transfer, index) =>
-          EthereumTransactionItem(transfer, `to_transfer_${index}`, "green")
+          EthereumTransactionItem(transfer, `to_transfer_${index}`, "green", "from", false) // "false" for received transfers
         )
       )}
-      
+
       <List.Subheader key={"Sent"}>Sent</List.Subheader>
       {!fromTransfers ? (
         <ActivityIndicator />
       ) : (
         fromTransfers.map((transfer, index) =>
-          EthereumTransactionItem(transfer, `from_transfer_${index}`, "red")
+          EthereumTransactionItem(transfer, `from_transfer_${index}`, "red", "to", true) // "true" for sent transfers
         )
       )}
     </List.Section>

@@ -1,4 +1,4 @@
-import { AssetTransfersResult } from "alchemy-sdk";
+import { AssetTransfersWithMetadataResponse } from "alchemy-sdk";
 import { Link } from "expo-router";
 import React from "react";
 import { ScrollView, View } from "react-native";
