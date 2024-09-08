@@ -44,15 +44,15 @@ const HomeScreen: React.FC = () => {
         </Card>
 
         <View style={styles.horizontalContainer}>
-          <FAB size="small" icon="bank-transfer" variant="tertiary" />
-          <FAB size="small" icon="cash-plus" variant="tertiary" />
-          <FAB size="small" icon="cash-minus" variant="tertiary" />
-          <FAB size="small" icon="account-cash-outline" variant="tertiary" />
+          <FAB size="small" icon="bank-transfer" variant="secondary" />
+          <FAB size="small" icon="cash-plus" variant="secondary" />
+          <FAB size="small" icon="cash-minus" variant="secondary" />
+          <FAB size="small" icon="account-cash-outline" variant="secondary" />
         </View>
 
         <Card style={styles.movementsCard} mode="elevated">
           <Card.Content>
-            <Card.Title title="Movements" />
+            <Card.Title title="Transaction History" />
             <MovementsList
               toTransfers={toTransfers}
               fromTransfers={fromTransfers}
