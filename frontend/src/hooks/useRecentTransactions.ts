@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { useAccountContext } from "./useAccountContext";
 import { useSafeLightAccount } from "./useLightAccount";
-import { AssetTransfersCategory, AssetTransfersResult } from "alchemy-sdk";
+import { AssetTransfersCategory, AssetTransfersWithMetadataResult } from "alchemy-sdk";
 
 export function useRecentTransactions() {
-  const [fromTransfers, setFromTransfers] = useState<AssetTransfersResult[] | null>(null);
-  const [toTransfers, setToTransfers] = useState<AssetTransfersResult[] | null>(null);
+  const [fromTransfers, setFromTransfers] = useState<AssetTransfersWithMetadataResult[] | null>(null);
+  const [toTransfers, setToTransfers] = useState<AssetTransfersWithMetadataResult[] | null>(null);
   const account = useSafeLightAccount();
   const { sdkClient } = useAccountContext();
 
