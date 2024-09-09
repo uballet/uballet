@@ -46,8 +46,10 @@ const AssetsAllocationChart = () => {
   return (
     <>
       <View>
-        <Text style={styles.screenHeader}>{title}</Text>
-        <Text className="text-center -mt-5">{subtitle}</Text>
+        <Text style={{ ...styles.screenHeader, textAlign: "left" }}>
+          {title}
+        </Text>
+        <Text className="text-left -mt-5">{subtitle}</Text>
         {loading ? (
           <View className="m-10">
             <ActivityIndicator size="small" color="#0000ff" />

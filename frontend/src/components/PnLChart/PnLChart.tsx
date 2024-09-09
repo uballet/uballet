@@ -12,53 +12,51 @@ const PnLChart = () => {
   const [loading, setLoading] = useState(true); // State for loading indicator
   useEffect(() => {
     // Simulate a delay
-    setTimeout(() => {
-      const data = {
-        labels: [
-          "01-01",
-          "01-02",
-          "01-03",
-          "01-04",
-          "01-05",
-          "01-06",
-          "01-07",
-          "01-08",
-          "01-09",
-          "01-10",
-          "01-11",
-          "01-12",
-          "01-13",
-          "01-14",
-          "01-15",
-        ],
-        datasets: [
-          {
-            data: [20, 45, 28, -80, 99, 43, 7, 100, 9, -123, 11, 20, 123, 4, 5],
-            colors: [
-              () => "green",
-              () => "green",
-              () => "green",
-              () => "red",
-              () => "green",
-              () => "green",
-              () => "green",
-              () => "green",
-              () => "green",
-              () => "red",
-              () => "green",
-              () => "green",
-              () => "green",
-              () => "green",
-              () => "green",
-            ],
-          },
-        ],
-      };
-      setData(data);
-      const lastDate = `Last ${data.labels.length} days`;
-      setSubtitle(lastDate);
-      setLoading(false);
-    }, 2000);
+    const data = {
+      labels: [
+        "01-01",
+        "01-02",
+        "01-03",
+        "01-04",
+        "01-05",
+        "01-06",
+        "01-07",
+        "01-08",
+        "01-09",
+        "01-10",
+        "01-11",
+        "01-12",
+        "01-13",
+        "01-14",
+        "01-15",
+      ],
+      datasets: [
+        {
+          data: [20, 45, 28, -80, 99, 43, 7, 100, 9, -123, 11, 20, 123, 4, 5],
+          colors: [
+            () => "green",
+            () => "green",
+            () => "green",
+            () => "red",
+            () => "green",
+            () => "green",
+            () => "green",
+            () => "green",
+            () => "green",
+            () => "red",
+            () => "green",
+            () => "green",
+            () => "green",
+            () => "green",
+            () => "green",
+          ],
+        },
+      ],
+    };
+    setData(data);
+    const lastDate = `Last ${data.labels.length} days`;
+    setSubtitle(lastDate);
+    setLoading(false);
   }, []);
 
   const chartConfig = {
@@ -93,8 +91,10 @@ const PnLChart = () => {
   return (
     <>
       <View>
-        <Text style={styles.screenHeader}>{title}</Text>
-        <Text className="text-center -mt-5">{subtitle}</Text>
+        <Text style={{ ...styles.screenHeader, textAlign: "left" }}>
+          {title}
+        </Text>
+        <Text className="text-left -mt-5 mb-3">{subtitle}</Text>
         {loading ? (
           <View className="m-10">
             <ActivityIndicator size="small" color="#0000ff" />

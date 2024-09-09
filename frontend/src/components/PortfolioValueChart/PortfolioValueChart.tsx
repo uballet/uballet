@@ -40,9 +40,6 @@ const PortfolioValueChart = () => {
         // Make format string
         const lastDate = `Last ${labels.length} days`;
         console.log("parsedData:", parsedData);
-
-        // Simulate a delay
-        await new Promise((resolve) => setTimeout(resolve, 2000));
         setData(parsedData);
         setSubtitle(lastDate);
       } catch (error) {
@@ -57,8 +54,13 @@ const PortfolioValueChart = () => {
 
   return (
     <View>
-      <Text style={styles.screenHeader}>{title}</Text>
-      <Text className="text-center -mt-5">{subtitle}</Text>
+      <Text
+        style={{ ...styles.screenHeader, textAlign: "left" }}
+        className="-mt-1"
+      >
+        {title}
+      </Text>
+      <Text className="text-left -mt-5 mb-3">{subtitle}</Text>
       <View>
         {loading ? (
           <View className="m-10">

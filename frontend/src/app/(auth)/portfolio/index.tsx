@@ -8,10 +8,10 @@ function PortfolioScreen() {
     <SafeAreaView className="w-full p-3 flex-1">
       <ScrollView>
         <View>
-          <View className="mb-8">
+          <View>
             <PortfolioValueChart />
           </View>
-          <View className="mb-8">
+          <View>
             <AssetsAllocationChart />
           </View>
           <PnLChart />

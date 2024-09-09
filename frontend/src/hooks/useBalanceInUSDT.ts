@@ -44,9 +44,6 @@ export function useBalanceInUSDT() {
         tokenBalancesInUSD[token] =
           response[token] * tokenBalancesParsed[token];
       }
-      // Simulate a delay
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-
       setData(tokenBalancesInUSD);
     } catch (err) {
       setError("Failed to fetch data");

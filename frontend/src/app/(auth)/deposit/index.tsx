@@ -7,28 +7,18 @@ import {
 } from "react-native";
 import styles from "../../../styles/styles";
 import { useSafeLightAccount } from "../../../hooks/useLightAccount";
+import QRCode from "react-native-qrcode-svg";
+import * as Clipboard from "expo-clipboard";
 
 const DepositScreen = () => {
   const account = useSafeLightAccount();
   const address = account?.address;
 
   // Function to copy the account address
-  const copyToClipboard = () => {
-    console.log("Copied to clipboard");
+  const copyToClipboard = async () => {
+    await Clipboard.setStringAsync(address);
+    console.log("Copied to clipboard:", address);
   };
-
-  // For the QR code
-
-  // npm install react-native-qrcode-svg
-
-  // import QRCode from "react-native-qrcode-svg";
-
-  //  <View className="flex items-center justify-center mb-4">
-  //    <QRCode
-  //      value={accountDirection}
-  //      size={150} // Adjust the size of the QR code
-  //    />
-  //  </View>
 
   return (
     <SafeAreaView className="w-full flex-1">
@@ -37,6 +27,14 @@ const DepositScreen = () => {
           <Text className="text-lg font-semibold mb-4 text-black p-1">
             For deposit, send your tokens to the following account direction:
           </Text>
+
+          <View className="flex items-center justify-center mb-5">
+            <QRCode
+              value={address}
+              size={150} // Adjust the size of the QR code
+            />
+          </View>
+
           <View className="bg-gray-200 p-3 rounded-lg mb-1">
             <Text className="text-black text-sm">{address}</Text>
           </View>
