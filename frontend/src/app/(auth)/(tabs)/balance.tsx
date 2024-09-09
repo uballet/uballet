@@ -5,7 +5,7 @@ import {
   Image,
   RefreshControl,
 } from "react-native";
-import { Card, Text } from "react-native-paper";
+import { Card, Text, Button } from "react-native-paper";
 import { useBalance } from "../../../hooks/useBalance";
 import { useTokenBalance } from "../../../hooks/useTokenBalance";
 import { useBalanceInUSDT } from "../../../hooks/useBalanceInUSDT";
@@ -88,6 +88,19 @@ const BalanceScreen = () => {
           </Card.Content>
         </Card>
 
+        <Button
+          style={{ ...styles.button, backgroundColor: "black" }}
+          textColor="white"
+          className="-mt-0.5"
+          onPress={() => {
+            router.push("/(auth)/deposit");
+          }}
+        >
+          <Text className="text-white text-center font-medium">
+            Deposit Tokens
+          </Text>
+        </Button>
+
         <Card>
           <Card.Content>
             <Text>Balance by Token</Text>
@@ -96,7 +109,7 @@ const BalanceScreen = () => {
                 <ActivityIndicator size="small" color="#0000ff" />
               </View>
             ) : (
-              <View className="flex flex-col justify-between items-center text-center w-[400px]">
+              <View className="flex flex-col justify-between mt-2 items-center text-center w-[400px]">
                 {Object.entries(tokenBalancesInUSDT ?? {}).map(
                   ([symbol, amount]) => (
                     <View className="flex flex-row mr-5">

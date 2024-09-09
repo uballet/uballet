@@ -5,7 +5,7 @@ import PnLChart from "../../../components/PnLChart/PnLChart";
 
 function PortfolioScreen() {
   return (
-    <SafeAreaView className="w-full p-4 flex-1">
+    <SafeAreaView className="w-full p-3 flex-1">
       <ScrollView>
         <View>
           <View className="mb-8">
