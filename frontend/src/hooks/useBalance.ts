@@ -14,7 +14,5 @@ export function useBalance() {
       .then((b) => setBalance(formatEther(b)));
   }, []);
 
-  // Return a mock balance for testing
-  return "1";
   return balance;
 }
