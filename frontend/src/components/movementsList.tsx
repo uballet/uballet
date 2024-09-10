@@ -1,18 +1,24 @@
 import { AssetTransfersWithMetadataResult } from "alchemy-sdk";
 import React, { Key } from "react";
-import { ColorValue, View } from "react-native";
+import { ColorValue, View, StyleSheet, TextStyle } from "react-native";
 import { ActivityIndicator, List, Text } from "react-native-paper";
 import { useContacts } from "../hooks/contacts/useContacts";
 import { router } from "expo-router";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 interface MovementsListProps {
   toTransfers: AssetTransfersWithMetadataResult[] | null;
   fromTransfers: AssetTransfersWithMetadataResult[] | null;
 }
 
-const formatTxAddress = (address: string | null, contacts: Array<{ id: string; name: string; address: string }>) => {
+const formatTxAddress = (
+  address: string | null, 
+  contacts: Array<{ id: string; name: string; address: string }>
+) => {
   if (!address) return "N/A";
-  const contact = contacts.find((contact) => contact.address.toLowerCase() === address.toLowerCase());
+  const contact = contacts.find(
+    (contact) => contact.address.toLowerCase() === address.toLowerCase()
+  );
   return contact ? contact.name : `${address.slice(0, 10)}...${address.slice(30)}`;
 };
 
@@ -27,6 +33,14 @@ const formatTimestamp = (isoString: string) => {
   return `${year}/${month}/${day} ${hours}:${minutes}`;
 };
 
+const formatValue = (value: string | number, significantFigures: number) => {
+  const numValue = typeof value === 'string' ? parseFloat(value) : value;
+  if (isNaN(numValue)) return value;
+  const formattedValue = numValue.toPrecision(significantFigures)
+    .replace(/(\.\d*?[1-9])0+$/, '$1').replace(/\.$/, '');;
+  return formattedValue;
+};
+
 const EthereumTransactionItem = (
   transfer: AssetTransfersWithMetadataResult,
   index: Key,
@@ -36,10 +50,18 @@ const EthereumTransactionItem = (
   contacts: Array<{ id: string; name: string; address: string }>
 ) => {
   const address = transfer[addressField] || "N/A";
-  const displayValue = isOutgoing ? `-${transfer.value}` : `+${transfer.value}`;
-  
+  const rawValue = transfer.value != null ? transfer.value : 0;
+  const displayValue = isOutgoing ? `-${formatValue(rawValue, 4)}` : `+${formatValue(rawValue, 4)}`;
   const tokenName = transfer.asset || "Unknown";
   const timestamp = transfer.metadata?.blockTimestamp;
+
+  // Conditional styling
+  const backgroundColor = isOutgoing ? 'transparent' : '#d0f0c0';
+  const valueStyle: TextStyle = {
+    fontSize: 18,
+    color: isOutgoing ? color : color,
+    fontWeight: isOutgoing ? 'normal' : 'bold',
+  };
 
   return (
     <List.Item
@@ -54,8 +76,20 @@ const EthereumTransactionItem = (
           params: { txHash: transfer.hash },
         })
       }
+      style={[{ backgroundColor }]}
+      left={() => (
+        <List.Icon
+          icon={() =>
+            isOutgoing ? (
+              <MaterialCommunityIcons name="arrow-up-bold" size={24} color="black" />
+            ) : (
+              <MaterialCommunityIcons name="arrow-down-bold" size={24} color="green" />
+            )
+          }
+        />
+      )}
       right={() => (
-        <Text style={{ color: color }}>
+        <Text style={valueStyle}>
           {displayValue} {tokenName}
         </Text>
       )}
@@ -86,7 +120,7 @@ const MovementsList: React.FC<MovementsListProps> = ({ toTransfers, fromTransfer
           EthereumTransactionItem(
             transfer,
             `transfer_${index}`,
-            transfer.isOutgoing ? "red" : "green", 
+            transfer.isOutgoing ? "gray" : "green", 
             transfer.isOutgoing ? "to" : "from",
             transfer.isOutgoing,
             contacts || []

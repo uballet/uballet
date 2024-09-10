@@ -15,6 +15,12 @@ import styles from "../../../styles/styles";
 import { useAuthContext } from "../../../providers/AuthProvider";
 import MovementsList from "../../../components/movementsList";
 
+const formatBalance = (balance: number | null, significantFigures: number) => {
+  if (balance == null) return "N/A";
+  const formattedBalance = balance.toPrecision(significantFigures);
+  return formattedBalance;
+};
+
 const HomeScreen: React.FC = () => {
   const balance = useBalance();
   const { fromTransfers, toTransfers } = useRecentTransactions();
@@ -25,14 +31,16 @@ const HomeScreen: React.FC = () => {
       <View style={styles.container}>
         <View style={styles.horizontalContainer}>
           <Avatar.Icon style={styles.userSettings} size={30} icon="account" />
-          <Text variant="titleLarge">{`Hola ${user?.email}`}</Text>
+          <Text variant="titleLarge">{`Hi ${user?.email}!`}</Text>
         </View>
 
         <Card style={styles.movementsCard} mode="contained">
           <Card.Content>
             <Text variant="titleLarge">Balance</Text>
             {balance !== null ? (
-              <Text style={styles.balance}>{balance?.toString()} ETH</Text>
+              <Text style={styles.balance}>
+                {formatBalance(parseFloat(balance), 4)} ETH
+              </Text>
             ) : (
               <ActivityIndicator />
             )}
