@@ -1,26 +1,94 @@
 {
-    "sepolia" : {
+  "arbitrum": {
+      "block_explorer": "block_explorer_url",
+      "erc20_tokens": []
+  },
+  "arbitrumGoerli": {
+      "block_explorer": "block_explorer_url",
+      "erc20_tokens": []
+  },
+  "arbitrumSepolia": {
+      "block_explorer": "block_explorer_url",
+      "erc20_tokens": []
+  },
+  "base": {
+      "block_explorer": "block_explorer_url",
+      "erc20_tokens": []
+  },
+  "baseGoerli": {
+      "block_explorer": "block_explorer_url",
+      "erc20_tokens": []
+  },
+  "baseSepolia": {
+      "block_explorer": "block_explorer_url",
+      "erc20_tokens": []
+  },
+  "fraxtal": {
+      "block_explorer": "block_explorer_url",
+      "erc20_tokens": []
+  },
+  "fraxtalSepolia": {
+      "block_explorer": "block_explorer_url",
+      "erc20_tokens": []
+  },
+  "goerli": {
+      "block_explorer": "block_explorer_url",
+      "erc20_tokens": []
+  },
+  "mainnet": {
+      "block_explorer": "block_explorer_url",
+      "erc20_tokens": []
+  },
+  "optimism": {
+      "block_explorer": "block_explorer_url",
+      "erc20_tokens": []
+  },
+  "optimismGoerli": {
+      "block_explorer": "block_explorer_url",
+      "erc20_tokens": []
+  },
+  "optimismSepolia": {
+      "block_explorer": "block_explorer_url",
+      "erc20_tokens": []
+  },
+  "polygon": {
+      "block_explorer": "block_explorer_url",
+      "erc20_tokens": []
+  },
+  "polygonAmoy": {
+      "block_explorer": "block_explorer_url",
+      "erc20_tokens": []
+  },
+  "polygonMumbai": {
+      "block_explorer": "block_explorer_url",
+      "erc20_tokens": []
+  },
+  "sepolia": {
       "block_explorer": "https://sepolia.etherscan.io/tx/",
-      "erc20_tokens" : [
+      "erc20_tokens": [
           {
-            "name": "DAI",
-            "symbol": "DAI",
-            "address": "0xf5c142292B85253e4D071812c84f05ec42828fdB"
+              "name": "DAI",
+              "symbol": "DAI",
+              "address": "0xf5c142292B85253e4D071812c84f05ec42828fdB"
           },
           {
-            "name": "Tether USD",
-            "symbol": "USDT",
-            "address": "0xaA8E23Fb1079EA71e0a56F48a2aA51851D8433D0"
+              "name": "Tether USD",
+              "symbol": "USDT",
+              "address": "0xaA8E23Fb1079EA71e0a56F48a2aA51851D8433D0"
           },
           {
-            "name": "USD Coin",
-            "symbol": "USDC",
-            "address": "0x73d219B3881E481394DA6B5008A081d623992200"
+              "name": "USD Coin",
+              "symbol": "USDC",
+              "address": "0x73d219B3881E481394DA6B5008A081d623992200"
           }
       ]
-    },
-    "ethereum" : {
-        "block_explorer": "block_explorer_url",
-        "erc20_tokens": []
-     }
+  },
+  "zora": {
+      "block_explorer": "block_explorer_url",
+      "erc20_tokens": []
+  },
+  "zoraSepolia": {
+      "block_explorer": "block_explorer_url",
+      "erc20_tokens": []
+  }
 }

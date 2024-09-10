@@ -10,20 +10,20 @@ import { useBalance } from "../../../hooks/useBalance";
 import { useTokenBalance } from "../../../hooks/useTokenBalance";
 import { useBalanceInUSDT } from "../../../hooks/useBalanceInUSDT";
 import styles from "../../../styles/styles";
-import ETHLogo from "../../../../assets/eth.png";
-import USDTLogo from "../../../../assets/usdt.png";
-import DAILogo from "../../../../assets/dai.png";
-import USDCLogo from "../../../../assets/usdc.png";
-import arrowPNG from "../../../../assets/arrow.png";
+// import ETHLogo from "../../../../assets/eth.png";
+// import USDTLogo from "../../../../assets/usdt.png";
+// import DAILogo from "../../../../assets/dai.png";
+// import USDCLogo from "../../../../assets/usdc.png";
+// import arrowPNG from "../../../../assets/arrow.png";
 import { router } from "expo-router";
 import { useState, useCallback } from "react";
 
 const BalanceScreen = () => {
   let tokenPNGs: { [key: string]: any } = {
-    ETH: ETHLogo,
-    USDT: USDTLogo,
-    DAI: DAILogo,
-    USDC: USDCLogo,
+    // ETH: ETHLogo,
+    // USDT: USDTLogo,
+    // DAI: DAILogo,
+    // USDC: USDCLogo,
   };
   let tokensNames: { [key: string]: string } = {
     ETH: "Ethereum",
@@ -81,8 +81,8 @@ const BalanceScreen = () => {
                   {totalSum.toFixed(2)}
                 </Text>
                 <Text className="mt-2"> USDT</Text>
-                <Image source={arrowPNG} className="w-3 h-2 mt-2 ml-1" />
-                <Image source={arrowPNG} className="w-3 h-2 mt-2 -ml-1" />
+                {/* <Image source={arrowPNG} className="w-3 h-2 mt-2 ml-1" />
+                <Image source={arrowPNG} className="w-3 h-2 mt-2 -ml-1" /> */}
               </View>
             )}
           </Card.Content>

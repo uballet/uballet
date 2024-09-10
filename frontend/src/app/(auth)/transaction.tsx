@@ -2,6 +2,7 @@ import { useGetTransactioDetail } from "../../hooks/useGetTransactioDetail";
 import { Stack, useLocalSearchParams } from "expo-router";
 import { View, Linking } from "react-native";
 import { ActivityIndicator, Card, Text, FAB } from "react-native-paper";
+import { useBlockchainContext } from "../../providers/BlockchainProvider";
 import styles from "../../styles/styles";
 import config from "../../../netconfig/blockchain.default.json";
 
@@ -9,8 +10,8 @@ const TransactionScreen: React.FC = () => {
   const { txHash } = useLocalSearchParams<{ txHash?: string }>();
   const { transaction, loading } = useGetTransactioDetail(txHash ? txHash : "");
 
-  const sepoliaConfig = config.sepolia;
-  const blockExplorerUrl = sepoliaConfig.block_explorer;
+  const { blockchain } = useBlockchainContext();
+  const blockExplorerUrl = blockchain.block_explorer;
 
   const openEtherscan = () => {
     if (txHash) {
