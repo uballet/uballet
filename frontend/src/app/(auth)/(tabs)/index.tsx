@@ -66,6 +66,11 @@ const HomeScreen: React.FC = () => {
               fromTransfers={fromTransfers}
               maxRows={4}
             />
+            <Link href="/(auth)/transaction_history" push>
+            <Text variant="bodyMedium" style={{ margin: 8 }}>
+              See all history
+            </Text>
+            </Link>
           </Card.Content>
         </Card>
       </View>

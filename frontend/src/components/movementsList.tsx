@@ -9,7 +9,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 interface MovementsListProps {
   toTransfers: AssetTransfersWithMetadataResult[] | null;
   fromTransfers: AssetTransfersWithMetadataResult[] | null;
-  maxRows?: number; // Optional parameter to limit the number of rows
+  maxRows?: number;
 }
 
 const formatTxAddress = (
