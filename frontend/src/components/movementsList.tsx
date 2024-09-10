@@ -2,6 +2,7 @@ import { AssetTransfersWithMetadataResult } from "alchemy-sdk";
 import React, { Key } from "react";
 import { ColorValue, View } from "react-native";
 import { ActivityIndicator, List, Text } from "react-native-paper";
+import { useContacts } from "../hooks/contacts/useContacts";
 import { router } from "expo-router";
 
 interface MovementsListProps {
@@ -9,8 +10,10 @@ interface MovementsListProps {
   fromTransfers: AssetTransfersWithMetadataResult[] | null;
 }
 
-const formatTxAddress = (address: string | null) => {
-  return address ? `${address.slice(0, 10)}...${address.slice(30)}` : "N/A";
+const formatTxAddress = (address: string | null, contacts: Array<{ id: string; name: string; address: string }>) => {
+  if (!address) return "N/A";
+  const contact = contacts.find((contact) => contact.address.toLowerCase() === address.toLowerCase());
+  return contact ? contact.name : `${address.slice(0, 10)}...${address.slice(30)}`;
 };
 
 const formatTimestamp = (isoString: string) => {
@@ -29,18 +32,18 @@ const EthereumTransactionItem = (
   index: Key,
   color: ColorValue,
   addressField: "from" | "to",
-  isOutgoing: boolean
+  isOutgoing: boolean,
+  contacts: Array<{ id: string; name: string; address: string }>
 ) => {
   const address = transfer[addressField] || "N/A";
   const displayValue = isOutgoing ? `-${transfer.value}` : `+${transfer.value}`;
   
   const tokenName = transfer.asset || "Unknown";
-
   const timestamp = transfer.metadata?.blockTimestamp;
 
   return (
     <List.Item
-      title={`${formatTxAddress(address)}`}
+      title={`${formatTxAddress(address, contacts)}`}
       titleStyle={{ fontSize: 15 }}
       description={`${formatTimestamp(timestamp)}`}
       descriptionStyle={{ fontSize: 11 }}
@@ -61,6 +64,8 @@ const EthereumTransactionItem = (
 };
 
 const MovementsList: React.FC<MovementsListProps> = ({ toTransfers, fromTransfers }) => {
+  const { contacts, isLoading } = useContacts();
+
   const combinedTransfers = [
     ...(fromTransfers?.map(transfer => ({ ...transfer, isOutgoing: true })) || []),
     ...(toTransfers?.map(transfer => ({ ...transfer, isOutgoing: false })) || [])
@@ -83,7 +88,8 @@ const MovementsList: React.FC<MovementsListProps> = ({ toTransfers, fromTransfer
             `transfer_${index}`,
             transfer.isOutgoing ? "red" : "green", 
             transfer.isOutgoing ? "to" : "from",
-            transfer.isOutgoing
+            transfer.isOutgoing,
+            contacts || []
           )
         )
       )}
