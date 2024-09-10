@@ -12,8 +12,6 @@ const TransactionScreen: React.FC = () => {
   const sepoliaConfig = config.sepolia;
   const blockExplorerUrl = sepoliaConfig.block_explorer;
 
-  console.log(blockExplorerUrl)
-
   const openEtherscan = () => {
     if (txHash) {
       const url = `${blockExplorerUrl}${txHash}`;
