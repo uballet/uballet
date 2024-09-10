@@ -9,6 +9,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 interface MovementsListProps {
   toTransfers: AssetTransfersWithMetadataResult[] | null;
   fromTransfers: AssetTransfersWithMetadataResult[] | null;
+  maxRows?: number; // Optional parameter to limit the number of rows
 }
 
 const formatTxAddress = (
@@ -97,7 +98,7 @@ const EthereumTransactionItem = (
   );
 };
 
-const MovementsList: React.FC<MovementsListProps> = ({ toTransfers, fromTransfers }) => {
+const MovementsList: React.FC<MovementsListProps> = ({ toTransfers, fromTransfers, maxRows }) => {
   const { contacts, isLoading } = useContacts();
 
   const combinedTransfers = [
@@ -111,12 +112,14 @@ const MovementsList: React.FC<MovementsListProps> = ({ toTransfers, fromTransfer
     return timestampB - timestampA;
   });
 
+  const displayedTransfers = maxRows ? sortedTransfers.slice(0, maxRows) : sortedTransfers;
+
   return (
     <List.Section>
       {!sortedTransfers.length ? (
         <ActivityIndicator />
       ) : (
-        sortedTransfers.map((transfer, index) =>
+        displayedTransfers.map((transfer, index) =>
           EthereumTransactionItem(
             transfer,
             `transfer_${index}`,

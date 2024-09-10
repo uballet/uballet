@@ -64,6 +64,7 @@ const HomeScreen: React.FC = () => {
             <MovementsList
               toTransfers={toTransfers}
               fromTransfers={fromTransfers}
+              maxRows={4}
             />
           </Card.Content>
         </Card>
