@@ -16,22 +16,13 @@ export interface BlockchainConfig {
 
 export interface Config {
   arbitrum: BlockchainConfig;
-  arbitrumGoerli: BlockchainConfig;
   arbitrumSepolia: BlockchainConfig;
   base: BlockchainConfig;
-  baseGoerli: BlockchainConfig;
   baseSepolia: BlockchainConfig;
-  fraxtal: BlockchainConfig;
-  fraxtalSepolia: BlockchainConfig;
-  goerli: BlockchainConfig;
   mainnet: BlockchainConfig;
   optimism: BlockchainConfig;
-  optimismGoerli: BlockchainConfig;
   optimismSepolia: BlockchainConfig;
   polygon: BlockchainConfig;
   polygonAmoy: BlockchainConfig;
-  polygonMumbai: BlockchainConfig;
   sepolia: BlockchainConfig;
-  zora: BlockchainConfig;
-  zoraSepolia: BlockchainConfig;
 }
