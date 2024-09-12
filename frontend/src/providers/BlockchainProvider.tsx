@@ -1,18 +1,32 @@
-import React, { createContext, useContext, ReactNode } from 'react';
-import config from '../../netconfig/blockchain.default.json'; // Adjust the path as needed
-import { BlockchainConfig } from '../../netconfig/blockchain-config';
+import React, { createContext, useContext, ReactNode, useEffect, useState } from 'react';
+import config from '../../netconfig/blockchain.default.json'; // Default config
+import userConfig from '../../netconfig/blockchain.user.json'; // User config
+import { BlockchainConfig, Config } from '../../netconfig/blockchain-config';
+import deepmerge from 'deepmerge'; // Utility for deep merging
+
 
 interface BlockchainContextType {
-    blockchain: BlockchainConfig;
-  }
+  blockchain: BlockchainConfig;
+}
+
+const mergeConfigs = (defaultConfig: Config, userConfig: Partial<Config>): Config => {
+  return deepmerge(defaultConfig, userConfig, {
+    arrayMerge: (destinationArray, sourceArray) => [...destinationArray, ...sourceArray],
+  });
+};
 
 const BlockchainContext = createContext<BlockchainContextType | undefined>(undefined);
 
 export const BlockchainProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const blockchain = config.sepolia; // Hardcoded sepolia for now
+  const [mergedConfig, setMergedConfig] = useState<BlockchainConfig>(config.sepolia);
+
+  useEffect(() => {
+    const merged = mergeConfigs(config, userConfig as Partial<Config>);
+    setMergedConfig(merged.sepolia); // Hardcoded to sepolia for now
+  }, []);
 
   return (
-    <BlockchainContext.Provider value={{ blockchain }}>
+    <BlockchainContext.Provider value={{ blockchain: mergedConfig }}>
       {children}
     </BlockchainContext.Provider>
   );
