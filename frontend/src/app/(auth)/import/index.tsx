@@ -6,45 +6,40 @@ import {
     TextInput,
     TouchableOpacity,
   } from "react-native";
-  import { useState } from "react";
+  import { useState, useEffect } from "react";
   import styles from "../../../styles/styles";
   import { Ionicons } from "@expo/vector-icons";
+  import { useBlockchainContext } from "../../../providers/BlockchainProvider";
   
-
   const ImportTokenScreen = () => {
-    // TODO: Get from config
     const [contractAddress, setContractAddress] = useState("");
-    const [customTokens, setCustomTokens] = useState([
-      {
-        symbol: "USDT",
-        name: "Tether USD",
-        address: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
-      },
-      {
-        symbol: "DAI",
-        name: "Dai Stablecoin",
-        address: "0x6B175474E89094C44Da98b954EedeAC495271d0F",
-      },
-    ]);
+    const { getUserTokens } = useBlockchainContext();
+    const [customTokens, setCustomTokens] = useState<
+      { symbol: string; name: string; address: string }[]
+    >([]);
   
-    // TODO: handle adding the ERC20 token
+    useEffect(() => {
+      const tokens = getUserTokens();
+      setCustomTokens(tokens);
+    }, [getUserTokens]);
+  
+    // TODO: Handle adding the ERC20 token
     const handleAddToken = () => {
       if (contractAddress.trim()) {
         console.log("ERC20 Contract Address:", contractAddress);
-        // TODO: add logic to fetch token details by contract address, then add to customTokens
         const newToken = {
           symbol: "NEW",
           name: "New Token",
           address: contractAddress,
         };
-        setCustomTokens([...customTokens, newToken]);
+        setCustomTokens((prevTokens) => [...prevTokens, newToken]);
         setContractAddress(""); // Clear the input
       } else {
         console.log("Please enter a valid contract address");
       }
     };
   
-    // TODO: remove token
+    // TODO: Handle removing the token
     const handleRemoveToken = (tokenAddress: string) => {
       const updatedTokens = customTokens.filter(
         (token) => token.address !== tokenAddress
@@ -57,12 +52,18 @@ import {
         <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
           <View className="bg-gray-100 p-6">
             <View className="bg-yellow-100 p-3 rounded-md mb-4 flex-row items-center">
-                <Ionicons name="warning-outline" size={20} color="black" className="mr-2" />
-                <View className="flex-1">
-                    <Text className="text-black text-sm">
-                    Anyone can create a token, including fake versions of existing tokens.
-                    </Text>
-                </View>
+              <Ionicons
+                name="warning-outline"
+                size={20}
+                color="black"
+                className="mr-2"
+              />
+              <View className="flex-1">
+                <Text className="text-black text-sm">
+                  Anyone can create a token, including fake versions of existing
+                  tokens.
+                </Text>
+              </View>
             </View>
   
             <TextInput
