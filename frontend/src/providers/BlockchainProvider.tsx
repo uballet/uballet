@@ -1,6 +1,6 @@
 import React, { createContext, useContext, ReactNode, useEffect, useState } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import config from '../../netconfig/blockchain.default.json'; // Default config
-import userConfig from '../../netconfig/blockchain.user.json'; // User config
 import { BlockchainConfig, Config, ERC20Token } from '../../netconfig/blockchain-config';
 import deepmerge from 'deepmerge';
 
@@ -8,37 +8,91 @@ const blockchain_name = "sepolia"; // Hard-coded sepolia for now
 
 interface BlockchainContextType {
   blockchain: BlockchainConfig;
-  getUserTokens: () => ERC20Token[];
+  getUserTokens: () => Promise<ERC20Token[]>;
+  addUserToken: (token: ERC20Token) => Promise<void>;
+  removeUserToken: (address: string) => Promise<void>;
 }
 
-const mergeConfigs = (defaultConfig: Config, userConfig: Partial<Config>): Config => {
-  return deepmerge(defaultConfig, userConfig, {
-    arrayMerge: (destinationArray, sourceArray) => [...destinationArray, ...sourceArray],
+const mergeConfigs = (defaultConfig: Config, userTokens: ERC20Token[]): Config => {
+  return deepmerge(defaultConfig, {
+    [blockchain_name]: {
+      erc20_tokens: userTokens,
+    },
   });
 };
 
-const getUserCustomTokens = (userConfig: Partial<Config>): ERC20Token[] => {
-  if (userConfig[blockchain_name] && userConfig[blockchain_name].erc20_tokens) {
-    return userConfig[blockchain_name].erc20_tokens;
+const LOCAL_STORAGE_KEY = 'user_erc20_tokens' + blockchain_name;
+
+const dummyToken: ERC20Token = {
+  name: "Fake Test Coin",
+  symbol: "FC",
+  address: "0x73d219B3881E481394DA6B5008A081d623992200",
+};
+
+const loadUserTokens = async (): Promise<ERC20Token[]> => {
+  try {
+    const storedTokens = await AsyncStorage.getItem(LOCAL_STORAGE_KEY);
+    if (storedTokens) {
+      return JSON.parse(storedTokens);
+    } else {
+      // If no tokens are found in storage, return the dummy token
+      return [dummyToken];
+    }
+  } catch (error) {
+    console.error('Failed to load user tokens from storage', error);
+    return [dummyToken]; // Return dummy token on error
   }
-  return [];
+};
+
+const saveUserTokens = async (tokens: ERC20Token[]) => {
+  try {
+    await AsyncStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(tokens));
+  } catch (error) {
+    console.error('Failed to save user tokens to storage', error);
+  }
 };
 
 const BlockchainContext = createContext<BlockchainContextType | undefined>(undefined);
 
 export const BlockchainProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const [userTokens, setUserTokens] = useState<ERC20Token[]>([]);
   const [mergedConfig, setMergedConfig] = useState<BlockchainConfig>(config[blockchain_name]);
 
   useEffect(() => {
-    const merged = mergeConfigs(config, userConfig as Partial<Config>);
-    setMergedConfig(merged[blockchain_name]);
+    const loadTokens = async () => {
+      const tokens = await loadUserTokens();
+      setUserTokens(tokens);
+      const merged = mergeConfigs(config, tokens);
+      setMergedConfig(merged[blockchain_name]);
+    };
+    loadTokens();
   }, []);
 
+  useEffect(() => {
+    const merged = mergeConfigs(config, userTokens);
+    setMergedConfig(merged[blockchain_name]);
+  }, [userTokens]);
+
+  const getUserTokens = async (): Promise<ERC20Token[]> => {
+    return userTokens;
+  };
+
+  const addUserToken = async (token: ERC20Token) => {
+    const updatedTokens = [...userTokens, token];
+    setUserTokens(updatedTokens);
+    await saveUserTokens(updatedTokens);
+  };
+
+  const removeUserToken = async (address: string) => {
+    const updatedTokens = userTokens.filter((token) => token.address !== address);
+    setUserTokens(updatedTokens);
+    await saveUserTokens(updatedTokens);
+  };
+
   return (
-    <BlockchainContext.Provider value={{ 
-      blockchain: mergedConfig, 
-      getUserTokens: () => getUserCustomTokens(userConfig as Partial<Config>) 
-    }}>
+    <BlockchainContext.Provider
+      value={{ blockchain: mergedConfig, getUserTokens, addUserToken, removeUserToken }}
+    >
       {children}
     </BlockchainContext.Provider>
   );

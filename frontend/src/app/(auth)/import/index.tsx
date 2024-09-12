@@ -6,40 +6,50 @@ import {
     TextInput,
     TouchableOpacity,
   } from "react-native";
-  import { useState, useEffect } from "react";
-  import styles from "../../../styles/styles";
-  import { Ionicons } from "@expo/vector-icons";
-  import { useBlockchainContext } from "../../../providers/BlockchainProvider";
+import { useState, useEffect } from "react";
+import styles from "../../../styles/styles";
+import { Ionicons } from "@expo/vector-icons";
+import { useBlockchainContext } from "../../../providers/BlockchainProvider";
   
-  const ImportTokenScreen = () => {
+interface ERC20Token {
+    symbol: string;
+    name: string;
+    address: string;
+}
+  
+const ImportTokenScreen = () => {
     const [contractAddress, setContractAddress] = useState("");
     const { getUserTokens } = useBlockchainContext();
-    const [customTokens, setCustomTokens] = useState<
-      { symbol: string; name: string; address: string }[]
-    >([]);
-  
+    const [customTokens, setCustomTokens] = useState<ERC20Token[]>([]);
+
     useEffect(() => {
-      const tokens = getUserTokens();
-      setCustomTokens(tokens);
+      const fetchTokens = async () => {
+        try {
+          const tokens = await getUserTokens();
+          setCustomTokens(tokens);
+        } catch (error) {
+          console.error("Failed to fetch tokens:", error);
+        }
+      };
+  
+      fetchTokens();
     }, [getUserTokens]);
   
-    // TODO: Handle adding the ERC20 token
     const handleAddToken = () => {
       if (contractAddress.trim()) {
         console.log("ERC20 Contract Address:", contractAddress);
-        const newToken = {
+        const newToken: ERC20Token = {
           symbol: "NEW",
           name: "New Token",
           address: contractAddress,
         };
-        setCustomTokens((prevTokens) => [...prevTokens, newToken]);
+        setCustomTokens([...customTokens, newToken]);
         setContractAddress(""); // Clear the input
       } else {
         console.log("Please enter a valid contract address");
       }
     };
   
-    // TODO: Handle removing the token
     const handleRemoveToken = (tokenAddress: string) => {
       const updatedTokens = customTokens.filter(
         (token) => token.address !== tokenAddress
@@ -117,7 +127,7 @@ import {
         </ScrollView>
       </SafeAreaView>
     );
-  };
+};
   
-  export default ImportTokenScreen;
+export default ImportTokenScreen;
   
