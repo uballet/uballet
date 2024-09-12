@@ -2,8 +2,9 @@ import React, { createContext, useContext, ReactNode, useEffect, useState } from
 import config from '../../netconfig/blockchain.default.json'; // Default config
 import userConfig from '../../netconfig/blockchain.user.json'; // User config
 import { BlockchainConfig, Config } from '../../netconfig/blockchain-config';
-import deepmerge from 'deepmerge'; // Utility for deep merging
+import deepmerge from 'deepmerge';
 
+const blockchain_name = "sepolia" // Hard-coded sepolia for now
 
 interface BlockchainContextType {
   blockchain: BlockchainConfig;
@@ -18,11 +19,11 @@ const mergeConfigs = (defaultConfig: Config, userConfig: Partial<Config>): Confi
 const BlockchainContext = createContext<BlockchainContextType | undefined>(undefined);
 
 export const BlockchainProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [mergedConfig, setMergedConfig] = useState<BlockchainConfig>(config.sepolia);
+  const [mergedConfig, setMergedConfig] = useState<BlockchainConfig>(config[blockchain_name]);
 
   useEffect(() => {
     const merged = mergeConfigs(config, userConfig as Partial<Config>);
-    setMergedConfig(merged.sepolia); // Hardcoded to sepolia for now
+    setMergedConfig(merged[blockchain_name]);
   }, []);
 
   return (
