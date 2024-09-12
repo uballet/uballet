@@ -56,9 +56,14 @@ import {
       <SafeAreaView className="w-full flex-1">
         <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
           <View className="bg-gray-100 p-6">
-            <Text className="text-lg font-semibold mb-4 text-black p-1">
-              Import ERC-20 Token by Contract Address:
-            </Text>
+            <View className="bg-yellow-100 p-3 rounded-md mb-4 flex-row items-center">
+                <Ionicons name="warning-outline" size={20} color="black" className="mr-2" />
+                <View className="flex-1">
+                    <Text className="text-black text-sm">
+                    Anyone can create a token, including fake versions of existing tokens.
+                    </Text>
+                </View>
+            </View>
   
             <TextInput
               style={{
