@@ -1,6 +1,6 @@
 import React, { createContext, useContext, ReactNode, useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import config from '../../netconfig/blockchain.default.json'; // Default config
+import config from '../../netconfig/blockchain.default.json';
 import { BlockchainConfig, Config, ERC20Token } from '../../netconfig/blockchain-config';
 import deepmerge from 'deepmerge';
 
@@ -21,13 +21,7 @@ const mergeConfigs = (defaultConfig: Config, userTokens: ERC20Token[]): Config =
   });
 };
 
-const LOCAL_STORAGE_KEY = 'user_erc20_tokens' + blockchain_name;
-
-const dummyToken: ERC20Token = {
-  name: "Fake Test Coin",
-  symbol: "FC",
-  address: "0x73d219B3881E481394DA6B5008A081d623992200",
-};
+const LOCAL_STORAGE_KEY = 'user_erc20_tokens_' + blockchain_name;
 
 const loadUserTokens = async (): Promise<ERC20Token[]> => {
   try {
@@ -35,12 +29,11 @@ const loadUserTokens = async (): Promise<ERC20Token[]> => {
     if (storedTokens) {
       return JSON.parse(storedTokens);
     } else {
-      // If no tokens are found in storage, return the dummy token
-      return [dummyToken];
+      return []
     }
   } catch (error) {
     console.error('Failed to load user tokens from storage', error);
-    return [dummyToken]; // Return dummy token on error
+    return [];
   }
 };
 
