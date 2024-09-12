@@ -4,7 +4,7 @@ import { Picker } from "@react-native-picker/picker";
 import { useSafeLightAccount } from "../../../hooks/useLightAccount";
 import { useTransfer } from "../../../hooks/useTransfer";
 import { useCheckTransferSponsorship } from "../../../hooks/useCheckTransferSponsorship";
-
+import { useBlockchainContext } from "../../../providers/BlockchainProvider";
 import { Text, Button, TextInput, Card } from "react-native-paper";
 import styles from "../../../styles/styles";
 import EstimateGasFees from "../../../components/EstimateGasFees";
@@ -44,7 +44,8 @@ function TransferScreen() {
   } = useCheckTransferSponsorship();
   const sponsorshipCheckDisabled = loadingSponsorship || isSponsored !== null;
 
-  const tokens = config.sepolia.erc20_tokens;;
+  const { blockchain } = useBlockchainContext();
+  const tokens = blockchain.erc20_tokens;
   const currencies = ["ETH", ...tokens.map((token) => token.symbol)];
   const tokenAddresses = tokens.reduce<{ [key: string]: `0x${string}` }>(
     (acc, token) => {

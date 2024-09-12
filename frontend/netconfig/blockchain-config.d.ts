@@ -34,5 +34,4 @@ export interface Config {
   sepolia: BlockchainConfig;
   zora: BlockchainConfig;
   zoraSepolia: BlockchainConfig;
-  [key: string]: BlockchainConfig;
 }
