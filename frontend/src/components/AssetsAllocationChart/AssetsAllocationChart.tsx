@@ -23,7 +23,7 @@ const AssetsAllocationChart = () => {
 
   const parsedData = Object.entries(data || {}).map(([key, value]) => ({
     name: key,
-    balance: value,
+    balance: value.quote,
     color: colors[key],
     legendFontColor: colors[key],
     legendFontSize: 15,

@@ -2,13 +2,7 @@ import { AssetTransfersWithMetadataResult } from "alchemy-sdk";
 import { Link } from "expo-router";
 import React from "react";
 import { ScrollView, View } from "react-native";
-import {
-  ActivityIndicator,
-  Avatar,
-  Card,
-  FAB,
-  Text,
-} from "react-native-paper";
+import { ActivityIndicator, Avatar, Card, FAB, Text } from "react-native-paper";
 import { useBalance } from "../../../hooks/useBalance";
 import { useRecentTransactions } from "../../../hooks/useRecentTransactions";
 import styles from "../../../styles/styles";
@@ -22,7 +16,7 @@ const formatBalance = (balance: number | null, significantFigures: number) => {
 };
 
 const HomeScreen: React.FC = () => {
-  const balance = useBalance();
+  const { balance } = useBalance();
   const { fromTransfers, toTransfers } = useRecentTransactions();
   const { user } = useAuthContext();
 
@@ -67,9 +61,9 @@ const HomeScreen: React.FC = () => {
               maxRows={4}
             />
             <Link href="/(auth)/transaction_history" push>
-            <Text variant="bodyMedium" style={{ margin: 8 }}>
-              See all history
-            </Text>
+              <Text variant="bodyMedium" style={{ margin: 8 }}>
+                See all history
+              </Text>
             </Link>
           </Card.Content>
         </Card>

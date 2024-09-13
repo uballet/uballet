@@ -10,6 +10,8 @@ interface TokenBalances {
 export function useTokenBalance() {
   const { client, sdkClient, account } = useAccountContext();
   const [tokenBalances, setTokenBalances] = useState<TokenBalances>({});
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
   const tokens = config.sepolia.erc20_tokens;
 
@@ -18,6 +20,7 @@ export function useTokenBalance() {
   }
 
   useEffect(() => {
+    setLoading(true);
     const fetchTokenBalances = async () => {
       const balances: TokenBalances = {};
 
@@ -38,13 +41,8 @@ export function useTokenBalance() {
     if (account.address) {
       fetchTokenBalances();
     }
+    setLoading(false);
   }, [account.address, sdkClient]);
 
-  // Return a mock balance for testing
-  return {
-    DAI: "100",
-    USDT: "200",
-    USDC: "350",
-  };
-  return tokenBalances;
+  return { tokenBalances, loading, error };
 }

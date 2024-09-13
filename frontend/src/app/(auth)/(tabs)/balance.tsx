@@ -6,8 +6,6 @@ import {
   RefreshControl,
 } from "react-native";
 import { Card, Text, Button } from "react-native-paper";
-import { useBalance } from "../../../hooks/useBalance";
-import { useTokenBalance } from "../../../hooks/useTokenBalance";
 import { useBalanceInUSDT } from "../../../hooks/useBalanceInUSDT";
 import styles from "../../../styles/styles";
 import ETHLogo from "../../../../assets/eth.png";
@@ -16,7 +14,7 @@ import DAILogo from "../../../../assets/dai.png";
 import USDCLogo from "../../../../assets/usdc.png";
 import arrowPNG from "../../../../assets/arrow.png";
 import { router } from "expo-router";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 
 const BalanceScreen = () => {
   let tokenPNGs: { [key: string]: any } = {
@@ -33,15 +31,17 @@ const BalanceScreen = () => {
   };
 
   const { data, loading, error, refetch } = useBalanceInUSDT();
-  const tokenBalancesInUSDT = data;
-  const balance = useBalance() || "0";
-  let tokenBalances = useTokenBalance();
-  tokenBalances["ETH"] = balance;
-  const totalTokensBalance = Object.values(data || {}).reduce(
-    (a, b) => a + b,
-    0
-  );
-  const totalSum = totalTokensBalance;
+
+  const [totalSum, setTotalSum] = useState(0);
+
+  useEffect(() => {
+    let totalTokensBalance = 0;
+    for (const token in data) {
+      const sum = data?.[token]?.quote || 0;
+      totalTokensBalance += sum;
+    }
+    setTotalSum(totalTokensBalance);
+  }, [data]);
 
   const [refreshing, setRefreshing] = useState(false);
   const onRefresh = useCallback(() => {
@@ -110,35 +110,33 @@ const BalanceScreen = () => {
               </View>
             ) : (
               <View className="flex flex-col justify-between mt-2 items-center text-center w-[400px]">
-                {Object.entries(tokenBalancesInUSDT ?? {}).map(
-                  ([symbol, amount]) => (
-                    <View className="flex flex-row mr-5">
-                      <View className="flex flex-row w-[200px] text-center items-center">
-                        <Image source={tokenPNGs[symbol]} className="w-6 h-6" />
-                        <View className="flex flex-col ml-2 w-20 justify-start">
-                          <Text className="font-bold text-xl text-[#277ca5] ">
-                            {symbol}
-                          </Text>
-                          <Text className="text-gray-500">
-                            {tokensNames[symbol]}
-                          </Text>
-                        </View>
-                      </View>
-
-                      <View className="flex flex-col justify-center items-end  w-[170px] ml-2 text-center">
-                        <Text className="text-center text-2xl font-bold">
-                          {tokenBalances[symbol].toString()}
+                {Object.entries(data ?? {}).map(([symbol, amount]) => (
+                  <View key={symbol} className="flex flex-row mr-5">
+                    <View className="flex flex-row w-[200px] text-center items-center">
+                      <Image source={tokenPNGs[symbol]} className="w-6 h-6" />
+                      <View className="flex flex-col ml-2 w-20 justify-start">
+                        <Text className="font-bold text-xl text-[#277ca5] ">
+                          {symbol}
                         </Text>
-                        <Text>
-                          {tokenBalancesInUSDT?.[symbol] === undefined
-                            ? "-"
-                            : tokenBalancesInUSDT[symbol].toFixed(2)}{" "}
-                          USDT
+                        <Text className="text-gray-500">
+                          {tokensNames[symbol]}
                         </Text>
                       </View>
                     </View>
-                  )
-                )}
+
+                    <View className="flex flex-col justify-center items-end  w-[170px] ml-2 text-center">
+                      <Text className="text-center text-2xl font-bold">
+                        {data?.[symbol].balance.toString() ?? "-"}
+                      </Text>
+                      <Text>
+                        {data?.[symbol] === undefined
+                          ? "-"
+                          : data[symbol].quote.toFixed(2)}{" "}
+                        USDT
+                      </Text>
+                    </View>
+                  </View>
+                ))}
               </View>
             )}
           </Card.Content>
