@@ -8,33 +8,49 @@ interface Balances {
 }
 
 export function useBalanceInUSDT() {
-  const [data, setData] = useState<Balances>(); // Holds the fetched data
-  const [loading, setLoading] = useState<boolean>(true); // Loading state
-  const [error, setError] = useState<string | null>(null); // Error state
+  const [data, setData] = useState<Balances>();
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
   let {
     balance: dataUseBalance,
     loading: loadingUseBalance,
     error: errorUseBalance,
+    refreshData: refreshDataUseBalance,
   } = useBalance();
 
   let {
     tokenBalances: dataUseTokenBalance,
     loading: loadingUseTokenBalance,
     error: errorUseTokenBalance,
+    refreshData: refreshDataUseTokenBalance,
   } = useTokenBalance();
+
+  const refetchFunction = () => {
+    refreshDataUseBalance();
+    refreshDataUseTokenBalance();
+  };
 
   const fetchData = async () => {
     setLoading(true);
+
+    if (loadingUseBalance || loadingUseTokenBalance) {
+      console.log("ETH balance or Tokens Balance still loading...");
+      return;
+    }
+    if (errorUseBalance || errorUseTokenBalance) {
+      console.error("Error fetching balances");
+      setError("Error fetching balances");
+      setLoading(false);
+      return;
+    }
+
+    console.log("Updating quotes for tokens...");
+
     // Add ETH balance to tokenBalances
     if (dataUseBalance !== null) {
       dataUseTokenBalance.ETH = dataUseBalance;
     }
-
-    // Put ETH firt place in array
-    const ethBalance = dataUseTokenBalance.ETH;
-    delete dataUseTokenBalance.ETH;
-    dataUseTokenBalance = { ETH: ethBalance, ...dataUseTokenBalance };
 
     // Parse all values in tokenBalances to float
     const tokenBalancesParsed = Object.fromEntries(
@@ -43,22 +59,17 @@ export function useBalanceInUSDT() {
         parseFloat(value),
       ])
     );
-    // If balance is loading, or dataUseBalance is NaN, return
-    if (
-      loadingUseBalance ||
-      loadingUseTokenBalance ||
-      isNaN(tokenBalancesParsed["ETH"])
-    ) {
-      return;
-    }
+
     try {
+      // Get quotes for all tokens from API
       let query = "ETH";
       for (const token in tokenBalancesParsed) {
         if (token === "ETH") continue;
         query += `,${token}`;
       }
       const response = await UballetAPI.getQuote({ coin: query });
-      // Convert token balances in USD
+
+      // Convert token balances to USDT
       const tokenBalancesInUSD: {
         [key: string]: { balance: number; quote: number };
       } = {};
@@ -68,18 +79,32 @@ export function useBalanceInUSDT() {
           quote: response[token] * tokenBalancesParsed[token],
         };
       }
-      setData(tokenBalancesInUSD);
+
+      // Sort tokenBalancesInUSD by quote field
+      const sortedTokens = Object.entries(tokenBalancesInUSD).sort(
+        (a, b) => b[1].quote - a[1].quote
+      );
+      let sortedTokenBalances: Balances = Object.fromEntries(sortedTokens);
+
+      // Put ETH first place in sortedTokenBalances
+      const ethBalance = sortedTokenBalances.ETH;
+      delete sortedTokenBalances.ETH;
+      sortedTokenBalances = { ETH: ethBalance, ...sortedTokenBalances };
+
+      setData(sortedTokenBalances);
     } catch (err) {
+      console.error("Failed to fetch data");
       setError("Failed to fetch data");
-      console.error(err);
+      setLoading(false);
     } finally {
+      console.log("Quotes updated successfully");
       setLoading(false);
     }
   };
 
   useEffect(() => {
     fetchData();
-  }, [dataUseTokenBalance, loadingUseBalance, loadingUseTokenBalance]);
+  }, [loadingUseBalance, loadingUseTokenBalance]);
 
-  return { data, loading, error, refetch: fetchData };
+  return { data, loading, error, refetch: refetchFunction };
 }

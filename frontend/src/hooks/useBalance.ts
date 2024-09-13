@@ -9,14 +9,40 @@ export function useBalance() {
   const [balance, setBalance] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [refreshKey, setRefreshKey] = useState(0); // Key to trigger refresh
+
+  const getBalance = () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      console.log("Fetching ETH balance...");
+      client
+        .getBalance({ address: account.address })
+        .then((b) => setBalance(formatEther(b)));
+      setLoading(false);
+    } catch {
+      console.error("Error fetching balance");
+      setError("Error fetching balance");
+      setLoading(false);
+    } finally {
+      console.log("ETH balance fetched");
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    setLoading(true);
-    client
-      .getBalance({ address: account.address })
-      .then((b) => setBalance(formatEther(b)));
-    setLoading(false);
-  }, []);
+    console.log("Running useBalance useEffect...");
+    if (account.address) {
+      getBalance();
+    }
+    console.log("Finished useBalance useEffect");
+  }, [refreshKey]);
 
-  return { balance, loading, error };
+  // Function to trigger data refresh
+  const refreshData = () => {
+    setRefreshKey((prevKey) => prevKey + 1);
+  };
+
+  return { balance, loading, error, refreshData };
 }
