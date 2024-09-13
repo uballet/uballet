@@ -175,8 +175,6 @@ async function addContact({
 async function getQuote({ coin }: { coin: string }) {
   // Make a GET request to /quote with the coin parameter as a query parameter
   const { data } = await uballetAxios.get("/quotes", { params: { coin } });
-
-  console.log("[UBALLET API SERVICE] Fetched quote for", coin, ":", data);
   return data;
 }
 
@@ -185,8 +183,6 @@ async function getPortfolioData({ days }: { days: number }) {
   const { data } = await uballetAxios.get("portfolio/historical_values", {
     params: { last_days: days },
   });
-
-  console.log("[UBALLET API SERVICE] Fetched portfolio data:", data);
   return data;
 }
 
