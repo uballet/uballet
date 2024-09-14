@@ -7,8 +7,15 @@ interface Balances {
   [key: string]: { balance: number; quote: number };
 }
 
+const roundNumber = (num: number, decimalPlaces: number) => {
+  return (
+    Math.round(num * Math.pow(10, decimalPlaces)) / Math.pow(10, decimalPlaces)
+  );
+};
+
 export function useBalanceInUSDT() {
   const [data, setData] = useState<Balances>();
+  const [totalSumData, setTotalSumData] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -74,9 +81,12 @@ export function useBalanceInUSDT() {
         [key: string]: { balance: number; quote: number };
       } = {};
       for (const token in tokenBalancesParsed) {
+        // Round balance to 4 decimal places
+        const balance = tokenBalancesParsed[token];
+        const quote = response[token] * tokenBalancesParsed[token];
         tokenBalancesInUSD[token] = {
-          balance: tokenBalancesParsed[token],
-          quote: response[token] * tokenBalancesParsed[token],
+          balance: balance,
+          quote: roundNumber(quote, 2),
         };
       }
 
@@ -91,6 +101,13 @@ export function useBalanceInUSDT() {
       delete sortedTokenBalances.ETH;
       sortedTokenBalances = { ETH: ethBalance, ...sortedTokenBalances };
 
+      // Calculate total sum of all tokens
+      let totalSum = 0;
+      for (const token in sortedTokenBalances) {
+        totalSum += sortedTokenBalances[token].quote;
+      }
+
+      setTotalSumData(totalSum);
       setData(sortedTokenBalances);
     } catch (err) {
       console.error("Failed to fetch data");
@@ -106,5 +123,5 @@ export function useBalanceInUSDT() {
     fetchData();
   }, [loadingUseBalance, loadingUseTokenBalance]);
 
-  return { data, loading, error, refetch: refetchFunction };
+  return { data, totalSumData, loading, error, refetch: refetchFunction };
 }

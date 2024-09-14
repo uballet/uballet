@@ -82,6 +82,7 @@ const AssetsAllocationChart = () => {
             backgroundColor={"transparent"}
             paddingLeft={"50"}
             center={[0, 0]}
+            avoidFalseZero={true}
           />
         )}
       </View>
