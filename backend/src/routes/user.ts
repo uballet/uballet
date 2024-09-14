@@ -29,4 +29,12 @@ router.post('/wallet-address', authenticateToken, async (req: Request, res: Resp
     return res.status(200).json(userObj)
 })
 
+router.post('/device-token', authenticateToken, async (req: Request, res: Response) => {
+    const { user } = res.locals
+
+    const { token } = req.body
+    await UserService.setDeviceToken(user, token)
+    return res.status(200).json({})
+})
+
 export default router

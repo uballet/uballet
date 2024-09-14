@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken'
 import { JWT_SECRET } from './env'
+import { User } from './entity/User'
 
 // @ts-ignore
 export function authenticateToken(req, res, next) {
@@ -8,11 +9,12 @@ export function authenticateToken(req, res, next) {
   
     if (token == null) return res.sendStatus(401)
   
-    jwt.verify(token, JWT_SECRET as string, (err: any, payload: any) => {
+    jwt.verify(token, JWT_SECRET as string, async (err: any, payload: any) => {
       if (err) return res.sendStatus(403)
   
-      req.user = payload
-      res.locals.user = payload
+      const user = await User.findOneOrFail({ where: { id: payload.id } })
+      req.user = user
+      res.locals.user = user
   
       next()
     })

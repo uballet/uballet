@@ -1,4 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, BaseEntity } from "typeorm"
+import { Address } from "../types"
 
 @Entity()
 export class User extends BaseEntity {
@@ -12,5 +13,5 @@ export class User extends BaseEntity {
     verified: boolean
 
     @Column({ nullable: true })
-    walletAddress: string
+    walletAddress: Address
 }

@@ -11,6 +11,8 @@ import wellKnownRouter from './routes/well-known'
 import { PORT } from './env';
 import quotesRouter from "./routes/quotes";
 import portfolioRouter from "./routes/portfolio";
+import recoveryRouter from "./routes/recovery";
+import PushNotificationService from './services/push-notification';
 // For env File
 dotenv.config();
 
@@ -42,10 +44,18 @@ app.get('/', (req: Request, res: Response) => {
 app.use("/contacts", authenticateToken, contactsRouter);
 app.use("/quotes", quotesRouter); // Add authenticateToken later...
 app.use("/portfolio", portfolioRouter); // Add authenticateToken later...
+app.use("/recovery", recoveryRouter);
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Welcome to Express & TypeScript Server");
 });
+
+app.post('/test-push-notification', async (req: Request, res: Response) => {
+  const { userId } = req.body
+  await PushNotificationService.sendNotificationToUser({ userId, title: 'test', body: 'test' })
+
+  return res.status(200).json({})
+})
 
 app.listen(port, () => {
   console.log(`Server is Fire at http://localhost:${port}`);

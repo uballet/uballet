@@ -3,8 +3,8 @@ import { DataSource } from "typeorm";
 import path = require("path");
 import { DB_HOST, DB_NAME, DB_PASSWORD, DB_PORT, DB_USER } from "./env";
 
-const entities = path.join(__dirname, "./entity/*.js");
-const migrations = path.join(__dirname, "/migration/*.js");
+const entities = path.join(__dirname, "../dist/entity/*.js");
+const migrations = path.join(__dirname, "../dist/migration/*.js");
 const subscribers = path.join(__dirname, "../dist/subscriber/*.js");
 
 export const AppDataSource = new DataSource({
