@@ -1,11 +1,8 @@
-import axios from "axios";
-import { UBALLET_API_URL } from "../../env";
 import { PublicKeyCredentialCreationOptionsJSON } from "@simplewebauthn/typescript-types";
 import {
   PasskeyAuthenticationResult,
   PasskeyRegistrationResult,
 } from "react-native-passkey";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
   Contact,
   type User,
@@ -13,39 +10,14 @@ import {
   type UserPasskey,
 } from "./types";
 
-const uballetAxios = axios.create({
-  baseURL: UBALLET_API_URL,
-});
-
-uballetAxios.interceptors.request.use(
-  async (config) => {
-    const token = await getUballetToken();
-    if (token) {
-      config.headers["Authorization"] = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
-
-const UBALLET_JWT_KEY = "uballet_jwt";
-
-export const getUballetToken = async () => {
-  const token = await AsyncStorage.getItem(UBALLET_JWT_KEY);
-  return token;
-};
-
-export const setUballetToken = async (token: string) => {
-  return await AsyncStorage.setItem(UBALLET_JWT_KEY, token);
-};
-
-export const removeUballetToken = async () => {
-  return await AsyncStorage.removeItem(UBALLET_JWT_KEY);
-};
+import uballetAxios, { setUballetToken, getUballetToken, removeUballetToken } from "./fetcher";
+import recovery from "./recovery";
 
 const signUp = ({ email }: { email: string }) => {
   return uballetAxios.post<User>(`/signup`, { email });
 };
+
+export { setUballetToken, getUballetToken, removeUballetToken };
 
 const verifyEmail = async ({
   email,
@@ -172,6 +144,13 @@ async function addContact({
   return data;
 }
 
+async function registerDeviceToken({ token }: { token: string }) {
+  const { data } = await uballetAxios.post('/user/device-token', {
+    token,
+  });
+  return data;
+}
+
 async function getQuote({ coin }: { coin: string }) {
   // Make a GET request to /quote with the coin parameter as a query parameter
   const { data } = await uballetAxios.get(`/quotes`, { params: { coin } });
@@ -193,6 +172,7 @@ export default {
     getContacts,
     getCurrentUser,
     getUserPasskeys,
+    registerDeviceToken,
     signUp,
     startEmailLogin,
     setUserWalletAddress,
@@ -200,4 +180,5 @@ export default {
     verifyPasskeyRegistration,
     verifyPasskeyAuthentication,
     getQuote,
+    recovery,
 };

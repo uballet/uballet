@@ -3,39 +3,34 @@ import { View } from "react-native";
 import { Text, Button } from "react-native-paper";
 import { parseEther } from "viem";
 import styles from "../styles/styles";
-import { LightAccount } from "@alchemy/aa-accounts";
-import { AlchemySmartAccountClient } from "@alchemy/aa-alchemy";
-
+import { useAccountContext } from "../hooks/useAccountContext";
+import { type AlchemyAccountClient } from "../providers/AccountProvider";
 interface EstimateGasFeesProps {
-  client: AlchemySmartAccountClient; // Alchemy Smart Account Client
-  account: LightAccount; // Light Account
   target: `0x${string}`;
   data: `0x${string}`;
 }
 
 const buildUserOperation = async (
-  client: AlchemySmartAccountClient,
-  account: LightAccount,
+  account: AlchemyAccountClient,
   target: `0x${string}`,
   data: `0x${string}`
 ) => {
-  const uo = await client.buildUserOperation({
-    account,
+  // @ts-ignore
+  const uo = await account.buildUserOperation({
     uo: {
       target,
       data,
       value: parseEther("0.00001"),
-    },
+    }
   });
   return uo;
 };
 
 const EstimateGasFees: React.FC<EstimateGasFeesProps> = ({
-  client,
-  account,
   target,
   data,
 }) => {
+  const { account } = useAccountContext();
   const [uoBuilded, setuoBuilded] = useState<any>(null);
   const [isFetchButtonDisabled, setIsFetchButtonDisabled] = useState(false);
 
@@ -54,7 +49,7 @@ const EstimateGasFees: React.FC<EstimateGasFeesProps> = ({
   const fetchData = async () => {
     try {
       setIsFetchButtonDisabled(true);
-      const uo = await buildUserOperation(client, account, target, data);
+      const uo = await buildUserOperation(account!, target, data);
       setuoBuilded(uo);
       console.log(uo);
     } catch (error) {

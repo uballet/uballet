@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { ScrollView, View } from "react-native";
 import { Picker } from "@react-native-picker/picker";
-import { useSafeLightAccount } from "../../../hooks/useLightAccount";
 import { useTransfer } from "../../../hooks/useTransfer";
 import { useCheckTransferSponsorship } from "../../../hooks/useCheckTransferSponsorship";
 import tokensData from "../../../../erc20sepolia.json";
@@ -15,8 +14,8 @@ import styles from "../../../styles/styles";
 import EstimateGasFees from "../../../components/EstimateGasFees";
 import { Link, useLocalSearchParams } from "expo-router";
 import { ethers } from "ethers";
-import { useAlchemyClient } from "../../../hooks/useAlchemyClient";
 import { router } from "expo-router";
+import { useAccountContext } from "../../../hooks/useAccountContext";
 
 type Token = {
   name: string;
@@ -29,10 +28,9 @@ type TokensData = {
 };
 
 function TransferScreen() {
-  const account = useSafeLightAccount();
+  const { account } = useAccountContext()
   const { address } = useLocalSearchParams<{ address: string }>()
   const [toAddress, setAddress] = useState(address?.startsWith("0x") ? address.slice(2) : "");
-  const client = useAlchemyClient();
   const [amount, setAmount] = useState("");
   const [currency, setCurrency] = useState("ETH");
   const [isAddressValid, setIsAddressValid] = useState(true);
@@ -132,11 +130,9 @@ function TransferScreen() {
             </Text>
           )}
           <Text variant="bodyMedium" selectable={true} style={{ margin: 8 }}>
-            {`From:\n${account.address}`}
+            {`From:\n${account?.getAddress()}`}
           </Text>
           <EstimateGasFees
-            client={client}
-            account={account}
             target={`0x${toAddress}`}
             data={"0x"}
           />

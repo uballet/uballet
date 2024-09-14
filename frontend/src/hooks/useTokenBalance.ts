@@ -26,8 +26,9 @@ interface TokenBalances {
 }
 
 export function useTokenBalance() {
-    const { client, sdkClient, account } = useAccountContext();
+    const { sdkClient, account } = useAccountContext();
     const [tokenBalances, setTokenBalances] = useState<TokenBalances>({});
+    const accountAddress = account!.getAddress();
 
     if (!account) {
         throw new Error('Account not ready');
@@ -38,7 +39,7 @@ export function useTokenBalance() {
             const balances: TokenBalances = {};
 
             for (const token of tokens) {
-                const balance = await sdkClient.core.getTokenBalances(account.address, [token.address]);
+                const balance = await sdkClient.core.getTokenBalances(accountAddress, [token.address]);
                 const tokenBalance = balance.tokenBalances[0]?.tokenBalance;
 
                 if (tokenBalance && tokenBalance !== "0") {
@@ -49,10 +50,10 @@ export function useTokenBalance() {
             setTokenBalances(balances);
         };
 
-        if (account.address) {
+        if (accountAddress) {
             fetchTokenBalances();
         }
-    }, [account.address, sdkClient]);
+    }, [accountAddress, sdkClient]);
 
     return tokenBalances;
 }

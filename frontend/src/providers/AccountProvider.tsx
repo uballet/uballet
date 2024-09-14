@@ -1,16 +1,14 @@
 import {
   createContext,
   PropsWithChildren,
+  useCallback,
   useEffect,
   useState,
 } from "react";
-import {
-  type AlchemySmartAccountClient,
-  createAlchemySmartAccountClient,
-} from "@alchemy/aa-alchemy";
-import { LocalAccountSigner, sepolia } from "@alchemy/aa-core";
-import { createLightAccount, LightAccount } from "@alchemy/aa-accounts";
-import { custom } from "viem";
+import { Address, LocalAccountSigner } from "@aa-sdk/core"
+import { sepolia } from "@account-kit/infra"
+import { createMultisigAccountAlchemyClient } from "@account-kit/smart-contracts";
+
 import { Alchemy, Network } from "alchemy-sdk";
 import { useAuthContext } from "./AuthProvider";
 import { ALCHEMY_API_URL, ALCHEMY_POLICY_ID } from "../env";
@@ -18,6 +16,7 @@ import * as SecureStore from 'expo-secure-store'
 import { generateMnemonic } from "bip39";
 import uballet from "../api/uballet";
 import { User } from "../api/uballet/types";
+import { useSignerStore } from "../hooks/useSignerStore";
 
 global.Buffer = global.Buffer || require('buffer').Buffer;
 
@@ -26,94 +25,161 @@ const sdkClient = new Alchemy({
   network: Network.ETH_SEPOLIA,
 });
 
-const client = createAlchemySmartAccountClient({
-  rpcUrl: ALCHEMY_API_URL!!,
-  chain: sepolia,
-  gasManagerConfig: {
-    policyId: ALCHEMY_POLICY_ID!!,
-  },
-});
+export type AlchemyAccountClient = Awaited<ReturnType<typeof createMultisigAccountAlchemyClient>>;
+
+type SignerPair = [LocalAccountSigner<any>, LocalAccountSigner<any>];
+
+function createMultisigClient(signer: LocalAccountSigner<any>, owners?: Address[], accountAddress?: Address): Promise<AlchemyAccountClient> {
+  return createMultisigAccountAlchemyClient({
+    signer,
+    owners,
+    accountAddress,
+    threshold: 2n,
+    chain: sepolia,
+    rpcUrl: ALCHEMY_API_URL!!
+  })
+}
+
+async function createExistingAccountClient(signers: SignerPair, address: `0x${string}`): Promise<[AlchemyAccountClient, AlchemyAccountClient]> {
+    const owners = await Promise.all([signers[0].getAddress(), signers[1].getAddress()]);
+    const initiator = await createMultisigClient(signers[0], owners, address)
+    const submitter = await createMultisigClient(signers[1], owners, address)
+
+    return [initiator, submitter]
+}
+
+async function createNewAccountClient(signers: SignerPair): Promise<[AlchemyAccountClient, AlchemyAccountClient]> {
+  const owners = await Promise.all([signers[0].getAddress(), signers[1].getAddress()]);
+  const initiator = await createMultisigClient(signers[1], owners, undefined)
+
+  const submitter = await createMultisigClient(signers[1], owners, undefined)
+  return [initiator, submitter]
+}
 
 export const AccountContext = createContext<{
-  client: AlchemySmartAccountClient;
+  account: AlchemyAccountClient | null;
+  initiator: AlchemyAccountClient | null;
+  submitter: AlchemyAccountClient | null;
   sdkClient: Alchemy;
-  account: LightAccount | null;
   needsRecovery: boolean;
   initializing: boolean;
-  mnemonic: string | null;
-  clearMnemonic: () => void;
   recoverWithSeedPhrase: (seedPhrase: string) => Promise<void>;
+  createMultsigClient: (signer: LocalAccountSigner<any>, address: `0x${string}`) => Promise<AlchemyAccountClient>
 }>({
-  client,
-  sdkClient,
   account: null,
+  initiator: null,
+  submitter: null,
+  sdkClient,
   needsRecovery: false,
   initializing: false,
-  mnemonic: null,
-  clearMnemonic: () => {},
   recoverWithSeedPhrase: async () => {},
+  createMultsigClient: (signer: LocalAccountSigner<any>, address: `0x${string}`) => createMultisigClient(signer, undefined, address),
 });
 
-async function getStoredSigner(user: User) {
-  const privateKey = await SecureStore.getItemAsync(`signer-${user.id}`);
-  if (!privateKey) {
-    return null
-  }
-  const signer = LocalAccountSigner.privateKeyToAccountSigner(`0x${privateKey}`);
-  return signer
+function getSignersFromSeedphrase(seedphrase: string): SignerPair {
+  const signer1 = LocalAccountSigner.mnemonicToAccountSigner(seedphrase, { accountIndex: 0 });
+  const signer2 = LocalAccountSigner.mnemonicToAccountSigner(seedphrase, { accountIndex: 1 });
+  return [signer1, signer2]
+}
+
+async function checkIfSignersAreOwners(signers: SignerPair, user: User): Promise<boolean> {
+  const signerAddresses = await Promise.all(signers.map(signer => signer.getAddress()))
+  console.log({ signerAddresses })
+
+  const client = await createMultisigClient(signers[0], undefined, user.walletAddress!);
+  const owners = await client.readOwners();
+  console.log({ owners })
+  return (owners.includes(signerAddresses[0]) && owners.includes(signerAddresses[1]))
 }
 
 export function AccountProvider({ children }: PropsWithChildren) {
-    const [account, setAccount] = useState<LightAccount | null>(null);
+    const [initiator, setInitiator] = useState<AlchemyAccountClient | null>(null);
+    const [submitter, setSubmitter] = useState<AlchemyAccountClient | null>(null);
     const [needsRecovery, setNeedsRecovery] = useState(false);
     const [initializing, setInitializing] = useState(false);
-    const [mnemonic, setMnemonic] = useState<string | null>(null);
-    const clearMnemonic = () => setMnemonic(null)
     const { user, setUser } = useAuthContext();
-
+    const { loadSigners, storeSeedphrase, promoteRecoverySeedphrase, loadRecoverySigners } = useSignerStore();
     const initWallet = async (user: User) => {
       setInitializing(true)
       const mnemonic = generateMnemonic();
-      const signer = LocalAccountSigner.mnemonicToAccountSigner(mnemonic);
-      const privateKey = Buffer.from(signer.inner.getHdKey().privateKey!).toString('hex')
+      const signers = await storeSeedphrase(mnemonic);
+      const [initiator, submitter] = await createNewAccountClient(signers)
 
-      await SecureStore.setItemAsync(`signer-${user.id}`, privateKey);
-      const lightAccount = await createLightAccount({
-        signer: signer,
-        transport: custom(client),
-        chain: sepolia,
-      })
-
-      const updatedUser = await uballet.setUserWalletAddress({ walletAddress: lightAccount.address })
-
-      setMnemonic(mnemonic)
-      setAccount(lightAccount)
+      const updatedUser = await uballet.setUserWalletAddress({ walletAddress: initiator.getAddress() })
+      setInitiator(initiator)
+      setSubmitter(submitter)
       setUser(updatedUser)
       setInitializing(false)
-      return signer
     }
+    
+    useEffect(() => {
+      if (needsRecovery) {
+        const intervalId = setInterval(async () => {
+          const recoverySigners = await loadRecoverySigners();
+          if (!recoverySigners) {
+            return
+          }
+          const isRecoveryFinished = await checkIfSignersAreOwners(recoverySigners, user!);
 
-    const recoverWithSeedPhrase = async (seedPhrase: string) => {
-      const signer = LocalAccountSigner.mnemonicToAccountSigner(seedPhrase);
-
-      const lightAccount = await createLightAccount({
-        signer: signer,
-        transport: custom(client),
-        chain: sepolia,
-      })
-      if (lightAccount.address !== user?.walletAddress) {
-        throw new Error('Wrong seed phrase')
+          console.log("isRecoveryFinished", isRecoveryFinished)
+          if (isRecoveryFinished) {
+            await promoteRecoverySeedphrase();
+            loadAccountFromStorage(user!);
+          }
+        }, 10000)
+        return () => clearInterval(intervalId)
       }
-      const privateKey = Buffer.from(signer.inner.getHdKey().privateKey!).toString('hex')
+    }, [needsRecovery])
 
-      await SecureStore.setItemAsync(`signer-${user?.id}`, privateKey);
+    const recoverWithSeedPhrase = useCallback(async (seedPhrase: string) => {
+      if (!user) {
+        throw new Error('User not ready')
+      }
+      const [signer1, signer2] = getSignersFromSeedphrase(seedPhrase)
+      const signerAddress1 = await signer1.getAddress();
+      const signerAddress2 = await signer2.getAddress();
+      let [initiator, submitter] = await createExistingAccountClient([signer1, signer2], user.walletAddress! as `0x${string}`);
+      const isDeployed = await initiator.account.isAccountDeployed();
+
+      if (!isDeployed) {
+        if (initiator.getAddress() !== user?.walletAddress) {
+          throw new Error('Wrong seed phrase')
+        }
+      } else {
+        const owners = await initiator.readOwners();
+
+        if (!owners.includes(signerAddress1) || !owners.includes(signerAddress2)) {
+          throw new Error('Wrong seed phrase')
+        }
+      }
+      await storeSeedphrase(seedPhrase);
       setNeedsRecovery(false);
-      setAccount(lightAccount)
+      setInitiator(initiator);
+      setSubmitter(submitter);
+    }, [user])
+
+    const loadAccountFromStorage = async (user: User) => {
+      const signers = await loadSigners();
+      if (!signers) {
+        setNeedsRecovery(true)
+        return
+      }
+      let [initiator, submitter] = await createExistingAccountClient(signers, user.walletAddress! as `0x${string}`);
+
+      if (initiator.getAddress() !== user.walletAddress) {
+        setNeedsRecovery(true)
+      }
+
+      setNeedsRecovery(false);
+      setInitiator(initiator);
+      setSubmitter(submitter);
     }
 
     useEffect(() => {
       if (!user) {
-        setAccount(null)
+        setInitiator(null)
+        setSubmitter(null)
+        setNeedsRecovery(false)
         return
       }
       if (user.verified) {
@@ -121,18 +187,8 @@ export function AccountProvider({ children }: PropsWithChildren) {
           initWallet(user)
           return;
         }
-        if (!account) {
-          getStoredSigner(user).then((signer) => {
-            if (!signer) {
-                setNeedsRecovery(true)
-                return;
-            }
-            createLightAccount({
-                signer: signer,
-                transport: custom(client),
-                chain: sepolia,
-            }).then(setAccount);
-          })
+        if (!initiator) {
+          loadAccountFromStorage(user)
         }
       }
     }, [user]);
@@ -140,14 +196,14 @@ export function AccountProvider({ children }: PropsWithChildren) {
   return (
     <AccountContext.Provider
       value={{
-        client,
         sdkClient,
-        account,
+        account: initiator,
+        initiator,
+        submitter,
         needsRecovery,
         initializing,
-        mnemonic,
-        clearMnemonic,
-        recoverWithSeedPhrase
+        recoverWithSeedPhrase,
+        createMultsigClient: (signer, address) => createMultisigClient(signer, undefined, address),
       }}
     >
       {children}

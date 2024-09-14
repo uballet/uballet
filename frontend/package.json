@@ -18,9 +18,12 @@
     "ts:check": "tsc"
   },
   "dependencies": {
-    "@alchemy/aa-accounts": "^3.17.2",
-    "@alchemy/aa-alchemy": "^3.17.2",
-    "@alchemy/aa-core": "^3.17.2",
+    "@aa-sdk/core": "^4.0.0-beta.0",
+    "@account-kit/core": "^4.0.0-beta.0",
+    "@account-kit/infra": "^4.0.0-beta.0",
+    "@account-kit/react": "^4.0.0-beta.0",
+    "@account-kit/signer": "^4.0.0-beta.0",
+    "@account-kit/smart-contracts": "^4.0.0-beta.0",
     "@noble/ciphers": "^0.5.3",
     "@noble/hashes": "^1.4.0",
     "@react-native-picker/picker": "^2.7.7",

@@ -70,6 +70,15 @@ function TabsLayout() {
           ),
         }}
       />
+      <MaterialBottomTabs.Screen
+        name="security"
+        options={{
+          title: "Security",
+          tabBarIcon: ({ color }) => (
+            <MaterialIcons name="security" size={24} color={color} />
+          ),
+        }}
+      />
     </MaterialBottomTabs>
     </>
   );

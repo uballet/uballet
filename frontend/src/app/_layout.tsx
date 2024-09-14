@@ -11,6 +11,7 @@ import { theme } from "../styles/color";
 import "node-libs-react-native/globals.js";
 import "react-native-get-random-values";
 import { IS_STORYBOOK } from "../env";
+import { PushNotificationProvider } from "../providers/PushNotificationProvider";
 
 export default function App() {
   if (IS_STORYBOOK) {
@@ -19,16 +20,17 @@ export default function App() {
     return <Storybook />;
   }
 
-  registerForPushNotificationsAsync();
   useNotificationObserver();
   return (
     <QueryProvider>
       <AuthProvider  >
+        <PushNotificationProvider>
         <AccountProvider >
           <PaperProvider theme={theme}>
             <Slot />
           </PaperProvider>
         </AccountProvider>
+        </PushNotificationProvider>
       </AuthProvider>
     </QueryProvider>
   );

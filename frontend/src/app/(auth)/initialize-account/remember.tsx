@@ -1,21 +1,32 @@
 import { Text, View } from "react-native";
-import { Modal, TextInput } from "react-native-paper";
+import { ActivityIndicator, Modal, TextInput } from "react-native-paper";
 import { Button } from "react-native-paper";
 import { useEffect, useState } from "react";
 import { useAccountContext } from "../../../hooks/useAccountContext";
 import { useRouter } from "expo-router";
+import { useSignerStore } from "../../../hooks/useSignerStore";
 
 export default function RememberScreen() {
     const router = useRouter()
+    const [modalText, setModalText] = useState('')
+    const [mnemonic, setMnemonic] = useState('')
     const [modalVisible, setModalVisible] = useState(false);
-    const [modalText, setModalText] = useState('');
-    const { mnemonic, clearMnemonic } = useAccountContext();
+    const { loadSeedphrase } = useSignerStore();
 
     useEffect(() => {
-        return () => {
-            clearMnemonic()
-        }
+        loadSeedphrase().then(code => setMnemonic(code!))
     }, [])
+
+    const onOpenModal = () => {
+        setModalVisible(true)
+        loadSeedphrase().then(code => setMnemonic(code!))
+    }
+
+    useEffect(() => {
+        if (!modalVisible) {
+            setMnemonic('')
+        }
+    }, [modalVisible])
 
     const onModalDone = () => {
         router.replace('/(auth)/')
@@ -29,12 +40,17 @@ export default function RememberScreen() {
             <Text className="m-2">
                 COPY AND SAVE SOMEWHERE SAFE!
             </Text>
-            <View className="m-2 p-2 border h-64 bg-gray-200 rounded-md">
-                <Text className="p-2 text-black">
-                    {mnemonic}
-                </Text>
-            </View>
-            <Button mode="contained" onPress={() => setModalVisible(true)}>
+            {!mnemonic && (
+                <ActivityIndicator />
+            )}
+            {mnemonic && (
+                <View className="m-2 p-2 border h-64 bg-gray-200 rounded-md">
+                    <Text className="p-2 text-black">
+                        {mnemonic}
+                    </Text>
+                </View>
+            )}
+            <Button mode="contained" onPress={onOpenModal}>
                 <Text>Done</Text>
             </Button>
             <Modal

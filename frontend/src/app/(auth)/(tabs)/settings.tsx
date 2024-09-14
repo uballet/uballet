@@ -1,4 +1,4 @@
-import { StyleSheet, View } from "react-native";
+import { View } from "react-native";
 import { ActivityIndicator, Button, Text } from "react-native-paper";
 import { useLogout } from "../../../hooks/useLogout";
 import styles from "../../../styles/styles";
@@ -16,9 +16,9 @@ function SettingsScreen() {
 
   return (
     <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
-      <View style={settingsStyles.sectionContainer}>
-        <Text style={settingsStyles.sectionHeader}>Passkeys</Text>
-        {hasNoPasskeys && <Text style={settingsStyles.emptyText}>You don't have any passkeys</Text>}
+      <View className="w-5/6">
+        <Text className="text-xl mb-8 self-center">Passkeys</Text>
+        {hasNoPasskeys && <Text className="self-center">You don't have any passkeys</Text>}
         {hasPasskeys && passkeys?.map((passkey) => (
           <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
             <Text>{passkey.name.slice(0, 16) + '...'}</Text>
@@ -39,22 +39,5 @@ function SettingsScreen() {
 }
 
 const Separator = () => <View style={{ height: 1, backgroundColor: theme.colors.primary, width: '90%' }} />;
-
-
-const settingsStyles = StyleSheet.create({
-    emptyText: {
-      alignSelf: 'center'
-    },
-    sectionHeader: {
-        alignSelf: 'center',
-        fontSize: 18,
-        marginBottom: 32,
-        color: theme.colors.primary
-    },
-    sectionContainer: {
-      width: '90%',
-      padding: 8
-    }
-})
 
 export default SettingsScreen;
