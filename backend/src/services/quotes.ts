@@ -5,7 +5,7 @@ const isStableCoin = (coin: string) => {
 };
 
 async function getQuote(coin: string) {
-  const productionReady = false;
+  const productionReady = true;
 
   const criptoIds: { [key: string]: string } = {
     ETH: "1027",
@@ -23,6 +23,8 @@ async function getQuote(coin: string) {
     XRP: "52",
     USDC: "3408",
     DAI: "4943",
+    AAVE: "7278",
+    WBTC: "3717",
   };
 
   if (!productionReady) {

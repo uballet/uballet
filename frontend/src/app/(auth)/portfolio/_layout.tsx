@@ -1,14 +1,14 @@
 import { Slot, Stack } from "expo-router";
 import { SafeAreaView } from "react-native";
 
-function ContactsLayout() {
+function PortfolioLayout() {
   return (
     <SafeAreaView
       style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
     >
       <Stack.Screen
         options={{
-          title: "Contacts",
+          title: "Portfolio",
           headerStyle: { backgroundColor: "#277ca5" },
           headerShown: true,
           headerTintColor: "#fff",
@@ -23,4 +23,4 @@ function ContactsLayout() {
   );
 }
 
-export default ContactsLayout;
+export default PortfolioLayout;

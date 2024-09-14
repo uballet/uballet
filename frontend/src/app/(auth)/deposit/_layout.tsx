@@ -1,14 +1,12 @@
 import { Slot, Stack } from "expo-router";
 import { SafeAreaView } from "react-native";
 
-function ContactsLayout() {
+function DepositLayout() {
   return (
-    <SafeAreaView
-      style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
-    >
+    <SafeAreaView className="flex-1 justify-center items-center bg-gray-100">
       <Stack.Screen
         options={{
-          title: "Contacts",
+          title: "Deposit Tokens",
           headerStyle: { backgroundColor: "#277ca5" },
           headerShown: true,
           headerTintColor: "#fff",
@@ -23,4 +21,4 @@ function ContactsLayout() {
   );
 }
 
-export default ContactsLayout;
+export default DepositLayout;

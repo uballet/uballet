@@ -8,6 +8,7 @@ export default function SignUpScreen() {
     const { signup, isPending } = useSignUp()
     const [email, setEmail] = useState<string>('');
 
+
     return (
         <View className="flex-1 justify-center items-center">
             <TextInput

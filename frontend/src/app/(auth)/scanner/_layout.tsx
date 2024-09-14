@@ -1,14 +1,14 @@
 import { Slot, Stack } from "expo-router";
 import { SafeAreaView } from "react-native";
 
-function ContactsLayout() {
+function ScannerLayout() {
   return (
     <SafeAreaView
       style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
     >
       <Stack.Screen
         options={{
-          title: "Contacts",
+          title: "Scan QR adress",
           headerStyle: { backgroundColor: "#277ca5" },
           headerShown: true,
           headerTintColor: "#fff",
@@ -19,8 +19,9 @@ function ContactsLayout() {
         }}
       />
       <Slot />
+  
     </SafeAreaView>
   );
 }
 
-export default ContactsLayout;
+export default ScannerLayout;

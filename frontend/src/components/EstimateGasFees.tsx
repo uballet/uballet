@@ -91,14 +91,6 @@ const EstimateGasFees: React.FC<EstimateGasFeesProps> = ({
       <Text variant="labelLarge">
         Max Fee Per Gas in gwei: {parseInt(maxFeePerGas) / 1000000000}{" "}
       </Text>
-      <Button
-        style={styles.button}
-        mode="contained"
-        onPress={fetchData}
-        disabled={isFetchButtonDisabled}
-      >
-        Fetch Data Again
-      </Button>
     </View>
   );
 };

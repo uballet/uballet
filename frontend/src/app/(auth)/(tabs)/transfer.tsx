@@ -3,19 +3,15 @@ import { ScrollView, View } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import { useTransfer } from "../../../hooks/useTransfer";
 import { useCheckTransferSponsorship } from "../../../hooks/useCheckTransferSponsorship";
-import tokensData from "../../../../erc20sepolia.json";
-import {
-  Text,
-  Button,
-  TextInput,
-  Card,
-} from "react-native-paper";
+
+import { Text, Button, TextInput, Card } from "react-native-paper";
 import styles from "../../../styles/styles";
 import EstimateGasFees from "../../../components/EstimateGasFees";
 import { Link, useLocalSearchParams } from "expo-router";
 import { ethers } from "ethers";
 import { router } from "expo-router";
 import { useAccountContext } from "../../../hooks/useAccountContext";
+import config from "../../../../netconfig/blockchain.default.json";
 
 type Token = {
   name: string;
@@ -29,8 +25,14 @@ type TokensData = {
 
 function TransferScreen() {
   const { account } = useAccountContext()
-  const { address } = useLocalSearchParams<{ address: string }>()
-  const [toAddress, setAddress] = useState(address?.startsWith("0x") ? address.slice(2) : "");
+
+  const currencyScanned = useLocalSearchParams<{ currency: string }>()?.currency;
+  const addressScanned = useLocalSearchParams<{ address: string }>()?.address;
+  const amountScanned = useLocalSearchParams<{ amount: string }>()?.amount;
+  const { address } = useLocalSearchParams<{ address: string }>();
+  const [toAddress, setAddress] = useState(
+    address?.startsWith("0x") ? address.slice(2) : ""
+  );
   const [amount, setAmount] = useState("");
   const [currency, setCurrency] = useState("ETH");
   const [isAddressValid, setIsAddressValid] = useState(true);
@@ -51,9 +53,9 @@ function TransferScreen() {
   } = useCheckTransferSponsorship();
   const sponsorshipCheckDisabled = loadingSponsorship || isSponsored !== null;
 
-  const tokens: TokensData = tokensData;
-  const currencies = ["ETH", ...tokens.tokens.map((token) => token.symbol)];
-  const tokenAddresses = tokens.tokens.reduce<{ [key: string]: `0x${string}` }>(
+  const tokens = config.sepolia.erc20_tokens;;
+  const currencies = ["ETH", ...tokens.map((token) => token.symbol)];
+  const tokenAddresses = tokens.reduce<{ [key: string]: `0x${string}` }>(
     (acc, token) => {
       acc[token.symbol] = token.address as `0x${string}`;
       return acc;
@@ -76,7 +78,18 @@ function TransferScreen() {
         params: { txHash: txHash },
       });
     }
-  }, [txHash]);
+
+    if (currencyScanned) {
+      setCurrency(currencyScanned);
+    }
+
+    if (addressScanned) {
+      handleAddressChange(addressScanned.slice(2));
+    }
+    if (amountScanned) {
+      handleAmountChange(amountScanned);
+    }
+  }, [txHash, currencyScanned, addressScanned, amountScanned]);
 
   const handleAddressChange = (address: string) => {
     const fullAddress = `0x${address}`;
@@ -94,10 +107,11 @@ function TransferScreen() {
   };
 
   return (
-    <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.container}>
+    <ScrollView >
+      <View style={styles.container}>
       <Card>
         <Card.Content>
-          <Text variant="titleMedium">Transfer Amount: </Text>
+          <Card.Title title="Transfer Amount:" />
           <View
             style={{
               flexDirection: "row",
@@ -116,6 +130,7 @@ function TransferScreen() {
             />
             <Picker
               selectedValue={currency}
+              
               style={{ width: 150 }}
               onValueChange={(itemValue: string) => setCurrency(itemValue)}
             >
@@ -124,12 +139,20 @@ function TransferScreen() {
               ))}
             </Picker>
           </View>
+         
+          <Button
+            mode="outlined"
+            style={styles.button}
+            onPress={() => router.push({ pathname: "scanner" })}
+          >
+            Scan QR
+          </Button>
           {!isAmountValid && (
             <Text style={{ color: "red", marginLeft: 8 }}>
               Amount must be greater than 0
             </Text>
           )}
-          <Text variant="bodyMedium" selectable={true} style={{ margin: 8 }}>
+          <Text variant="bodySmall" selectable={true} style={{ margin: 8 }}>
             {`From:\n${account?.getAddress()}`}
           </Text>
           <EstimateGasFees
@@ -141,9 +164,9 @@ function TransferScreen() {
               To Address:{" "}
             </Text>
             <Link href="/(auth)/contacts" push>
-                <Text variant="bodyMedium" style={{ margin: 8 }}>
-                  Select Contact
-                </Text>
+              <Text variant="bodyMedium" style={{ margin: 8 }}>
+                Select Contact
+              </Text>
             </Link>
           </View>
           <TextInput
@@ -233,7 +256,7 @@ function TransferScreen() {
           Transfer!
         </Button>
       )}
-      {error && <Text style={{ color: "red" }}>Something went wrong!</Text>}
+      </View>
     </ScrollView>
   );
 }

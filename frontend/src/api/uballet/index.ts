@@ -153,32 +153,45 @@ async function registerDeviceToken({ token }: { token: string }) {
 
 async function getQuote({ coin }: { coin: string }) {
   // Make a GET request to /quote with the coin parameter as a query parameter
-  const { data } = await uballetAxios.get(`/quotes`, { params: { coin } });
-
-  console.log("Fetched quote for", coin, ":", data);
+  const { data } = await uballetAxios.get("/quotes", { params: { coin } });
   return data;
 }
 
-async function setUserWalletAddress({ walletAddress }: { walletAddress: string }) {
-    const { data } = await uballetAxios.post<User>('/user/wallet-address', { walletAddress })
-    return data
+async function getPortfolioData({ days }: { days: number }) {
+  // Make a GET request to /portfolio
+  const { data } = await uballetAxios.get("portfolio/historical_values", {
+    params: { last_days: days },
+  });
+  return data;
+}
+
+async function setUserWalletAddress({
+  walletAddress,
+}: {
+  walletAddress: string;
+}) {
+  const { data } = await uballetAxios.post<User>("/user/wallet-address", {
+    walletAddress,
+  });
+  return data;
 }
 
 export default {
-    addContact,
-    completeSignIn,
-    getPasskeyAuthenticationOptions,
-    getPasskeyRegistrationOptions,
-    getContacts,
-    getCurrentUser,
-    getUserPasskeys,
-    registerDeviceToken,
-    signUp,
-    startEmailLogin,
-    setUserWalletAddress,
-    verifyEmail,
-    verifyPasskeyRegistration,
-    verifyPasskeyAuthentication,
-    getQuote,
-    recovery,
+  addContact,
+  completeSignIn,
+  getPasskeyAuthenticationOptions,
+  getPasskeyRegistrationOptions,
+  getContacts,
+  getCurrentUser,
+  getUserPasskeys,
+  registerDeviceToken,
+  signUp,
+  startEmailLogin,
+  setUserWalletAddress,
+  verifyEmail,
+  verifyPasskeyRegistration,
+  verifyPasskeyAuthentication,
+  getQuote,
+  recovery,
+  getPortfolioData,
 };

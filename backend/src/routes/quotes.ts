@@ -6,13 +6,23 @@ const router = express.Router();
 router.get("/", async (req, res) => {
   const coin = req.query.coin as string;
 
-  const quote = await QuotesService.getQuote(coin);
+  // Split coin by comma
+  const coins = coin.split(",");
 
-  if (!quote) {
+  // Define response object, which will be sent as JSON key string value number
+  let response: { [key: string]: number } = {};
+  for (const coin of coins) {
+    let quote = await QuotesService.getQuote(coin);
+    response[coin] = quote;
+  }
+
+  console.log("Response", response);
+
+  if (!response) {
     return res.status(400).json({ error: "Invalid coin" });
   }
 
-  return res.send({ quote });
+  return res.send(response);
 });
 
 export default router;
