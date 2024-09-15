@@ -1,4 +1,10 @@
-import { View, ScrollView, Image, RefreshControl } from "react-native";
+import {
+  View,
+  ScrollView,
+  Image,
+  RefreshControl,
+  Pressable,
+} from "react-native";
 import {
   Card,
   Text,
@@ -8,11 +14,11 @@ import {
 } from "react-native-paper";
 import { useBalanceInUSDT } from "../../../hooks/useBalanceInUSDT";
 import styles from "../../../styles/styles";
-import arrowPNG from "../../../../assets/arrow.png";
 import images from "../../../../assets/imageMap";
 import { router } from "expo-router";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import config from "../../../../netconfig/blockchain.default.json";
+import AntDesign from "@expo/vector-icons/AntDesign";
 
 const BalanceScreen = () => {
   const tokens = config.sepolia.erc20_tokens;
@@ -70,8 +76,14 @@ const BalanceScreen = () => {
                   {totalSumData.toFixed(2)}
                 </Text>
                 <Text className="mt-2"> USDT</Text>
-                <Image source={arrowPNG} className="w-3 h-2 mt-2 ml-1" />
-                <Image source={arrowPNG} className="w-3 h-2 mt-2 -ml-1" />
+                <View className="-mb-2 ml-1">
+                  <AntDesign
+                    name="doubleright"
+                    size={20}
+                    color="black"
+                    className=""
+                  />
+                </View>
               </View>
             )}
           </Card.Content>
@@ -111,7 +123,10 @@ const BalanceScreen = () => {
             ) : (
               <View className="flex flex-col justify-between mt-2 items-center text-center">
                 {Object.entries(data ?? {})
-                  .filter(([_, { balance }]) => !showZeroBalance || balance > 0)
+                  .filter(
+                    ([key, { balance }]) =>
+                      key == "ETH" || !showZeroBalance || balance > 0
+                  )
                   .map(([symbol, amount]) => (
                     <View
                       key={symbol}
@@ -120,12 +135,18 @@ const BalanceScreen = () => {
                       <View className="flex flex-row text-center items-center">
                         <Image source={tokenPNGs[symbol]} className="w-6 h-6" />
                         <View className="flex flex-col ml-2 w-20 justify-start">
-                          <Text className="font-bold text-xl text-[#277ca5] ">
-                            {symbol}
-                          </Text>
-                          <Text className="text-gray-500">
-                            {tokensNames[symbol]}
-                          </Text>
+                          <Pressable
+                            onPress={() => {
+                              router.push("/(auth)/market-info");
+                            }}
+                          >
+                            <Text className="font-bold text-xl text-[#277ca5] ">
+                              {symbol}
+                            </Text>
+                            <Text className="text-gray-500">
+                              {tokensNames[symbol]}
+                            </Text>
+                          </Pressable>
                         </View>
                       </View>
 

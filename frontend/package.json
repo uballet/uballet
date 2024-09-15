@@ -61,7 +61,8 @@
     "react-native-svg": "15.2.0",
     "stream-browserify": "^3.0.0",
     "viem": "^2.8.6",
-    "expo-clipboard": "~6.0.3"
+    "expo-clipboard": "~6.0.3",
+    "@expo/vector-icons": "^14.0.2"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
