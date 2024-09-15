@@ -14,7 +14,6 @@ import {
 } from "react-native-paper";
 import { useBalanceInUSDT } from "../../../hooks/useBalanceInUSDT";
 import styles from "../../../styles/styles";
-import images from "../../../../assets/imageMap";
 import { router } from "expo-router";
 import { useState } from "react";
 import config from "../../../../netconfig/blockchain.default.json";
@@ -29,7 +28,11 @@ const BalanceScreen = () => {
     tokensNames[token.symbol] = token.name;
   }
 
-  const tokenPNGs = images;
+  let tokensLogosUris: { [key: string]: string } = {};
+  tokensLogosUris["ETH"] = "https://cryptologos.cc/logos/ethereum-eth-logo.png";
+  for (const token of tokens) {
+    tokensLogosUris[token.symbol] = token.logo_url;
+  }
 
   const [showZeroBalance, setShowZeroBalance] = useState(true);
   const { data, totalSumData, loading, error, refetch } = useBalanceInUSDT();
@@ -133,11 +136,22 @@ const BalanceScreen = () => {
                       className="flex flex-row w-full justify-between"
                     >
                       <View className="flex flex-row text-center items-center">
-                        <Image source={tokenPNGs[symbol]} className="w-6 h-6" />
+                        <Image
+                          source={{
+                            uri: tokensLogosUris[symbol],
+                          }}
+                          className="w-6 h-6"
+                        />
                         <View className="flex flex-col ml-2 w-20 justify-start">
                           <Pressable
                             onPress={() => {
-                              router.push("/(auth)/market-info");
+                              router.push({
+                                pathname: "/(auth)/market-info",
+                                params: {
+                                  symbol: symbol,
+                                  name: tokensNames[symbol],
+                                },
+                              });
                             }}
                           >
                             <Text className="font-bold text-xl text-[#277ca5] ">
@@ -161,7 +175,7 @@ const BalanceScreen = () => {
                         <Text>
                           {data?.[symbol] === undefined
                             ? "-"
-                            : data[symbol].quote.toFixed(2)}{" "}
+                            : data[symbol].balanceInUSDT.toFixed(2)}{" "}
                           USDT
                         </Text>
                       </View>
