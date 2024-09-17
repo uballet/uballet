@@ -7,6 +7,10 @@ export interface ERC20Token {
     name: string;
     symbol: string;
     address: string;
+    decimals: number;
+    color: string;
+    cmc_url: string;
+    logo_url: string;
   }
 
 export interface BlockchainConfig {
