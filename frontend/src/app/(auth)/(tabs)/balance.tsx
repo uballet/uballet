@@ -16,11 +16,12 @@ import { useBalanceInUSDT } from "../../../hooks/useBalanceInUSDT";
 import styles from "../../../styles/styles";
 import { router } from "expo-router";
 import { useState } from "react";
-import config from "../../../../netconfig/blockchain.default.json";
+import { useBlockchainContext } from "../../../providers/BlockchainProvider";
 import AntDesign from "@expo/vector-icons/AntDesign";
 
 const BalanceScreen = () => {
-  const tokens = config.sepolia.erc20_tokens;
+  const { blockchain } = useBlockchainContext();
+  const tokens = blockchain.erc20_tokens;
 
   let tokensNames: { [key: string]: string } = {};
   tokensNames["ETH"] = "Ethereum";
@@ -76,7 +77,7 @@ const BalanceScreen = () => {
             ) : (
               <View className="flex flex-row justify-start w-50 items-center mt-2">
                 <Text className="text-3xl font-bold">
-                  {totalSumData.toFixed(2)}
+                  {totalSumData ? totalSumData.toFixed(2) : "0.00"}
                 </Text>
                 <Text className="mt-2"> USDT</Text>
                 <View className="-mb-2 ml-1">
@@ -105,8 +106,21 @@ const BalanceScreen = () => {
           </Text>
         </Button>
 
+        <Button
+          style={{ ...styles.button, backgroundColor: "black" }}
+          textColor="white"
+          className="-mt-0.5"
+          onPress={() => {
+            router.push("/(auth)/import");
+          }}
+        >
+          <Text className="text-white text-center font-medium">
+            Import Tokens
+          </Text>
+        </Button>
+
         {/* Checkbox to toggle zero balance tokens */}
-        <View className="flex flex-row  justify-left mb-1">
+        <View className="flex flex-row justify-left mb-1">
           <Text>Hide tokens with zero balance</Text>
           <Switch
             className="-mt-0.5 w-12"
@@ -170,7 +184,7 @@ const BalanceScreen = () => {
                           adjustsFontSizeToFit
                           numberOfLines={1}
                         >
-                          {data?.[symbol].balance.toString() ?? "-"}
+                          {data?.[symbol]?.balance?.toString() ?? "-"}
                         </Text>
                         <Text>
                           {data?.[symbol] === undefined
