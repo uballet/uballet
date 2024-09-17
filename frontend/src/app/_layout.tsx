@@ -24,7 +24,7 @@ export default function App() {
   useNotificationObserver();
   return (
     <QueryProvider>
-      <AuthProvider  >
+      <AuthProvider>
         <BlockchainProvider>
           <AccountProvider >
               <PaperProvider theme={theme}>

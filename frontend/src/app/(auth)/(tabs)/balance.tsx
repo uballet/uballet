@@ -12,10 +12,11 @@ import arrowPNG from "../../../../assets/arrow.png";
 import images from "../../../../assets/imageMap";
 import { router } from "expo-router";
 import { useState, useEffect } from "react";
-import config from "../../../../netconfig/blockchain.default.json";
+import { useBlockchainContext } from "../../../providers/BlockchainProvider";
 
 const BalanceScreen = () => {
-  const tokens = config.sepolia.erc20_tokens;
+  const { blockchain } = useBlockchainContext();
+  const tokens = blockchain.erc20_tokens;
 
   let tokensNames: { [key: string]: string } = {};
   tokensNames["ETH"] = "Ethereum";

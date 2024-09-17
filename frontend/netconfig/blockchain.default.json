@@ -45,7 +45,7 @@
       "sdk_name": "MATIC_AMOY"
     },
     "sepolia": {
-      "block_explorer": "https://sepolia.etherscan.io/",
+      "block_explorer": "https://sepolia.etherscan.io/tx/",
       "erc20_tokens": [
         {
           "name": "DAI",
