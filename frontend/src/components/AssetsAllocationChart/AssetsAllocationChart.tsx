@@ -3,17 +3,20 @@ import { View, Text, ActivityIndicator } from "react-native";
 import styles from "../../styles/styles";
 import { useBalanceInUSDT } from "../../hooks/useBalanceInUSDT";
 import { useEffect, useState } from "react";
+import config from "../../../netconfig/blockchain.default.json";
 
 const AssetsAllocationChart = () => {
   const title = "Assets Allocation";
   const [subtitle, setSubtitle] = useState("");
-  let colors: { [key: string]: string } = {
-    Ethereum: "black",
-    USDC: "blue",
-    USDT: "green",
-    DAI: "#FFB800",
-  };
 
+  // Define colors for the chart
+  let colors: { [key: string]: string } = {};
+  colors.ETH = "black";
+  for (const token of config.sepolia.erc20_tokens) {
+    colors[token.symbol] = token.color;
+  }
+
+  // Get the data from the useBalanceInUSDT hook
   const { data, loading, error } = useBalanceInUSDT();
   useEffect(() => {
     if (data) {
@@ -21,10 +24,18 @@ const AssetsAllocationChart = () => {
     }
   }, [data]);
 
-  const parsedData = Object.entries(data || {}).map(([key, value]) => ({
+  // Filter tokens with zero balance
+  const filteredData = Object.entries(data || {}).filter(
+    ([key, value]) => value.quote > 0
+  );
+
+  // Parse data
+  const parsedData = filteredData.map(([key, value]) => ({
     name: key,
-    balance: value,
-    color: colors[key],
+    balance: value.quote,
+    // Get the color from the colors object, or use a random color
+    color:
+      colors[key] || "#" + Math.floor(Math.random() * 16777215).toString(16),
     legendFontColor: colors[key],
     legendFontSize: 15,
   }));
@@ -39,8 +50,15 @@ const AssetsAllocationChart = () => {
   };
 
   // Conditionally render the chart only when data is available
-  if (error) {
-    return <Text>No data available</Text>;
+  if ((error || parsedData.length === 0) && !loading) {
+    return (
+      <View>
+        <Text style={{ ...styles.screenHeader, textAlign: "left" }}>
+          {title}
+        </Text>
+        <Text>No data available</Text>
+      </View>
+    );
   }
 
   return (
@@ -64,6 +82,7 @@ const AssetsAllocationChart = () => {
             backgroundColor={"transparent"}
             paddingLeft={"50"}
             center={[0, 0]}
+            avoidFalseZero={true}
           />
         )}
       </View>

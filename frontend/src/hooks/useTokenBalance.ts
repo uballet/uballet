@@ -10,6 +10,9 @@ interface TokenBalances {
 export function useTokenBalance() {
   const { client, sdkClient, account } = useAccountContext();
   const [tokenBalances, setTokenBalances] = useState<TokenBalances>({});
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+  const [refreshKey, setRefreshKey] = useState(0); // Key to trigger refresh
 
   const tokens = config.sepolia.erc20_tokens;
 
@@ -17,8 +20,11 @@ export function useTokenBalance() {
     throw new Error("Account not ready");
   }
 
-  useEffect(() => {
-    const fetchTokenBalances = async () => {
+  const getTokenBalances = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      console.log("Fetching token balances...");
       const balances: TokenBalances = {};
 
       for (const token of tokens) {
@@ -28,23 +34,35 @@ export function useTokenBalance() {
         const tokenBalance = balance.tokenBalances[0]?.tokenBalance;
 
         if (tokenBalance && tokenBalance !== "0") {
-          balances[token.symbol] = ethers.formatUnits(tokenBalance, 18); // Format the balance to a readable format
+          const decimals = token.decimals;
+          const redeableFormat = ethers.formatUnits(tokenBalance, decimals);
+          balances[token.symbol] = redeableFormat; // Format the balance to a readable format
         }
       }
-
       setTokenBalances(balances);
-    };
-
-    if (account.address) {
-      fetchTokenBalances();
+      setLoading(false);
+    } catch {
+      console.error("Error fetching token balances");
+      setError("Error fetching token balances");
+      setLoading(false);
+    } finally {
+      console.log("Token balances fetched");
+      setLoading(false);
     }
-  }, [account.address, sdkClient]);
-
-  // Return a mock balance for testing
-  return {
-    DAI: "100",
-    USDT: "200",
-    USDC: "350",
   };
-  return tokenBalances;
+
+  useEffect(() => {
+    console.log("Running useTokenBalance useEffect...");
+    if (account.address) {
+      getTokenBalances();
+    }
+    console.log("useTokenBalance useEffect finished");
+  }, [refreshKey]);
+
+  // Function to trigger data refresh
+  const refreshData = () => {
+    setRefreshKey((prevKey) => prevKey + 1);
+  };
+
+  return { tokenBalances, loading, error, refreshData };
 }
