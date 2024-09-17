@@ -11,6 +11,7 @@ import styles from "../../../styles/styles";
 import { Ionicons } from "@expo/vector-icons";
 import { useBlockchainContext } from "../../../providers/BlockchainProvider";
 import { ethers } from "ethers";
+import { useERC20 } from "../../../hooks/useERC20";
 
 interface ERC20Token {
   symbol: string;
@@ -23,6 +24,7 @@ const ImportTokenScreen = () => {
   const [isAddressValid, setIsAddressValid] = useState(true);
   const { getUserTokens, addUserToken, removeUserToken } = useBlockchainContext();
   const [customTokens, setCustomTokens] = useState<ERC20Token[]>([]);
+  const { isERC20Contract, getERC20Name, getERC20Symbol } = useERC20();
 
   useEffect(() => {
     const fetchTokens = async () => {
@@ -39,9 +41,19 @@ const ImportTokenScreen = () => {
 
   const handleAddToken = async () => {
     if (contractAddress.startsWith("0x") && ethers.isAddress(contractAddress.trim())) {
+        const isERC20 = await isERC20Contract(contractAddress);
+
+        if (!isERC20) {
+          setIsAddressValid(false);
+          console.log("Please enter a valid contract address");
+        }
+
+        const name = await getERC20Name(contractAddress);
+        const symbol = await getERC20Symbol(contractAddress);
+
         const newToken: ERC20Token = {
-        symbol: "NEW",
-        name: "New Token",
+        symbol: symbol,
+        name: name,
         address: contractAddress,
         };
 

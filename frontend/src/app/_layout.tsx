@@ -25,13 +25,13 @@ export default function App() {
   return (
     <QueryProvider>
       <AuthProvider  >
-        <AccountProvider >
-            <BlockchainProvider>
+        <BlockchainProvider>
+          <AccountProvider >
               <PaperProvider theme={theme}>
                 <Slot />
-              </PaperProvider>
-          </BlockchainProvider>
-        </AccountProvider>
+              </PaperProvider>          
+          </AccountProvider>
+        </BlockchainProvider>
       </AuthProvider>
     </QueryProvider>
   );
