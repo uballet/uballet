@@ -50,7 +50,7 @@
       {
         "name": "DAI",
         "symbol": "DAI",
-        "address": "0xf5c142292B85253e4D071812c84f05ec42828fdB",
+        "address": "0xff34b3d4aee8ddcd6f9afffb6fe49bd371b8a357",
         "decimals": 18,
         "color": "#FF8C00",
         "cmc_url": "https://coinmarketcap.com/currencies/dai/",
