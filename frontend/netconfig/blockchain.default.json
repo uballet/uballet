@@ -31,7 +31,17 @@
   },
   "optimismSepolia": {
     "block_explorer": "https://sepolia-optimism.etherscan.io/tx/",
-    "erc20_tokens": [],
+    "erc20_tokens": [
+      {
+        "name": "USD Coin",
+        "symbol": "USDC",
+        "address": "0x5fd84259d66Cd46123540766Be93DFE6D43130D7",
+        "decimals": 6,
+        "color": "#2775CA",
+        "cmc_url": "https://coinmarketcap.com/currencies/usd-coin/",
+        "logo_url": "https://cryptologos.cc/logos/usd-coin-usdc-logo.png"
+      }
+    ],
     "sdk_name": "OPT_SEPOLIA"
   },
   "polygon": {
