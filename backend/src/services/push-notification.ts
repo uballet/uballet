@@ -24,7 +24,7 @@ interface SendPushNotificationArgs {
     userId: string;
     body: string;
     title: string;
-    data?: JSON
+    data?: object;
 }
 
 async function sendNotificationToUser({ userId, title, body }: SendPushNotificationArgs) {

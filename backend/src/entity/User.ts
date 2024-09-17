@@ -1,5 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column, BaseEntity } from "typeorm"
+import { Entity, PrimaryGeneratedColumn, Column, BaseEntity, AfterInsert, AfterUpdate } from "typeorm"
 import { Address } from "../types"
+import { addAddressToWebhook } from "../webhooks"
 
 @Entity()
 export class User extends BaseEntity {
@@ -14,4 +15,12 @@ export class User extends BaseEntity {
 
     @Column({ nullable: true })
     walletAddress: Address
+
+    @AfterInsert()
+    @AfterUpdate()
+    async updateWalletAddress() {
+        if (this.walletAddress) {
+            await addAddressToWebhook({ address: this.walletAddress })
+        }
+    }
 }

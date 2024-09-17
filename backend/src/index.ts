@@ -12,7 +12,11 @@ import { PORT } from './env';
 import quotesRouter from "./routes/quotes";
 import portfolioRouter from "./routes/portfolio";
 import recoveryRouter from "./routes/recovery";
+import AddressActivity from './routes/address-activity';
 import PushNotificationService from './services/push-notification';
+import { initWebHooks } from './webhooks';
+import ngrok from '@ngrok/ngrok'
+import { NGROK_AUTHTOKEN, NGROK_DOMAIN } from './env';
 // For env File
 dotenv.config();
 
@@ -35,6 +39,7 @@ app.use(bodyParser.json()); // <--- Here
 app.use('/contacts', authenticateToken, contactsRouter)
 app.use('/', authRouter)
 app.use('/', webAuthnRouter)
+app.use('/', AddressActivity)
 app.use('/.well-known', wellKnownRouter)
 app.use('/user', authenticateToken, userRouter)
 app.get('/', (req: Request, res: Response) => {
@@ -57,14 +62,20 @@ app.post('/test-push-notification', async (req: Request, res: Response) => {
   return res.status(200).json({})
 })
 
-app.listen(port, () => {
-  console.log(`Server is Fire at http://localhost:${port}`);
-});
 
-AppDataSource.initialize()
-  .then(async () => {
+  async function init() {
+    await AppDataSource.initialize();
+    app.listen(port, () => {
+      console.log(`Server is Fire at http://localhost:${port}`);
+    });
+
+    if (NGROK_AUTHTOKEN && NGROK_DOMAIN) {
+      const listener = await ngrok.connect({ addr: port, authtoken: NGROK_AUTHTOKEN, domain: NGROK_DOMAIN });
+      initWebHooks({ url: listener.url()! });
+    }
     console.log(
       "Here you can setup and run express / fastify / any other framework."
     );
-  })
-  .catch((error) => console.log(error));
+  }
+
+  init();
