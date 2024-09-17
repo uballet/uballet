@@ -6,6 +6,7 @@ import { QueryProvider } from '../providers/QueryProvider';
 import { useNotificationObserver } from "../notifications/observer";
 import { registerForPushNotificationsAsync } from "../notifications/register";
 import { AccountProvider } from "../providers/AccountProvider";
+import { BlockchainProvider } from "../providers/BlockchainProvider";
 import AuthProvider from "../providers/AuthProvider";
 import { theme } from "../styles/color";
 import "node-libs-react-native/globals.js";
@@ -23,12 +24,14 @@ export default function App() {
   useNotificationObserver();
   return (
     <QueryProvider>
-      <AuthProvider  >
-        <AccountProvider >
-          <PaperProvider theme={theme}>
-            <Slot />
-          </PaperProvider>
-        </AccountProvider>
+      <AuthProvider>
+        <BlockchainProvider>
+          <AccountProvider >
+              <PaperProvider theme={theme}>
+                <Slot />
+              </PaperProvider>          
+          </AccountProvider>
+        </BlockchainProvider>
       </AuthProvider>
     </QueryProvider>
   );

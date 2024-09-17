@@ -3,18 +3,26 @@ declare module "*.json" {
     export default value;
   }
 
-interface ERC20Token {
+export interface ERC20Token {
     name: string;
     symbol: string;
     address: string;
   }
 
-interface BlockchainConfig {
+export interface BlockchainConfig {
     block_explorer: string;
     erc20_tokens: ERC20Token[];
 }
 
-interface Config {
-    sepolia: BlockchainConfig;
-    ethereum: BlockchainConfig;
+export interface Config {
+  arbitrum: BlockchainConfig;
+  arbitrumSepolia: BlockchainConfig;
+  base: BlockchainConfig;
+  baseSepolia: BlockchainConfig;
+  mainnet: BlockchainConfig;
+  optimism: BlockchainConfig;
+  optimismSepolia: BlockchainConfig;
+  polygon: BlockchainConfig;
+  polygonAmoy: BlockchainConfig;
+  sepolia: BlockchainConfig;
 }
