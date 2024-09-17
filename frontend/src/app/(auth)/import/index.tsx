@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   SafeAreaView,
   ScrollView,
@@ -42,6 +42,15 @@ const ImportTokenScreen = () => {
   const handleAddToken = async () => {
     if (contractAddress.startsWith("0x") && ethers.isAddress(contractAddress.trim())) {
         const isERC20 = await isERC20Contract(contractAddress);
+
+        const tokenExists = customTokens.some(
+          (token) => token.address.toLowerCase() === contractAddress.trim().toLowerCase()
+        );
+    
+        if (tokenExists) {
+          console.log("Token already added");
+          return;
+        }
 
         if (!isERC20) {
           setIsAddressValid(false);
@@ -139,7 +148,7 @@ const ImportTokenScreen = () => {
               />
               <View className="flex-1">
                 <Text className="text-black text-sm">
-                  The address you provided is not a valid Ethereum address
+                  The address you provided is not a valid Ethereum address, or it is no the address of an ERC20 contract.
                 </Text>
               </View>
             </View>
