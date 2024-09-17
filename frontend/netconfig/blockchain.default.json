@@ -50,33 +50,47 @@
       {
         "name": "DAI",
         "symbol": "DAI",
-        "address": "0xf5c142292B85253e4D071812c84f05ec42828fdB"
+        "address": "0xf5c142292B85253e4D071812c84f05ec42828fdB",
+        "decimals": 18,
+        "color": "#FF8C00",
+        "cmc_url": "https://coinmarketcap.com/currencies/dai/",
+        "logo_url": "https://cryptologos.cc/logos/multi-collateral-dai-dai-logo.png"
       },
       {
         "name": "Tether USD",
         "symbol": "USDT",
-        "address": "0xaA8E23Fb1079EA71e0a56F48a2aA51851D8433D0"
+        "address": "0xaA8E23Fb1079EA71e0a56F48a2aA51851D8433D0",
+        "decimals": 6,
+        "color": "#26A17B",
+        "cmc_url": "https://coinmarketcap.com/currencies/tether/",
+        "logo_url": "https://cryptologos.cc/logos/tether-usdt-logo.png"
       },
       {
         "name": "USD Coin",
         "symbol": "USDC",
         "address": "0x73d219B3881E481394DA6B5008A081d623992200",
         "decimals": 6,
-        "color": "#2775CA"
+        "color": "#2775CA",
+        "cmc_url": "https://coinmarketcap.com/currencies/usd-coin/",
+        "logo_url": "https://cryptologos.cc/logos/usd-coin-usdc-logo.png"
       },
       {
         "name": "Wrapped Bitcoin",
         "symbol": "WBTC",
         "address": "0x29f2D40B0605204364af54EC677bD022dA425d03",
         "decimals": 8,
-        "color": "#F7931A"
+        "color": "#F7931A",
+        "cmc_url": "https://coinmarketcap.com/currencies/wrapped-bitcoin/",
+        "logo_url": "https://cryptologos.cc/logos/wrapped-bitcoin-wbtc-logo.png"
       },
       {
         "name": "Aave",
         "symbol": "AAVE",
         "address": "0x88541670E55cC00bEEFD87eB59EDd1b7C511AC9a",
         "decimals": 18,
-        "color": "#2EBAC6"
+        "color": "#2EBAC6",
+        "cmc_url": "https://coinmarketcap.com/currencies/aave/",
+        "logo_url": "https://cryptologos.cc/logos/aave-aave-logo.png"
       }
     ],
     "sdk_name": "ETH_SEPOLIA"
