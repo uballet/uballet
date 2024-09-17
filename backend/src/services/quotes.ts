@@ -42,17 +42,23 @@ async function getQuote(coin: string) {
     return 1;
   }
 
-  // Not a valid coin to fetch
-  if (!criptoIds[coin]) {
-    console.error("Invalid coin");
-    return null;
+  let coinsSplit = coin.split(",");
+
+  let coinsId = "";
+  for (coin of coinsSplit) {
+    if (!criptoIds[coin]) {
+      console.warn("Invalid coin");
+    } else {
+      coinsId += criptoIds[coin] + ",";
+    }
   }
+  // Remove last comma
+  coinsId = coinsId.slice(0, -1);
 
   // Passed all validations, let's fetch the data from coinmarketcap API
-  const id = criptoIds[coin];
-  const url = `https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?id=${id}&convert=USD`;
+  const url = `https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?id=${coinsId}&convert=USD`;
 
-  console.log("Fetching data from", url, "for coin", coin);
+  console.log("Fetching data from:", url, "for coins:", coinsSplit);
 
   const response = await fetch(url, {
     method: "GET",
@@ -68,9 +74,38 @@ async function getQuote(coin: string) {
   }
 
   const data = await response.json();
-  console.log("Data fetched:", data);
 
-  return data.data[id].quote.USD.price;
+  console.log("Response data obtained from Coin Market Cap API:", data);
+
+  const quotes: {
+    [key: string]: {
+      quote: number;
+      max_supply: number;
+      circulating_supply: number;
+      total_supply: number;
+      volume_24h: number;
+      percent_change_24h: number;
+      market_cap: number;
+      market_cap_dominance: number;
+    };
+  } = {};
+  for (let id of coinsId.split(",")) {
+    const symbol = Object.keys(criptoIds).find(
+      (key) => criptoIds[key] === id
+    ) as string;
+    quotes[symbol] = {
+      quote: data.data[id].quote.USD.price,
+      max_supply: data.data[id].max_supply,
+      circulating_supply: data.data[id].circulating_supply,
+      total_supply: data.data[id].total_supply,
+      volume_24h: data.data[id].quote.USD.volume_24h,
+      percent_change_24h: data.data[id].quote.USD.percent_change_24h,
+      market_cap: data.data[id].quote.USD.market_cap,
+      market_cap_dominance: data.data[id].quote.USD.market_cap_dominance,
+    };
+  }
+
+  return quotes;
 }
 
 export default {

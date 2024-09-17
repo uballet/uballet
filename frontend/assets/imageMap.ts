@@ -1,8 +1,9 @@
 // imageMap.ts
-import ETHLogo from "./eth.png";
-import USDTLogo from "./usdt.png";
-import DAILogo from "./dai.png";
-import USDCLogo from "./usdc.png";
+// https://github.com/spothq/cryptocurrency-icons/blob/master/svg/icon
+import ETHLogo from "./ETH.png";
+import USDTLogo from "./USDT.png";
+import DAILogo from "./DAI.png";
+import USDCLogo from "./USDC.png";
 import WTBCLogo from "./WBTC.png";
 import AAVELogo from "./AAVE.png";
 

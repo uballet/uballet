@@ -20,7 +20,6 @@ export function useBalance() {
       client
         .getBalance({ address: account.address })
         .then((b) => setBalance(formatEther(b)));
-      setLoading(false);
     } catch {
       console.error("Error fetching balance");
       setError("Error fetching balance");
