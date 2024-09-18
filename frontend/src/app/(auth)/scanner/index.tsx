@@ -18,6 +18,7 @@ const QrScannerScreen = () => {
     let currency = "";
     let address = "";
     let amount = "";
+    let wcuri = "";
 
     console.log(`QR code data: ${data}`);
     const bitcoinUriPattern =
@@ -26,6 +27,7 @@ const QrScannerScreen = () => {
       /^ethereum:(0x[a-fA-F0-9]{40})(\?amount=)?([0-9\.]+)?$/;
     const bitcoinMatches = data.match(bitcoinUriPattern);
     const ethereumMatches = data.match(ethereumUriPattern);
+    const wcuriMatches = data.match(/^wc:(.*)/);
 
     try {
       if (bitcoinMatches) {
@@ -40,6 +42,10 @@ const QrScannerScreen = () => {
         amount = ethereumMatches[3];
       }
 
+      if (wcuriMatches) {
+        wcuri = data;
+      }
+
       console.log(`Currency: ${currency}`);
       console.log(`Address: ${address}`);
       console.log(`Amount: ${amount}`);
@@ -47,7 +53,7 @@ const QrScannerScreen = () => {
       console.error("Failed to parse QR code data:", error);
     }
 
-    return { currency, address, amount };
+    return { currency, address, amount, wcuri };
   };
     
   if (hasPermission === null) {
@@ -77,13 +83,13 @@ const QrScannerScreen = () => {
             ? undefined
             : ({ data }) => {
                 setScanned(true);
-                if (data === null || data.includes("0x") === false) {
+                if (data === null) {
                   Alert.alert("Imvalid QR", data, [{ text: "OK" }]);
                   return;
                 }
 
                 router.navigate({
-                  pathname: `transfer`,
+                  pathname: `settings`,
                   params: parseQRCodeData(data),
                 });
               }

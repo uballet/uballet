@@ -1,29 +1,17 @@
+import { useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { ActivityIndicator, Button, Card, Text } from "react-native-paper";
+import { router, useLocalSearchParams } from "expo-router";
+import { Core } from "@walletconnect/core";
+import "@walletconnect/react-native-compat";
+import Client, { Web3Wallet, Web3WalletTypes } from "@walletconnect/web3wallet";
+import { buildApprovedNamespaces, getSdkError } from "@walletconnect/utils";
 import { useLogout } from "../../../hooks/useLogout";
-import styles from "../../../styles/styles";
 import { usePasskeyRegistration } from "../../../hooks/usePasskeyRegistration";
 import { useUserPasskeys } from "../../../hooks/useUserPasskeys";
-import { theme } from "../../../styles/color";
-import WalletConnectProvider from "../../../providers/WalletConnectProvider_test";
-import "@walletconnect/react-native-compat";
-import { buildApprovedNamespaces, getSdkError } from "@walletconnect/utils";
-import QRCodeModal from "@walletconnect/qrcode-modal";
-import {
-  W3mAccountButton,
-  W3mConnectButton,
-  W3mNetworkButton,
-} from "@web3modal/ethers-react-native";
-import { Core } from "@walletconnect/core";
-import { Web3Wallet, Web3WalletTypes } from "@walletconnect/web3wallet";
-import {
-  createWeb3Modal,
-  defaultConfig,
-  Web3Modal,
-} from "@web3modal/ethers-react-native";
-import { useEffect } from "react";
-import { router, useLocalSearchParams } from "expo-router";
 import { useSafeLightAccount } from "../../../hooks/useLightAccount";
+import styles from "../../../styles/styles";
+import { theme } from "../../../styles/color";
 
 const projectId = "bcf04074fe19f9c2663524759ae56420";
 
@@ -38,83 +26,22 @@ const metadata = {
   },
 };
 
-const config = defaultConfig({ metadata });
+async function initConnector(setConnector: any) {
+  const core = new Core({
+    projectId: projectId,
+  });
 
-const sepholia = {
-  chainId: 11155111,
-  name: "Sepholia",
-  currency: "ETH",
-  explorerUrl: "https://sepolia.etherscan.io",
-  rpcUrl:
-    "https://eth-sepolia.g.alchemy.com/v2/KaOwMyCJOdG7X_ru2JGHt_C-ve5QodPD",
-};
-
-const chains = [sepholia];
-
-createWeb3Modal({
-  projectId,
-  chains,
-  config,
-  enableAnalytics: true, // Optional - defaults to your Cloud configuration
-});
-
-const core = new Core({
-  projectId: projectId,
-});
-
-async function loadWallet(wcuriScanned: string, address: string) {
   const web3wallet = await Web3Wallet.init({
     core, // <- pass the shared `core` instance
     metadata: metadata,
   });
-
-  async function onSessionProposal({
-    id,
-    params,
-  }: Web3WalletTypes.SessionProposal) {
-    try {
-      // TODO - refactor `approvedNamespaces` generation
-      const approvedNamespaces = buildApprovedNamespaces({
-        proposal: params,
-        supportedNamespaces: {
-          eip155: {
-            chains: ["eip155:11155111"],
-            methods: ["eth_sendTransaction", "personal_sign"],
-            events: ["accountsChanged", "chainChanged"],
-            accounts: [
-              `eip155:11155111:${address}`,
-            ],
-          },
-        },
-      });
-  
-      const session = await web3wallet.approveSession({
-        id,
-        namespaces: approvedNamespaces,
-      });
-      console.log("Session approved: ", session);
-    } catch (error) {
-      // use the error.message to show toast/info-box letting the user know that the connection attempt was unsuccessful
-      console.log("Error approving session: ", error.message);
-      await web3wallet.rejectSession({
-        id: proposal.id,
-        reason: getSdkError("USER_REJECTED"),
-      });
-    }
-  }
-
-  web3wallet.on("session_proposal", onSessionProposal);
-
-  // Call this after WCURI is received
-  const wcuri = wcuriScanned;
-  await web3wallet.pair({ uri: wcuri });
-  //           let session = await web3wallet.pair({ wcuri });
-  // console.log("Session created: ", session);
+  setConnector(web3wallet);
 }
 
 function SettingsScreen() {
   const logout = useLogout();
   const account = useSafeLightAccount();
+  const [connector, setConnector] = useState<Client>();
 
   const { register } = usePasskeyRegistration();
   const { passkeys, isLoading } = useUserPasskeys();
@@ -124,10 +51,46 @@ function SettingsScreen() {
   const hasPasskeys = !!passkeys?.length;
 
   useEffect(() => {
+    console.log("Init connector");
+    initConnector(setConnector);
+  }, []);
+
+  useEffect(() => {
+    if (connector) {
+      connector?.on("session_proposal", async (proposal: Web3WalletTypes.SessionProposal) => {
+        try {
+          console.log("Session proposal: ", proposal);
+          // TODO - refactor `approvedNamespaces` generation
+          const approvedNamespaces = buildApprovedNamespaces({
+            proposal: proposal.params,
+            supportedNamespaces: {
+              eip155: {
+                chains: ["eip155:11155111"],
+                methods: ["eth_sendTransaction", "personal_sign"],
+                events: ["accountsChanged", "chainChanged"],
+                accounts: [`eip155:11155111:${account.address}`],
+              },
+            },
+          });
+  
+          const session = await connector.approveSession({
+            id: proposal.id,
+            namespaces: approvedNamespaces,
+          });
+          console.log("Session approved: ", session);
+        }catch (error) {
+          console.log("Error approving session: ", getSdkError(error));
+        }
+       
+      });
+    }
+  }, [connector]);
+
+  useEffect(() => {
     if (wcuriScanned) {
       console.log("Scanned WCURI: ", wcuriScanned);
       try {
-        loadWallet(wcuriScanned, account.address);
+        connector?.pair({ uri: wcuriScanned });
       } catch (error) {
         // some error happens while pairing - check Expected errors section
       }
@@ -136,7 +99,6 @@ function SettingsScreen() {
 
   return (
     <>
-      <WalletConnectProvider>
         <>
           <View
             style={{
@@ -195,9 +157,7 @@ function SettingsScreen() {
             <Button style={styles.button} mode="outlined" onPress={logout}>
               Log Out
             </Button>
-            <W3mAccountButton />
-            <W3mConnectButton label={""} loadingLabel={""} />
-            <W3mNetworkButton />
+
             <Button
               mode="outlined"
               style={styles.button}
@@ -206,9 +166,7 @@ function SettingsScreen() {
               Scann dApp QR
             </Button>
           </View>
-          <Web3Modal />
         </>
-      </WalletConnectProvider>
     </>
   );
 }
