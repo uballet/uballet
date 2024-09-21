@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, Alert, Button } from "react-native";
 import { Camera, CameraView, PermissionStatus } from "expo-camera";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 
 const QrScannerScreen = () => {
   const [hasPermission, setHasPermission] = useState<Boolean | null>(null);
   const [scanned, setScanned] = useState(false);
+  const screenBack = useLocalSearchParams<{ screenBack: string }>()?.screenBack;
 
   useEffect(() => {
     (async () => {
@@ -87,9 +88,10 @@ const QrScannerScreen = () => {
                   Alert.alert("Imvalid QR", data, [{ text: "OK" }]);
                   return;
                 }
+                
 
                 router.navigate({
-                  pathname: `settings`,
+                  pathname: screenBack,
                   params: parseQRCodeData(data),
                 });
               }

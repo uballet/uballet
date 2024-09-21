@@ -4,6 +4,7 @@ export default {
     slug: "uballet",
     version: "1.0.0",
     orientation: "portrait",
+    scheme: ["uballet", "wc"],
     icon: "./assets/icon.png",
     userInterfaceStyle: "light",
     splash: {
@@ -26,7 +27,17 @@ export default {
       associatedDomains: [
         "webcredentials:uballet-backend-dot-outstanding-map-428001-f5.uc.r.appspot.com",
         "webcredentials:uballet-server.onrender.com"
-      ]
+      ],
+      infoPlist: {
+        LSApplicationQueriesSchemes: [
+          "metamask",
+          "trust",
+          "safe",
+          "rainbow",
+          "uniswap"
+        ]
+      }, 
+      NSCameraUsageDescription: "We need access to your camera to scan QR codes."
     },
     android: {
       package: "com.uballet.wallet",
@@ -35,6 +46,9 @@ export default {
         foregroundImage: "./assets/adaptive-icon.png",
         backgroundColor: "#ffffff",
       },
+      permissions: [
+        "CAMERA",
+      ],
     },
     web: {
       favicon: "./assets/favicon.png",
