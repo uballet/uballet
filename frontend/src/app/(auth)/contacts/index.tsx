@@ -6,6 +6,9 @@ import { useCallback } from "react";
 import { useDeleteContact } from "../../../hooks/contacts/useDeleteContact";
 import { router } from "expo-router";
 import { useAccountContext } from "../../../hooks/useAccountContext";
+import { ethers } from "ethers";
+import { Alchemy, Network } from "alchemy-sdk";
+import { ALCHEMY_API_URL } from "../../../env";
 
 function ContactsScreen() {
   const { contacts, isLoading } = useContacts();
@@ -14,9 +17,21 @@ function ContactsScreen() {
 
   const resolveName = useCallback(
     async (address: string) => {
+      // Using Alchemy SDK to resolve ENS names with the Alchemy API in the mainnet network
+      if (ALCHEMY_API_URL === undefined) {
+        throw new Error("ALCHEMY_API_URL is not defined");
+      }
+      const alchemyApiEthMainnetUrl = ALCHEMY_API_URL.replace(
+        "eth-sepolia",
+        "eth-mainnet"
+      );
+      const sdkMainnet = new Alchemy({
+        url: alchemyApiEthMainnetUrl,
+        network: Network.ETH_MAINNET,
+      });
+
       try {
-        // SEPOLIA does not support ENS resolution
-        const ensResolve = await sdkClient.core.resolveName(address);
+        const ensResolve = await sdkMainnet.core.resolveName(address);
         console.log("ENS Resolve:", ensResolve);
         if (ensResolve) {
           return ensResolve;
