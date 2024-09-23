@@ -7,6 +7,7 @@ export type User = {
   email: string
   verified: boolean
   walletAddress?: Address | null
+  walletType?: "light" | "multisig"
 };
 
 export type UserAndToken = User & { token: string };
@@ -63,4 +64,14 @@ export type ReceivedRecoveryRequest = {
   callData?: Hex
   aggregatedSignature?: Hex
   needToSign: boolean
+}
+
+export type Notification = {
+  id: string;
+  title: string;
+  body: string;
+  type: string;
+  seen: boolean;
+  data: object;
+  createdAt: Date;
 }

@@ -12,6 +12,7 @@ import {
 
 import uballetAxios, { setUballetToken, getUballetToken, removeUballetToken } from "./fetcher";
 import recovery from "./recovery";
+import notifications from "./notifications";
 
 const signUp = ({ email }: { email: string }) => {
   return uballetAxios.post<User>(`/signup`, { email });
@@ -103,6 +104,7 @@ const startEmailLogin = async ({ email }: { email: string }) => {
 
 const getCurrentUser = async () => {
   const { data: user } = await uballetAxios.get<User>(`/user`);
+  console.log({ user })
   return user;
 };
 
@@ -167,12 +169,16 @@ async function getPortfolioData({ days }: { days: number }) {
 
 async function setUserWalletAddress({
   walletAddress,
+  walletType
 }: {
   walletAddress: string;
+  walletType: 'light' | 'multisig'
 }) {
   const { data } = await uballetAxios.post<User>("/user/wallet-address", {
     walletAddress,
+    walletType
   });
+  console.log(data);
   return data;
 }
 
@@ -193,5 +199,6 @@ export default {
   verifyPasskeyAuthentication,
   getQuote,
   recovery,
+  notifications,
   getPortfolioData,
 };
