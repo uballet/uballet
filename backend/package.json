@@ -12,7 +12,8 @@
       "dev": "rm -rf ./dist && nodemon src/index.ts",
       "test": "echo \"Error: no test specified\" && exit 1",
       "typeorm": "rm -rf ./dist && typeorm-ts-node-commonjs",
-      "typeorm:generate": "typeorm-ts-node-commonjs migration:generate -d ./src/data-source.ts "
+      "typeorm:generate": "typeorm-ts-node-commonjs migration:generate -d ./src/data-source.ts ",
+      "typeorm:create": "typeorm-ts-node-commonjs migration:create "
    },
    "keywords": [],
    "author": "",

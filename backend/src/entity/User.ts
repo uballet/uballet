@@ -16,6 +16,9 @@ export class User extends BaseEntity {
     @Column({ nullable: true })
     walletAddress: Address
 
+    @Column({ nullable: true })
+    walletType: "light" | "multisig"
+
     @AfterInsert()
     @AfterUpdate()
     async updateWalletAddress() {

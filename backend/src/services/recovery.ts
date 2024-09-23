@@ -3,7 +3,7 @@ import { RecoveryTeam } from "../entity/RecoveryTeam";
 import { RecoveryRequest } from "../entity/RecoveryRequest";
 import { Address, Hex } from "../types";
 
-import PushNotificationService from "../services/push-notification"
+import NotificationService from "./notification"
 
 async function createRecoveryTeam({ user, recoverer1Email, recoverer2Email }: { user: User; recoverer1Email: string; recoverer2Email: string }) {
     const recoveryTeam = new RecoveryTeam()
@@ -14,8 +14,8 @@ async function createRecoveryTeam({ user, recoverer1Email, recoverer2Email }: { 
     recoveryTeam.recoverer1 = recoverer1
     recoveryTeam.recoverer2 = recoverer2
     await Promise.all([
-        PushNotificationService.sendNotificationToUser({ userId: recoverer1.id, title: `${recoverer1.email}: Join Recovery Team`, body: `User ${user.email} wants you to be their recoverer.` }),
-        PushNotificationService.sendNotificationToUser({ userId: recoverer2.id, title: `${recoverer2.email}: Join Recovery Team`, body: `User ${user.email} wants you to be their recoverer.` })
+        NotificationService.createNotification({ userId: recoverer1.id, title: `${recoverer1.email}: Join Recovery Team`, body: `User ${user.email} wants you to be their recoverer.`, type: 'recovery-team-invite', sendPush: true }),
+        NotificationService.createNotification({ userId: recoverer2.id, title: `${recoverer2.email}: Join Recovery Team`, body: `User ${user.email} wants you to be their recoverer.`, type: 'recovery-team-invite', sendPush: true }),
     ])
     await recoveryTeam.save()
     return recoveryTeam
@@ -37,7 +37,7 @@ async function joinRecoveryTeam({ user, recoveryTeamId, address }: { user: User;
         recoveryTeam.recoverer2Address = address
     }
     await recoveryTeam.save()
-    await PushNotificationService.sendNotificationToUser({ userId: recoveryTeam.userId, title: `Recovery Team Joined`, body: `User ${user.email} has joined your recovery team.` })
+    await NotificationService.createNotification({ userId: recoveryTeam.userId, title: `Recovery Team Joined`, body: `User ${user.email} has joined your recovery team.`, type: 'recovery-team-joined', sendPush: true })
     return recoveryTeam
 }
 
@@ -49,8 +49,8 @@ async function confirmRecoveryTeam({ user, recoveryTeamId }: { user: User; recov
     recoveryTeam.userConfirmed = true
     await recoveryTeam.save()
     await Promise.all([
-        PushNotificationService.sendNotificationToUser({ userId: recoveryTeam.recoverer1Id, title: `Recovery Team Confirmed`, body: `User ${user.email} has confirmed their recovery team.` }),
-        PushNotificationService.sendNotificationToUser({ userId: recoveryTeam.recoverer2Id, title: `Recovery Team Confirmed`, body: `User ${user.email} has confirmed their recovery team.` })
+        NotificationService.createNotification({ userId: recoveryTeam.recoverer1Id, title: `Recovery Team Confirmed`, body: `User ${user.email} has confirmed their recovery team.`, sendPush: true, type: 'recovery-team-confirmed' }),
+        NotificationService.createNotification({ userId: recoveryTeam.recoverer2Id, title: `Recovery Team Confirmed`, body: `User ${user.email} has confirmed their recovery team.`, sendPush: true, type: 'recovery-team-confirmed' }),
     ])
     return recoveryTeam
 }
@@ -69,8 +69,8 @@ async function requestRecovery({ user, address1, address2 }: { user: User; addre
 
     await newRequest.save()
     await Promise.all([
-        PushNotificationService.sendNotificationToUser({ userId: team.recoverer1Id, title: `Recovery Request`, body: `User ${user.email} has requested an account recovery.` }),
-        PushNotificationService.sendNotificationToUser({ userId: team.recoverer2Id, title: `Recovery Request`, body: `User ${user.email} has requested an account recovery.` })
+        NotificationService.createNotification({ userId: team.recoverer1Id, title: `Recovery Request`, body: `User ${user.email} has requested an account recovery.`, type: 'recovery-request', sendPush: true }),
+        NotificationService.createNotification({ userId: team.recoverer2Id, title: `Recovery Request`, body: `User ${user.email} has requested an account recovery.`, type: 'recovery-request', sendPush: true }),
     ])
     return newRequest
 }
@@ -95,7 +95,7 @@ async function signRecoveryRequest({ user, signature, aggregatedSignature, reque
     request.aggregatedSignature = aggregatedSignature
     request.callData = callData
     await request.save()
-    await PushNotificationService.sendNotificationToUser({ userId: request.recoveryTeam.userId, title: `Recovery Request Signed`, body: `User ${user.email} has signed your recovery request.` })
+    await NotificationService.createNotification({ userId: request.recoveryTeam.userId, title: `Recovery Request Signed`, body: `User ${user.email} has signed your recovery request.`, type: 'recovery-request-signed', sendPush: true })
     return request
 }
 
@@ -103,7 +103,7 @@ async function completeRecoveryRequest({ requestId }: { user: User; requestId: s
     const request = await RecoveryRequest.findOneOrFail({ where: { id: requestId } })
     request.status = "confirmed"
     await request.save()
-    await PushNotificationService.sendNotificationToUser({ userId: request.recoveryTeam.userId, title: `Recovery Completed`, body: `Your account recovery has been completed.` })
+    await NotificationService.createNotification({ userId: request.recoveryTeam.userId, title: `Recovery Completed`, body: `Your account recovery has been completed.`, type: 'recovery-completed', sendPush: true })
     return request
 }
 

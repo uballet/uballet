@@ -7,9 +7,10 @@ async function getUserById(id: string) {
     return user
 }
 
-async function setWalletAddress(id: string, address: Address) {
+async function setWalletAddress(id: string, { address, type }: { address: Address, type: "light" | "multisig" }) {
     const user = await User.findOneOrFail({ where: { id } })
-    user.walletAddress = address
+    user.walletAddress = address.toLowerCase() as Address;
+    user.walletType = type
     await user.save()
     return user
 }

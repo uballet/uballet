@@ -12,6 +12,7 @@ import { PORT } from './env';
 import quotesRouter from "./routes/quotes";
 import portfolioRouter from "./routes/portfolio";
 import recoveryRouter from "./routes/recovery";
+import notificationsRouter from "./routes/notifications"
 import AddressActivity from './routes/address-activity';
 import PushNotificationService from './services/push-notification';
 import { initWebHooks } from './webhooks';
@@ -50,6 +51,7 @@ app.use("/contacts", authenticateToken, contactsRouter);
 app.use("/quotes", quotesRouter); // Add authenticateToken later...
 app.use("/portfolio", portfolioRouter); // Add authenticateToken later...
 app.use("/recovery", recoveryRouter);
+app.use("/notifications", authenticateToken, notificationsRouter);
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Welcome to Express & TypeScript Server");
