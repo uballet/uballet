@@ -6,6 +6,8 @@ import {
   createMaterialBottomTabNavigator,
   MaterialBottomTabNavigationOptions,
 } from "react-native-paper/react-navigation";
+import { useAllNotifications } from "../../../hooks/notifications/useAllNotifications";
+import { View } from "react-native";
 
 const { Navigator } = createMaterialBottomTabNavigator();
 export const MaterialBottomTabs = withLayoutContext<
@@ -14,6 +16,8 @@ export const MaterialBottomTabs = withLayoutContext<
 >(Navigator);
 
 function TabsLayout() {
+  const notificationsQuery = useAllNotifications();
+  const unseenNotification = notificationsQuery.data?.find(n => !n.seen)
   return (
     <>
     <Stack.Screen
@@ -66,7 +70,11 @@ function TabsLayout() {
         options={{
           title: "Notifications",
           tabBarIcon: ({ color }) => (
-            <MaterialIcons name="notifications" size={24} color={color} />
+            // <View className={`rounded-full p-2 $`}>
+              <View>
+                {unseenNotification && <View className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full z-50"></View>}
+                <MaterialIcons name="notifications" size={24} color={color} />
+              </View>
           ),
         }}
       />
