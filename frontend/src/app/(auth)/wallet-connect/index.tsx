@@ -1,4 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
+import {isAddress, isHexString, toUtf8String, ut, Wallet} from 'ethers';
+import * as SecureStore from 'expo-secure-store'
 import { View, Image } from "react-native";
 import { Button, Card, Modal, Snackbar, Text } from "react-native-paper";
 import { router, useLocalSearchParams } from "expo-router";
@@ -8,11 +10,18 @@ import Client, { Web3Wallet, Web3WalletTypes } from "@walletconnect/web3wallet";
 import { buildApprovedNamespaces, getSdkError } from "@walletconnect/utils";
 import { useSafeLightAccount } from "../../../hooks/useLightAccount";
 import styles from "../../../styles/styles";
-import { SessionTypes } from "@walletconnect/types";
+import { SessionTypes, SignClientTypes } from "@walletconnect/types";
 import { Separator } from "../../../components/Separator/Separator";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import Toast from "react-native-toast-message";
+import {formatJsonRpcError, formatJsonRpcResult} from '@json-rpc-tools/utils';
+import { approveEIP155Request, rejectEIP155Request } from "./EIP155RequestHandlerUtil";
+import { useAccountContext } from "../../../hooks/useAccountContext";
+import { getStoredSigner } from "../../../providers/AccountProvider";
+import { useAuthContext } from "../../../providers/AuthProvider";
 
 const projectId = "bcf04074fe19f9c2663524759ae56420";
-
+const WALLET_CONNECTIONS = "wallet_connections";
 // 2. Create config
 const metadata = {
   name: "Uballet",
@@ -70,6 +79,7 @@ const SessionCard = (session: SessionTypes.Struct) => {
 
 const WalletConnectScreen = () => {
   const account = useSafeLightAccount();
+  const { user } = useAuthContext();
   const wcuriScanned = useLocalSearchParams<{ wcuri: string }>()?.wcuri;
   const [connector, setConnector] = useState<Client>();
   const [modalVisible, setModalVisible] = useState(false);
@@ -115,6 +125,8 @@ const WalletConnectScreen = () => {
                 namespaces: approvedNamespaces,
               });
               setSnackbarVisible(true);
+              await saveSession(connector);
+              loadActiveSessions(connector);
               console.log("Session approved: ", session);
             } catch (error) {
               console.log("Error approving session: ", getSdkError(error));
@@ -138,29 +150,104 @@ const WalletConnectScreen = () => {
     );
   }
 
-  function handleSendTrasnaction(connector: Client) {
-    connector.on("eth_sendTransaction", async (transaction: any) => {
-      console.log("Transaction: ", transaction);
+  async function saveSession(connector: Client) {
+    let activeSessions = connector.getActiveSessions();
+    const jsonData = JSON.stringify(activeSessions);
+    await AsyncStorage.setItem(WALLET_CONNECTIONS, jsonData);
+    loadActiveSessions(connector);
+  }
+
+  function handleSessionDelete(connector: Client) {
+    connector.on("session_delete", async (session: any) => {
+      console.log("Session delete: ", session);
+      await saveSession(connector);
     });
   }
 
-  function handlePersionalSign(connector: Client) {
-    connector.on("personal_sign", async (sign: any) => {
-      console.log("Personal sign: ", sign);
-    });
+  function handleSessionRequest(connector: Client) {
+    connector.on(
+      "session_request",
+      async (requestEvent: Web3WalletTypes.SessionRequest) => {
+        console.log("onSessionRequest: ", requestEvent.params.request.method);
+        const { params } = requestEvent;
+        const { request } = params;
+
+        switch (request.method) {
+          case "personal_sign":
+          case "eth_sign":
+            handlePersionalSign(connector, requestEvent);
+          default:
+            console.log("onSessionRequest", requestEvent);
+        }
+      }
+    );
   }
 
-  function loadActiveSessions(connector: Client) {
-    const activeSessions = connector.getActiveSessions();
-    setActiveSessions(activeSessions);
+  async function handlePersionalSign(connector: Client, requestEvent: Web3WalletTypes.SessionRequest) {
+    const { topic } = requestEvent;
+    setModalVisible(true);
+    setApprovedCallback(() => async () => {
+      try {     
+        const privateKey = await SecureStore.getItemAsync(`signer-${user!!.id}`);
+        const response = await approveEIP155Request(requestEvent, new Wallet(privateKey!!), account);
+        console.log("Response: ", response);
+        await connector.respondSessionRequest({
+          topic,
+          response,
+        });
+       
+      } catch (error: any) {
+        console.error(error);
+        console.log(error.message);
+      }
+    });
+   
+    setRejectedCallback(() => async () => {
+      try {
+        let response = rejectEIP155Request(requestEvent);
+        await connector.respondSessionRequest({
+          topic,
+          response,
+        });
+      } catch (e) {
+        console.log((e as Error).message, "error");
+        return;
+      }
+    });
+    
+  }
+
+  async function loadActiveSessions(connector: Client) {
+    let jsonData = undefined
+    var activeSessions = {};
+    if (jsonData) {
+      console.log("Active sessions from storage");
+      activeSessions = JSON.parse(jsonData);
+      setActiveSessions(activeSessions);
+    } else {
+      console.log("Active sessions from connector");
+      activeSessions = connector.getActiveSessions();
+      setActiveSessions(activeSessions);
+    }
     console.log("Active sessions: ", activeSessions);
+  }
+
+  function handlePing(connector: Client) {
+    connector.engine.signClient.events.on("session_ping", (data) => {
+      console.log("session_ping received", data);
+      Toast.show({
+        type: "info",
+        text1: "Session ping received",
+      });
+    });
   }
 
   useEffect(() => {
     if (connector) {
       handleSessionProposal(connector);
-      handleSendTrasnaction(connector);
-      handlePersionalSign(connector);
+      handleSessionDelete(connector);
+      handleSessionRequest(connector);
+      handlePing(connector);
       loadActiveSessions(connector);
     }
   }, [connector]);
@@ -240,7 +327,7 @@ const WalletConnectScreen = () => {
         </Modal>
       </View>
       <Snackbar
-        onDismiss={() => console.log("Dismissed snackbar")}
+        onDismiss={() => setSnackbarVisible(false)}
         visible={snackbarVisible}
         duration={2000}
       >
