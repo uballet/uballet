@@ -25,7 +25,11 @@ import { createLightAccount, LightAccount } from "@alchemy/aa-accounts";
 import { custom } from "viem";
 import { Alchemy, Network } from "alchemy-sdk";
 import { useAuthContext } from "./AuthProvider";
-import { ALCHEMY_API_KEY, ALCHEMY_POLICY_ID } from "../env";
+import {
+  ALCHEMY_API_KEY,
+  OPT_SEPOLIA_ALCHEMY_POLICY_ID,
+  SEPOLIA_ALCHEMY_POLICY_ID
+} from "../env";
 import * as SecureStore from 'expo-secure-store';
 import { generateMnemonic } from "bip39";
 import uballet from "../api/uballet";
@@ -61,6 +65,32 @@ const getAlchemyChain = (name: string) => {
   }
 };
 
+const getAlchemyPolicyId = (name: string) => {
+  switch (name) {
+    case "arbitrum":
+      return "";
+    case "arbitrumSepolia":
+      return "";
+    case "base":
+      return "";
+    case "baseSepolia":
+      return "";
+    case "mainnet":
+      return "";
+    case "optimism":
+      return "";
+    case "optimismSepolia":
+      return OPT_SEPOLIA_ALCHEMY_POLICY_ID;
+    case "polygon":
+      return "";
+    case "polygonAmoy":
+      return "";
+    case "sepolia":
+      return SEPOLIA_ALCHEMY_POLICY_ID;
+    default:
+      throw new Error(`Unsupported blockchain name: ${name}`);
+  }
+};
 
 export const AccountContext = createContext<{
   client: AlchemySmartAccountClient;
@@ -100,6 +130,8 @@ export function AccountProvider({ children }: PropsWithChildren) {
   const { user, setUser } = useAuthContext();
   const { blockchain, selectedNetwork } = useBlockchainContext();
 
+  console.log("Modric " + getAlchemyPolicyId(selectedNetwork))
+
   const sdkClient = new Alchemy({
     url: `${blockchain.api_key_endpoint}${ALCHEMY_API_KEY}`,
     network: blockchain.sdk_name,
@@ -109,7 +141,7 @@ export function AccountProvider({ children }: PropsWithChildren) {
     rpcUrl: `${blockchain.api_key_endpoint}${ALCHEMY_API_KEY}`,
     chain: getAlchemyChain(selectedNetwork),
     gasManagerConfig: {
-      policyId: ALCHEMY_POLICY_ID!!,
+      policyId: getAlchemyPolicyId(selectedNetwork)!!,
     },
   });
 
