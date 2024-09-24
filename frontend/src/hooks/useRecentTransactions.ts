@@ -2,6 +2,15 @@ import { useEffect, useState } from "react";
 import { useAccountContext } from "./useAccountContext";
 import { useSafeLightAccount } from "./useLightAccount";
 import { AssetTransfersCategory, AssetTransfersWithMetadataResult } from "alchemy-sdk";
+import { useBlockchainContext } from "../providers/BlockchainProvider";
+
+const getTransferCategory = (supports_internal: boolean) => [
+  AssetTransfersCategory.ERC1155,
+  AssetTransfersCategory.ERC20,
+  AssetTransfersCategory.ERC721,
+  AssetTransfersCategory.EXTERNAL,
+  ...(supports_internal ? [AssetTransfersCategory.INTERNAL] : [])
+]
 
 export function useRecentTransactions() {
   const [fromTransfers, setFromTransfers] = useState<AssetTransfersWithMetadataResult[] | null>(null);
@@ -9,6 +18,7 @@ export function useRecentTransactions() {
   const account = useSafeLightAccount();
   const { sdkClient } = useAccountContext();
   const [refreshKey, setRefreshKey] = useState(0);
+  const { blockchain } = useBlockchainContext();
 
   const fetchTransfers = async () => {
     try {
@@ -16,12 +26,7 @@ export function useRecentTransactions() {
       const fromTransfersResponse = await sdkClient.core.getAssetTransfers({
         fromBlock: "0x0",
         fromAddress: account.address,
-        category: [
-          AssetTransfersCategory.ERC1155,
-          AssetTransfersCategory.ERC20,
-          AssetTransfersCategory.ERC721,
-          AssetTransfersCategory.EXTERNAL,
-        ],
+        category: getTransferCategory(blockchain.supports_internal_transaction_history),
         withMetadata: true,
       });
       setFromTransfers(fromTransfersResponse.transfers);
@@ -30,12 +35,7 @@ export function useRecentTransactions() {
       const toTransfersResponse = await sdkClient.core.getAssetTransfers({
         fromBlock: "0x0",
         toAddress: account.address,
-        category: [
-          AssetTransfersCategory.ERC1155,
-          AssetTransfersCategory.ERC20,
-          AssetTransfersCategory.ERC721,
-          AssetTransfersCategory.EXTERNAL,
-        ],
+        category: getTransferCategory(blockchain.supports_internal_transaction_history),
         withMetadata: true,
       });
       setToTransfers(toTransfersResponse.transfers);

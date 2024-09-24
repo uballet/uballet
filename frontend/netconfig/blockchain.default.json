@@ -4,42 +4,48 @@
     "block_explorer": "https://arbiscan.io/tx/",
     "erc20_tokens": [],
     "sdk_name": "arb-mainnet",
-    "api_key_endpoint": "https://arb-mainnet.g.alchemy.com/v2/"
+    "api_key_endpoint": "https://arb-mainnet.g.alchemy.com/v2/",
+    "supports_internal_transaction_history": false
   },
   "arbitrumSepolia": {
     "name": "Arbitrum Sepolia",
     "block_explorer": "https://sepolia.arbiscan.io/tx/",
     "erc20_tokens": [],
     "sdk_name": "arb-sepolia",
-    "api_key_endpoint": "https://arb-sepolia.g.alchemy.com/v2/"
+    "api_key_endpoint": "https://arb-sepolia.g.alchemy.com/v2/",
+    "supports_internal_transaction_history": false
   },
   "base": {
     "name": "Base",
     "block_explorer": "https://base.blockscout.com/tx/",
     "erc20_tokens": [],
     "sdk_name": "base-mainnet",
-    "api_key_endpoint": "https://base-mainnet.g.alchemy.com/v2/"
+    "api_key_endpoint": "https://base-mainnet.g.alchemy.com/v2/",
+    "supports_internal_transaction_history": false
   },
   "baseSepolia": {
     "name": "Base Sepolia",
     "block_explorer": "https://base-sepolia.blockscout.com/tx/",
     "erc20_tokens": [],
     "sdk_name": "base-sepolia",
-    "api_key_endpoint": "https://base-sepolia.g.alchemy.com/v2/"
+    "api_key_endpoint": "https://base-sepolia.g.alchemy.com/v2/",
+    "supports_internal_transaction_history": false
   },
   "mainnet": {
     "name": "Ethereum",
     "block_explorer": "https://etherscan.io/tx/",
     "erc20_tokens": [],
     "sdk_name": "eth-mainnet",
-    "api_key_endpoint": "https://eth-mainnet.g.alchemy.com/v2/"
+    "api_key_endpoint": "https://eth-mainnet.g.alchemy.com/v2/",
+    "supports_internal_transaction_history": true
   },
   "optimism": {
     "name": "Optimism",
     "block_explorer": "https://optimistic.etherscan.io/tx/",
     "erc20_tokens": [],
     "sdk_name": "opt-mainnet",
-    "api_key_endpoint": "https://opt-mainnet.g.alchemy.com/v2/"
+    "api_key_endpoint": "https://opt-mainnet.g.alchemy.com/v2/",
+    "supports_internal_transaction_history": false
   },
   "optimismSepolia": {
     "name": "Optimism Sepolia",
@@ -56,21 +62,24 @@
       }
     ],
     "sdk_name": "opt-sepolia",
-    "api_key_endpoint": "https://opt-sepolia.g.alchemy.com/v2/"
+    "api_key_endpoint": "https://opt-sepolia.g.alchemy.com/v2/",
+    "supports_internal_transaction_history": false
   },
   "polygon": {
     "name": "Polygon",
     "block_explorer": "https://polygonscan.com/address/",
     "erc20_tokens": [],
     "sdk_name": "matic-mainnet",
-    "api_key_endpoint": "https://polygon-mainnet.g.alchemy.com/v2/"
+    "api_key_endpoint": "https://polygon-mainnet.g.alchemy.com/v2/",
+    "supports_internal_transaction_history": false
   },
   "polygonAmoy": {
     "name": "Polygon Amoy",
     "block_explorer": "https://amoy.polygonscan.com/address/",
     "erc20_tokens": [],
     "sdk_name": "matic-amoy",
-    "api_key_endpoint": "https://polygon-amoy.g.alchemy.com/v2/"
+    "api_key_endpoint": "https://polygon-amoy.g.alchemy.com/v2/",
+    "supports_internal_transaction_history": false
   },
   "sepolia": {
     "name": "Sepolia",
@@ -123,6 +132,7 @@
       }
     ],
     "sdk_name": "eth-sepolia",
-    "api_key_endpoint": "https://eth-sepolia.g.alchemy.com/v2/"
+    "api_key_endpoint": "https://eth-sepolia.g.alchemy.com/v2/",
+    "supports_internal_transaction_history": true
   }
 }
