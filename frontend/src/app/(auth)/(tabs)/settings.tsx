@@ -36,6 +36,7 @@ function SettingsScreen() {
   const closeMenu = () => setMenuVisible(false);
 
   const handleNetworkChange = (networkKey: string, networkName: string) => {
+     // @ts-ignore
     setNetwork(networkKey);
     setNetworkLabel(networkName);
     closeMenu();

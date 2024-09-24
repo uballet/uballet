@@ -6,11 +6,13 @@ import deepmerge from 'deepmerge';
 
 interface BlockchainContextType {
   blockchain: BlockchainConfig;
+  selectedNetwork: keyof Config; // Add this line
   getUserTokens: () => Promise<ERC20Token[]>;
   addUserToken: (token: ERC20Token) => Promise<void>;
   removeUserToken: (address: string) => Promise<void>;
   setNetwork: (networkName: keyof Config) => void;
 }
+
 
 const mergeConfigs = (defaultConfig: Config, userTokens: ERC20Token[], networkName: keyof Config): Config => {
   return deepmerge(defaultConfig, {
@@ -90,10 +92,17 @@ export const BlockchainProvider: React.FC<{ children: ReactNode }> = ({ children
 
   return (
     <BlockchainContext.Provider
-      value={{ blockchain: mergedConfig, getUserTokens, addUserToken, removeUserToken, setNetwork }}
-    >
-      {children}
-    </BlockchainContext.Provider>
+    value={{
+      blockchain: mergedConfig,
+      selectedNetwork,
+      getUserTokens,
+      addUserToken,
+      removeUserToken,
+      setNetwork,
+    }}
+  >
+    {children}
+  </BlockchainContext.Provider>
   );
 };
 

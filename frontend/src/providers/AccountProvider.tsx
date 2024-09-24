@@ -8,7 +8,19 @@ import {
   type AlchemySmartAccountClient,
   createAlchemySmartAccountClient,
 } from "@alchemy/aa-alchemy";
-import { LocalAccountSigner, optimismSepolia } from "@alchemy/aa-core";
+import {
+  LocalAccountSigner,
+  arbitrum,
+  arbitrumSepolia,
+  base,
+  baseSepolia,
+  mainnet,
+  optimism,
+  optimismSepolia,
+  polygon,
+  polygonAmoy,
+  sepolia
+} from "@alchemy/aa-core";
 import { createLightAccount, LightAccount } from "@alchemy/aa-accounts";
 import { custom } from "viem";
 import { Alchemy, Network } from "alchemy-sdk";
@@ -21,6 +33,34 @@ import { User } from "../api/uballet/types";
 import { useBlockchainContext } from "./BlockchainProvider";
 
 global.Buffer = global.Buffer || require('buffer').Buffer;
+
+const getAlchemyChain = (name: string) => {
+  switch (name) {
+    case "arbitrum":
+      return arbitrum;
+    case "arbitrumSepolia":
+      return arbitrumSepolia;
+    case "base":
+      return base;
+    case "baseSepolia":
+      return baseSepolia;
+    case "mainnet":
+      return mainnet;
+    case "optimism":
+      return optimism;
+    case "optimismSepolia":
+      return optimismSepolia;
+    case "polygon":
+      return polygon;
+    case "polygonAmoy":
+      return polygonAmoy;
+    case "sepolia":
+      return sepolia;
+    default:
+      throw new Error(`Unsupported blockchain name: ${name}`);
+  }
+};
+
 
 export const AccountContext = createContext<{
   client: AlchemySmartAccountClient;
@@ -58,16 +98,16 @@ export function AccountProvider({ children }: PropsWithChildren) {
   const [mnemonic, setMnemonic] = useState<string | null>(null);
   const clearMnemonic = () => setMnemonic(null);
   const { user, setUser } = useAuthContext();
-  const { blockchain } = useBlockchainContext();
+  const { blockchain, selectedNetwork } = useBlockchainContext();
 
   const sdkClient = new Alchemy({
     url: `${blockchain.api_key_endpoint}${ALCHEMY_API_KEY}`,
-    network: Network.OPT_SEPOLIA,
+    network: blockchain.sdk_name,
   });
 
   const client = createAlchemySmartAccountClient({
     rpcUrl: `${blockchain.api_key_endpoint}${ALCHEMY_API_KEY}`,
-    chain: optimismSepolia,
+    chain: getAlchemyChain(selectedNetwork),
     gasManagerConfig: {
       policyId: ALCHEMY_POLICY_ID!!,
     },
@@ -83,7 +123,7 @@ export function AccountProvider({ children }: PropsWithChildren) {
     const lightAccount = await createLightAccount({
       signer: signer,
       transport: custom(client),
-      chain: optimismSepolia,
+      chain: getAlchemyChain(selectedNetwork),
     });
 
     const updatedUser = await uballet.setUserWalletAddress({ walletAddress: lightAccount.address });
@@ -101,7 +141,7 @@ export function AccountProvider({ children }: PropsWithChildren) {
     const lightAccount = await createLightAccount({
       signer: signer,
       transport: custom(client),
-      chain: optimismSepolia,
+      chain: getAlchemyChain(selectedNetwork),
     });
 
     if (lightAccount.address !== user?.walletAddress) {
@@ -133,7 +173,7 @@ export function AccountProvider({ children }: PropsWithChildren) {
           createLightAccount({
             signer: signer,
             transport: custom(client),
-            chain: optimismSepolia,
+            chain: getAlchemyChain(selectedNetwork),
           }).then(setAccount);
         });
       }
