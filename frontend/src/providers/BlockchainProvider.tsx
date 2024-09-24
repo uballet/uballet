@@ -4,7 +4,7 @@ import config from '../../netconfig/blockchain.default.json';
 import { BlockchainConfig, Config, ERC20Token } from '../../netconfig/blockchain-config';
 import deepmerge from 'deepmerge';
 
-const blockchain_name = "sepolia"; // Hard-coded sepolia for now
+const blockchain_name = "optimismSepolia";
 
 interface BlockchainContextType {
   blockchain: BlockchainConfig;

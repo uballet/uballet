@@ -23,16 +23,16 @@ export default function App() {
   registerForPushNotificationsAsync();
   useNotificationObserver();
   return (
-    <QueryProvider>
-      <AuthProvider>
-        <BlockchainProvider>
+    <BlockchainProvider>
+      <QueryProvider>
+        <AuthProvider>
           <AccountProvider >
               <PaperProvider theme={theme}>
                 <Slot />
               </PaperProvider>          
           </AccountProvider>
-        </BlockchainProvider>
-      </AuthProvider>
-    </QueryProvider>
+        </AuthProvider>
+      </QueryProvider>
+    </BlockchainProvider>
   );
 }
