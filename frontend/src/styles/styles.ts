@@ -25,7 +25,7 @@ const globalStyles = StyleSheet.create({
   },
   userSettings: {
     position: 'absolute',
-    left: '5%',
+    left: '2%',
     top: '5%',
   },
   balance: {
