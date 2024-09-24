@@ -16,12 +16,11 @@ import { useBalanceInUSDT } from "../../../hooks/useBalanceInUSDT";
 import styles from "../../../styles/styles";
 import { router } from "expo-router";
 import { useState } from "react";
-import { useBlockchainContext } from "../../../providers/BlockchainProvider";
 import AntDesign from "@expo/vector-icons/AntDesign";
+import tokenInfo from "../../../../netconfig/erc20-token-info.json";
 
 const BalanceScreen = () => {
-  const { blockchain } = useBlockchainContext();
-  const tokens = blockchain.erc20_tokens;
+  const tokens = tokenInfo.erc20_tokens;
 
   let tokensNames: { [key: string]: string } = {};
   tokensNames["ETH"] = "Ethereum";
