@@ -32,7 +32,7 @@ export const AccountContext = createContext<{
   clearMnemonic: () => void;
   recoverWithSeedPhrase: (seedPhrase: string) => Promise<void>;
 }>({
-  client: null!, // Initialize with null or placeholder
+  client: null!,
   sdkClient: null!,
   account: null,
   needsRecovery: false,
@@ -58,7 +58,7 @@ export function AccountProvider({ children }: PropsWithChildren) {
   const [mnemonic, setMnemonic] = useState<string | null>(null);
   const clearMnemonic = () => setMnemonic(null);
   const { user, setUser } = useAuthContext();
-  const { blockchain } = useBlockchainContext(); // Move this inside the component
+  const { blockchain } = useBlockchainContext();
 
   const sdkClient = new Alchemy({
     url: `${blockchain.api_key_endpoint}${ALCHEMY_API_KEY}`,

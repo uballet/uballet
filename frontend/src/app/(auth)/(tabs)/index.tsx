@@ -1,13 +1,13 @@
-import { AssetTransfersWithMetadataResult } from "alchemy-sdk";
 import { Link } from "expo-router";
-import React from "react";
-import { ScrollView, View } from "react-native";
+import React, { useState } from "react";
+import { ScrollView, View, RefreshControl } from "react-native";
 import { ActivityIndicator, Avatar, Card, FAB, Text } from "react-native-paper";
 import { useBalance } from "../../../hooks/useBalance";
 import { useRecentTransactions } from "../../../hooks/useRecentTransactions";
 import styles from "../../../styles/styles";
 import { useAuthContext } from "../../../providers/AuthProvider";
 import MovementsList from "../../../components/movementsList";
+import { useFocusEffect } from "@react-navigation/native"; // Import useFocusEffect
 
 const formatBalance = (balance: number | null, significantFigures: number) => {
   if (balance == null) return "N/A";
@@ -16,12 +16,29 @@ const formatBalance = (balance: number | null, significantFigures: number) => {
 };
 
 const HomeScreen: React.FC = () => {
-  const { balance } = useBalance();
-  const { fromTransfers, toTransfers } = useRecentTransactions();
+  const { balance, refreshData } = useBalance();
+  const { fromTransfers, toTransfers, refreshTransactions } = useRecentTransactions();
   const { user } = useAuthContext();
+  const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await Promise.all([refreshData(), refreshTransactions()]);
+    setRefreshing(false);
+  };
+
+  useFocusEffect(
+    React.useCallback(() => {
+      onRefresh();
+    }, [])
+  );
 
   return (
-    <ScrollView>
+    <ScrollView
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }
+    >
       <View style={styles.container}>
         <View style={styles.horizontalContainer}>
           <Avatar.Icon style={styles.userSettings} size={30} icon="account" />

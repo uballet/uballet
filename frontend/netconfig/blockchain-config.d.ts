@@ -14,6 +14,7 @@ export interface ERC20Token {
   }
 
 export interface BlockchainConfig {
+    name: string;
     block_explorer: string;
     api_key_endpoint: string;
     erc20_tokens: ERC20Token[];
