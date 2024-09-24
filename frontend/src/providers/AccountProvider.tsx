@@ -130,8 +130,6 @@ export function AccountProvider({ children }: PropsWithChildren) {
   const { user, setUser } = useAuthContext();
   const { blockchain, selectedNetwork } = useBlockchainContext();
 
-  console.log("Modric " + getAlchemyPolicyId(selectedNetwork))
-
   const sdkClient = new Alchemy({
     url: `${blockchain.api_key_endpoint}${ALCHEMY_API_KEY}`,
     network: blockchain.sdk_name,
