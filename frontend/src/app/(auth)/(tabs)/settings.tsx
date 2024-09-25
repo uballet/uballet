@@ -6,7 +6,8 @@ import styles from "../../../styles/styles";
 import { usePasskeyRegistration } from "../../../hooks/usePasskeyRegistration";
 import { useUserPasskeys } from "../../../hooks/useUserPasskeys";
 import { theme } from "../../../styles/color";
-import { useBlockchainContext } from "../../../providers/BlockchainProvider"; // Import context
+import { useBlockchainContext } from "../../../providers/BlockchainProvider";
+import { useNavigation, CommonActions } from '@react-navigation/native';
 
 const networkLabels: Record<string, string> = {
   arbitrum: "Arbitrum",
@@ -33,11 +34,20 @@ function SettingsScreen() {
   const openMenu = () => setMenuVisible(true);
   const closeMenu = () => setMenuVisible(false);
 
+  const navigation = useNavigation();
+
   const handleNetworkChange = (networkKey: string, networkName: string) => {
-     // @ts-ignore
+    // @ts-ignore
     setNetwork(networkKey);
     setNetworkLabel(networkName);
     closeMenu();
+
+    navigation.dispatch(
+      CommonActions.reset({
+        index: 0,
+        routes: [{ name: 'index' }],
+      })
+    );
   };
 
   useEffect(() => {
@@ -75,15 +85,17 @@ function SettingsScreen() {
             onPress={() => handleNetworkChange("optimismSepolia", "Optimism Sepolia")}
             title={"Optimism Sepolia"}
           />
+          <Divider />
           <Menu.Item
             onPress={() => handleNetworkChange("arbitrumSepolia", "Arbitrum Sepolia")}
             title={"Arbitrum Sepolia"}
           />
-          {/* <Menu.Item
+          <Divider />
+          <Menu.Item
             onPress={() => handleNetworkChange("baseSepolia", "Base Sepolia")}
             title={"Base Sepolia"}
           />
-          */}
+         
         </Menu>
       </View>
 
