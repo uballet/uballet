@@ -17,8 +17,6 @@ import {
   mainnet,
   optimism,
   optimismSepolia,
-  polygon,
-  polygonAmoy,
   sepolia
 } from "@alchemy/aa-core";
 import { createLightAccount, LightAccount } from "@alchemy/aa-accounts";
@@ -28,7 +26,9 @@ import { useAuthContext } from "./AuthProvider";
 import {
   ALCHEMY_API_KEY,
   OPT_SEPOLIA_ALCHEMY_POLICY_ID,
-  SEPOLIA_ALCHEMY_POLICY_ID
+  SEPOLIA_ALCHEMY_POLICY_ID,
+  BASE_SEPOLIA_ALCHEMY_POLICY_ID,
+  ARB_SEPOLIA_ALCHEMY_POLICY_ID
 } from "../env";
 import * as SecureStore from 'expo-secure-store';
 import { generateMnemonic } from "bip39";
@@ -54,10 +54,6 @@ const getAlchemyChain = (name: string) => {
       return optimism;
     case "optimismSepolia":
       return optimismSepolia;
-    case "polygon":
-      return polygon;
-    case "polygonAmoy":
-      return polygonAmoy;
     case "sepolia":
       return sepolia;
     default:
@@ -70,21 +66,17 @@ const getAlchemyPolicyId = (name: string) => {
     case "arbitrum":
       return "";
     case "arbitrumSepolia":
-      return "";
+      return ARB_SEPOLIA_ALCHEMY_POLICY_ID;
     case "base":
       return "";
     case "baseSepolia":
-      return "";
+      return BASE_SEPOLIA_ALCHEMY_POLICY_ID;
     case "mainnet":
       return "";
     case "optimism":
       return "";
     case "optimismSepolia":
       return OPT_SEPOLIA_ALCHEMY_POLICY_ID;
-    case "polygon":
-      return "";
-    case "polygonAmoy":
-      return "";
     case "sepolia":
       return SEPOLIA_ALCHEMY_POLICY_ID;
     default:

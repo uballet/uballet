@@ -35,8 +35,6 @@ export interface Config {
   mainnet: BlockchainConfig;
   optimism: BlockchainConfig;
   optimismSepolia: BlockchainConfig;
-  polygon: BlockchainConfig;
-  polygonAmoy: BlockchainConfig;
   sepolia: BlockchainConfig;
 }
 

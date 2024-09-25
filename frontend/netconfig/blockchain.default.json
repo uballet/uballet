@@ -61,22 +61,6 @@
     "api_key_endpoint": "https://opt-sepolia.g.alchemy.com/v2/",
     "supports_internal_transaction_history": false
   },
-  "polygon": {
-    "name": "Polygon",
-    "block_explorer": "https://polygonscan.com/address/",
-    "erc20_tokens": [],
-    "sdk_name": "matic-mainnet",
-    "api_key_endpoint": "https://polygon-mainnet.g.alchemy.com/v2/",
-    "supports_internal_transaction_history": false
-  },
-  "polygonAmoy": {
-    "name": "Polygon Amoy",
-    "block_explorer": "https://amoy.polygonscan.com/address/",
-    "erc20_tokens": [],
-    "sdk_name": "matic-amoy",
-    "api_key_endpoint": "https://polygon-amoy.g.alchemy.com/v2/",
-    "supports_internal_transaction_history": false
-  },
   "sepolia": {
     "name": "Sepolia",
     "block_explorer": "https://sepolia.etherscan.io/tx/",

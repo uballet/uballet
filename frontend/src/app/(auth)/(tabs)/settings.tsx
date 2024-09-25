@@ -16,8 +16,6 @@ const networkLabels: Record<string, string> = {
   mainnet: "Ethereum",
   optimism: "Optimism",
   optimismSepolia: "Optimism Sepolia",
-  polygon: "Polygon",
-  polygonAmoy: "Polygon Amoy",
   sepolia: "Sepolia",
 };
 
@@ -77,6 +75,15 @@ function SettingsScreen() {
             onPress={() => handleNetworkChange("optimismSepolia", "Optimism Sepolia")}
             title={"Optimism Sepolia"}
           />
+          <Menu.Item
+            onPress={() => handleNetworkChange("arbitrumSepolia", "Arbitrum Sepolia")}
+            title={"Arbitrum Sepolia"}
+          />
+          {/* <Menu.Item
+            onPress={() => handleNetworkChange("baseSepolia", "Base Sepolia")}
+            title={"Base Sepolia"}
+          />
+          */}
         </Menu>
       </View>
 
