@@ -42,10 +42,10 @@ const HomeScreen: React.FC = () => {
       }
     >
       <View style={styles.container}>
-      <View style={{ position: 'absolute', top: 10, right: 10, flexDirection: 'row', alignItems: 'center' }}>
+        {/* <View style={{ position: 'absolute', top: 10, right: 10, flexDirection: 'row', alignItems: 'center' }}>
             <Text variant="titleSmall"> { blockchain.name } </Text>
             <Avatar.Icon size={20} icon="link" style={{ marginLeft: 4 }} />
-        </View>
+        </View> */}
         <View style={styles.horizontalContainer}>
           <Avatar.Icon style={styles.userSettings} size={30} icon="account" />
           <Text style = {{flex:1, left: 50}} variant="titleLarge">{ `${user?.email}` }</Text>

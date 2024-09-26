@@ -6,7 +6,7 @@ const globalStyles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     padding: 16,
-    marginTop: 40,
+    marginTop: 20,
   },
   containerLogin: {
     height: '100%',
