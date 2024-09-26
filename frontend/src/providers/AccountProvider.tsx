@@ -93,6 +93,7 @@ export const AccountContext = createContext<{
   mnemonic: string | null;
   clearMnemonic: () => void;
   recoverWithSeedPhrase: (seedPhrase: string) => Promise<void>;
+  initWalletForNetwork: (user: User, selectedNetwork: string) => Promise<boolean>;
 }>({
   client: null!,
   sdkClient: null!,
@@ -102,6 +103,7 @@ export const AccountContext = createContext<{
   mnemonic: null,
   clearMnemonic: () => {},
   recoverWithSeedPhrase: async () => {},
+  initWalletForNetwork: async () => false,
 });
 
 async function getStoredSigner(user: User) {
@@ -155,6 +157,36 @@ export function AccountProvider({ children }: PropsWithChildren) {
     setUser(updatedUser);
     setInitializing(false);
     return signer;
+  };
+
+  const initWalletForNetwork = async (user: User, selectedNetwork: string) => {
+    if (!user.walletAddress) {
+      throw new Error(
+        `User wallet address is missing. Ensure the user has a valid wallet address before switching to the new network (${selectedNetwork}). This might indicate the user account was not properly initialized on the default network.`
+      );
+    }
+
+    console.log("initializing wallet on network " + selectedNetwork);
+
+    setInitializing(true);
+  
+    const privateKey = await SecureStore.getItemAsync(`signer-${user.id}`);
+    if (!privateKey) {
+      throw new Error("Private key not found. User might need recovery.");
+    }
+  
+    const signer = LocalAccountSigner.privateKeyToAccountSigner(`0x${privateKey}`);
+  
+    const lightAccount = await createLightAccount({
+      signer: signer,
+      transport: custom(client),
+      chain: getAlchemyChain(selectedNetwork),
+    });
+  
+    setAccount(lightAccount);
+    setInitializing(false);
+  
+    return true;
   };
 
   const recoverWithSeedPhrase = async (seedPhrase: string) => {
@@ -213,6 +245,7 @@ export function AccountProvider({ children }: PropsWithChildren) {
         mnemonic,
         clearMnemonic,
         recoverWithSeedPhrase,
+        initWalletForNetwork
       }}
     >
       {children}

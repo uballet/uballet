@@ -8,6 +8,8 @@ import { useUserPasskeys } from "../../../hooks/useUserPasskeys";
 import { theme } from "../../../styles/color";
 import { useBlockchainContext } from "../../../providers/BlockchainProvider";
 import { useNavigation, CommonActions } from '@react-navigation/native';
+import { useAuthContext  } from "../../../providers/AuthProvider";
+import { useAccountContext } from "../../../hooks/useAccountContext";
 
 const networkLabels: Record<string, string> = {
   arbitrum: "Arbitrum",
@@ -27,6 +29,8 @@ function SettingsScreen() {
   const { setNetwork, blockchain } = useBlockchainContext();
   const [networkLabel, setNetworkLabel] = useState(blockchain.name);
   const [menuVisible, setMenuVisible] = useState(false);
+  const { user } = useAuthContext();
+  const { initWalletForNetwork } = useAccountContext();
 
   const hasNoPasskeys = !passkeys?.length && !isLoading;
   const hasPasskeys = !!passkeys?.length;
@@ -36,10 +40,15 @@ function SettingsScreen() {
 
   const navigation = useNavigation();
 
-  const handleNetworkChange = (networkKey: string, networkName: string) => {
+  const handleNetworkChange = async (networkKey: string, networkName: string) => {
     // @ts-ignore
     setNetwork(networkKey);
     setNetworkLabel(networkName);
+    if (user) {
+      await initWalletForNetwork(user, networkKey);
+    } else {
+      console.error("User is null or undefined. Cannot initialize wallet for network.");
+    }
     closeMenu();
 
     navigation.dispatch(
