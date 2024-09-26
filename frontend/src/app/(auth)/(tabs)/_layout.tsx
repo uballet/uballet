@@ -1,5 +1,5 @@
 import React from "react";
-import { View, StatusBar, SafeAreaView } from "react-native";
+import { View, StatusBar, SafeAreaView, Platform } from "react-native";
 import { Text, Avatar } from "react-native-paper";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Stack, withLayoutContext } from "expo-router";
@@ -8,6 +8,8 @@ import {
   MaterialBottomTabNavigationOptions,
 } from "react-native-paper/react-navigation";
 import { useBlockchainContext } from "../../../providers/BlockchainProvider";
+
+const statusBarHeight = Platform.OS === 'android' ? StatusBar.currentHeight : 0;
 
 const { Navigator } = createMaterialBottomTabNavigator();
 export const MaterialBottomTabs = withLayoutContext<
@@ -23,35 +25,31 @@ function TabsLayout() {
       <StatusBar backgroundColor="#000" barStyle="light-content" />
 
       <SafeAreaView style={{ flex: 1, backgroundColor: "#277ca5" }}>
-      <View
-        style={{
-          height: 40,
-          backgroundColor: "#277ca5",
-          flexDirection: "row",
-          alignItems: "center",
-          justifyContent: "center",
-          paddingRight: 10,
-        }}
-      >
-        <Avatar.Icon size={20} icon="link" />
-        <Text
-          variant="titleSmall"
-          style={{ color: "#fff" }}
-        >
-          Network:
-        </Text>
-        <Text
-          variant="titleMedium"
+        <View
           style={{
-            color: "#fff",
-            fontWeight: "bold",
-            marginLeft: 4,
+            paddingTop: statusBarHeight,
+            backgroundColor: "#277ca5",
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "center",
+            paddingRight: 10,
           }}
         >
-          {blockchain.name}
-        </Text>
-        
-      </View>
+          <Avatar.Icon size={20} icon="link" />
+          <Text variant="titleSmall" style={{ color: "#fff" }}>
+            Network:
+          </Text>
+          <Text
+            variant="titleMedium"
+            style={{
+              color: "#fff",
+              fontWeight: "bold",
+              marginLeft: 4,
+            }}
+          >
+            {blockchain.name}
+          </Text>
+        </View>
 
         <MaterialBottomTabs
           initialRouteName="index"
