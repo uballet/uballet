@@ -21,7 +21,8 @@ import {
 } from "@alchemy/aa-core";
 import { createLightAccount, LightAccount } from "@alchemy/aa-accounts";
 import { custom } from "viem";
-import { Alchemy, Network } from "alchemy-sdk";
+import { getAddress } from "ethers";
+import { Alchemy } from "alchemy-sdk";
 import { useAuthContext } from "./AuthProvider";
 import {
   ALCHEMY_API_KEY,
@@ -88,6 +89,7 @@ export const AccountContext = createContext<{
   client: AlchemySmartAccountClient;
   sdkClient: Alchemy;
   account: LightAccount | null;
+  contractDeployed: boolean;
   needsRecovery: boolean;
   initializing: boolean;
   mnemonic: string | null;
@@ -98,6 +100,7 @@ export const AccountContext = createContext<{
   client: null!,
   sdkClient: null!,
   account: null,
+  contractDeployed: false,
   needsRecovery: false,
   initializing: false,
   mnemonic: null,
@@ -117,6 +120,7 @@ async function getStoredSigner(user: User) {
 
 export function AccountProvider({ children }: PropsWithChildren) {
   const [account, setAccount] = useState<LightAccount | null>(null);
+  const [contractDeployed, setContractDeployed] = useState(false); // New state for contract deployment status
   const [needsRecovery, setNeedsRecovery] = useState(false);
   const [initializing, setInitializing] = useState(false);
   const [mnemonic, setMnemonic] = useState<string | null>(null);
@@ -136,6 +140,17 @@ export function AccountProvider({ children }: PropsWithChildren) {
       policyId: getAlchemyPolicyId(selectedNetwork)!!,
     },
   });
+
+  // Function to check if a smart contract is deployed at the given account address
+  const checkContractDeployed = async (address: string) => {
+    try {
+      const code = await sdkClient.core.getCode(address, 'latest');
+      setContractDeployed(code !== '0x'); // If the code is anything other than '0x', contract is deployed
+    } catch (error) {
+      console.error('Error checking contract deployment:', error);
+      setContractDeployed(false); // If there's an error, assume no contract
+    }
+  };
 
   const initWallet = async (user: User) => {
     setInitializing(true);
@@ -166,27 +181,41 @@ export function AccountProvider({ children }: PropsWithChildren) {
       );
     }
 
-    console.log("initializing wallet on network " + selectedNetwork);
-
     setInitializing(true);
-  
+
     const privateKey = await SecureStore.getItemAsync(`signer-${user.id}`);
     if (!privateKey) {
       throw new Error("Private key not found. User might need recovery.");
     }
-  
+
     const signer = LocalAccountSigner.privateKeyToAccountSigner(`0x${privateKey}`);
-  
+
     const lightAccount = await createLightAccount({
       signer: signer,
       transport: custom(client),
       chain: getAlchemyChain(selectedNetwork),
     });
-  
+
+    await fetchNonce(lightAccount.address);
+
     setAccount(lightAccount);
     setInitializing(false);
-  
+
     return true;
+  };
+
+  const fetchNonce = async (accountAddress: string) => {
+    try {
+      const formattedAddress = getAddress(accountAddress);
+      const nonce = await client.getTransactionCount({
+        address: formattedAddress as `0x${string}`,
+        blockTag: 'latest',
+      });
+      return nonce;
+    } catch (error) {
+      console.error("Error fetching nonce:", error);
+      throw new Error("Failed to fetch nonce for account.");
+    }
   };
 
   const recoverWithSeedPhrase = async (seedPhrase: string) => {
@@ -205,8 +234,19 @@ export function AccountProvider({ children }: PropsWithChildren) {
 
     await SecureStore.setItemAsync(`signer-${user?.id}`, privateKey);
     setNeedsRecovery(false);
+
+    await fetchNonce(lightAccount.address);
     setAccount(lightAccount);
   };
+
+  // Check contract deployment every time the account changes
+  useEffect(() => {
+    if (account) {
+      checkContractDeployed(account.address);
+    } else {
+      setContractDeployed(false);
+    }
+  }, [account]);
 
   useEffect(() => {
     if (!user) {
@@ -240,12 +280,13 @@ export function AccountProvider({ children }: PropsWithChildren) {
         client,
         sdkClient,
         account,
+        contractDeployed,
         needsRecovery,
         initializing,
         mnemonic,
         clearMnemonic,
         recoverWithSeedPhrase,
-        initWalletForNetwork
+        initWalletForNetwork,
       }}
     >
       {children}

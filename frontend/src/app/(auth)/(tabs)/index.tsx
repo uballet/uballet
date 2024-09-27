@@ -8,7 +8,7 @@ import styles from "../../../styles/styles";
 import { useAuthContext } from "../../../providers/AuthProvider";
 import MovementsList from "../../../components/movementsList";
 import { useFocusEffect } from "@react-navigation/native";
-import { useBlockchainContext } from "../../../providers/BlockchainProvider";
+import { useAccountContext } from "../../../hooks/useAccountContext";
 
 const formatBalance = (balance: number | null, significantFigures: number) => {
   if (balance == null) return "N/A";
@@ -21,7 +21,7 @@ const HomeScreen: React.FC = () => {
   const { fromTransfers, toTransfers, refreshTransactions } = useRecentTransactions();
   const { user } = useAuthContext();
   const [refreshing, setRefreshing] = useState(false);
-  const { blockchain } = useBlockchainContext();
+  const { contractDeployed } = useAccountContext(); // Get contractDeployed from AccountContext
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -42,13 +42,19 @@ const HomeScreen: React.FC = () => {
       }
     >
       <View style={styles.container}>
-        {/* <View style={{ position: 'absolute', top: 10, right: 10, flexDirection: 'row', alignItems: 'center' }}>
-            <Text variant="titleSmall"> { blockchain.name } </Text>
-            <Avatar.Icon size={20} icon="link" style={{ marginLeft: 4 }} />
-        </View> */}
         <View style={styles.horizontalContainer}>
-          <Avatar.Icon style={styles.userSettings} size={30} icon="account" />
-          <Text style = {{flex:1, left: 50}} variant="titleLarge">{ `${user?.email}` }</Text>
+          <Avatar.Icon
+            style={[
+              styles.userSettings,
+              {
+                backgroundColor: contractDeployed ? "green" : "gray",
+              },
+            ]}
+            size={30}
+            icon="account"
+            color="white"
+          />
+          <Text style={{ flex: 1, left: 50 }} variant="titleLarge">{`${user?.email}`}</Text>
         </View>
 
         <Card style={styles.movementsCard} mode="contained">
