@@ -17,7 +17,7 @@ import {
   mainnet,
   optimism,
   optimismSepolia,
-  sepolia
+  sepolia,
 } from "@alchemy/aa-core";
 import { createLightAccount, LightAccount } from "@alchemy/aa-accounts";
 import { custom } from "viem";
@@ -29,7 +29,7 @@ import {
   OPT_SEPOLIA_ALCHEMY_POLICY_ID,
   SEPOLIA_ALCHEMY_POLICY_ID,
   BASE_SEPOLIA_ALCHEMY_POLICY_ID,
-  ARB_SEPOLIA_ALCHEMY_POLICY_ID
+  ARB_SEPOLIA_ALCHEMY_POLICY_ID,
 } from "../env";
 import * as SecureStore from 'expo-secure-store';
 import { generateMnemonic } from "bip39";
@@ -120,10 +120,11 @@ async function getStoredSigner(user: User) {
 
 export function AccountProvider({ children }: PropsWithChildren) {
   const [account, setAccount] = useState<LightAccount | null>(null);
-  const [contractDeployed, setContractDeployed] = useState(false); // New state for contract deployment status
+  const [contractDeployed, setContractDeployed] = useState(false);
   const [needsRecovery, setNeedsRecovery] = useState(false);
   const [initializing, setInitializing] = useState(false);
   const [mnemonic, setMnemonic] = useState<string | null>(null);
+  const [accountCache, setAccountCache] = useState<Record<string, LightAccount>>({}); // Cache for accounts per network
   const clearMnemonic = () => setMnemonic(null);
   const { user, setUser } = useAuthContext();
   const { blockchain, selectedNetwork } = useBlockchainContext();
@@ -168,6 +169,7 @@ export function AccountProvider({ children }: PropsWithChildren) {
 
     setMnemonic(mnemonic);
     setAccount(lightAccount);
+    setAccountCache((prev) => ({ ...prev, [selectedNetwork]: lightAccount })); // Cache the account
     setUser(updatedUser);
     setInitializing(false);
     return signer;
@@ -182,6 +184,14 @@ export function AccountProvider({ children }: PropsWithChildren) {
 
     setInitializing(true);
 
+    // Check if the account for the selected network already exists in the cache
+    if (accountCache[selectedNetwork]) {
+      setAccount(accountCache[selectedNetwork]); // Reuse cached account
+      setInitializing(false);
+      return true;
+    }
+
+    // If no cached account, proceed to create a new one
     const signer = await getStoredSigner(user);
 
     if (!signer) {
@@ -195,9 +205,9 @@ export function AccountProvider({ children }: PropsWithChildren) {
       chain: getAlchemyChain(selectedNetwork),
     });
 
-    await fetchNonce(lightAccount.address);
-
     setAccount(lightAccount);
+    setAccountCache((prev) => ({ ...prev, [selectedNetwork]: lightAccount })); // Cache the new account
+    await fetchNonce(lightAccount.address);
     setInitializing(false);
 
     return true;
@@ -235,6 +245,7 @@ export function AccountProvider({ children }: PropsWithChildren) {
     setNeedsRecovery(false);
 
     setAccount(lightAccount);
+    setAccountCache((prev) => ({ ...prev, [selectedNetwork]: lightAccount })); // Cache the recovered account
     await fetchNonce(lightAccount.address);
   };
 
@@ -247,36 +258,41 @@ export function AccountProvider({ children }: PropsWithChildren) {
   }, [account]);
 
   useEffect(() => {
-    console.log("Render");
+    setAccountCache({});
+  }, [user]);
+
+  useEffect(() => {
     if (!user) {
-      console.log("A");
       setAccount(null);
       return;
     }
     if (user.verified) {
-      console.log("B");
       if (!user.walletAddress) {
-        console.log("BA");
         initWallet(user);
         return;
       }
       if (!account) {
-        console.log("BB");
         getStoredSigner(user).then((signer) => {
           if (!signer) {
-            console.log("BBA");
             setNeedsRecovery(true);
             return;
           }
-          createLightAccount({
-            signer: signer,
-            transport: custom(client),
-            chain: getAlchemyChain(selectedNetwork),
-          }).then(setAccount);
+          if (accountCache[selectedNetwork]) {
+            setAccount(accountCache[selectedNetwork]);
+          } else {
+            createLightAccount({
+              signer: signer,
+              transport: custom(client),
+              chain: getAlchemyChain(selectedNetwork),
+            }).then((newAccount) => {
+              setAccount(newAccount);
+              setAccountCache((prev) => ({ ...prev, [selectedNetwork]: newAccount })); // Cache new account
+            });
+          }
         });
       }
     }
-  }, [user]);
+  }, [user, selectedNetwork]);
 
   return (
     <AccountContext.Provider
