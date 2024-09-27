@@ -141,14 +141,13 @@ export function AccountProvider({ children }: PropsWithChildren) {
     },
   });
 
-  // Function to check if a smart contract is deployed at the given account address
   const checkContractDeployed = async (address: string) => {
     try {
       const code = await sdkClient.core.getCode(address, 'latest');
-      setContractDeployed(code !== '0x'); // If the code is anything other than '0x', contract is deployed
+      setContractDeployed(code !== '0x');
     } catch (error) {
       console.error('Error checking contract deployment:', error);
-      setContractDeployed(false); // If there's an error, assume no contract
+      setContractDeployed(false);
     }
   };
 
@@ -183,12 +182,12 @@ export function AccountProvider({ children }: PropsWithChildren) {
 
     setInitializing(true);
 
-    const privateKey = await SecureStore.getItemAsync(`signer-${user.id}`);
-    if (!privateKey) {
+    const signer = await getStoredSigner(user);
+
+    if (!signer) {
+      setInitializing(false);
       throw new Error("Private key not found. User might need recovery.");
     }
-
-    const signer = LocalAccountSigner.privateKeyToAccountSigner(`0x${privateKey}`);
 
     const lightAccount = await createLightAccount({
       signer: signer,
@@ -235,11 +234,10 @@ export function AccountProvider({ children }: PropsWithChildren) {
     await SecureStore.setItemAsync(`signer-${user?.id}`, privateKey);
     setNeedsRecovery(false);
 
-    await fetchNonce(lightAccount.address);
     setAccount(lightAccount);
+    await fetchNonce(lightAccount.address);
   };
 
-  // Check contract deployment every time the account changes
   useEffect(() => {
     if (account) {
       checkContractDeployed(account.address);
@@ -249,18 +247,24 @@ export function AccountProvider({ children }: PropsWithChildren) {
   }, [account]);
 
   useEffect(() => {
+    console.log("Render");
     if (!user) {
+      console.log("A");
       setAccount(null);
       return;
     }
     if (user.verified) {
+      console.log("B");
       if (!user.walletAddress) {
+        console.log("BA");
         initWallet(user);
         return;
       }
       if (!account) {
+        console.log("BB");
         getStoredSigner(user).then((signer) => {
           if (!signer) {
+            console.log("BBA");
             setNeedsRecovery(true);
             return;
           }
