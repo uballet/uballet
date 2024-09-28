@@ -4,6 +4,7 @@ import { ActivityIndicator, AppState, View } from "react-native";
 import * as LocalAuthentication from 'expo-local-authentication';
 import { type User } from "../api/uballet/types";
 import { isDevice } from "expo-device";
+import { useQueryClient } from "@tanstack/react-query";
 
 export const AuthContext = createContext<{
     user: User | null,
@@ -29,6 +30,7 @@ export default function AuthProvider({ children }: PropsWithChildren) {
     const [passkeysOnboarded, setPasskeysOnboarded] = useState(false)
     const [isReady, setIsReady] = useState(false)
     const appState = useRef(AppState.currentState.valueOf())
+    const queryClient = useQueryClient();
 
     const requestAuthentication = async () => {
         const hasHardware = await LocalAuthentication.hasHardwareAsync()
@@ -99,6 +101,12 @@ export default function AuthProvider({ children }: PropsWithChildren) {
     useEffect(() => {
         if (!user) {
             setPasskeysOnboarded(false)
+        }
+    }, [user])
+
+    useEffect(() => {
+        if (!user) {
+            queryClient.clear()
         }
     }, [user])
 

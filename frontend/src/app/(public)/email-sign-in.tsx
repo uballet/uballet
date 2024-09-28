@@ -5,13 +5,15 @@ import { useCompleteEmailSignIn } from "../../hooks/useCompleteEmailSignIn";
 import { Button, TextInput } from "react-native-paper";
 
 export default function EmailSignInScreen() {
-    const { complete, isPending } = useCompleteEmailSignIn()
+    const { complete, isPending, isError, isSuccess } = useCompleteEmailSignIn()
     const { email } = useLocalSearchParams() as { email: string }
     const [code, setCode ] = useState('')
 
     if (!email) {
         return <Redirect href={'/(public)/login'} />
     }
+
+    console.log({ complete, isPending })
 
     return (
         <View className="flex-1 items-center justify-center">

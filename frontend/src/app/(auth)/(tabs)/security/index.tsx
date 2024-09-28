@@ -1,13 +1,14 @@
-import { SafeAreaView, View } from "react-native";
+import { SafeAreaView, ScrollView, View } from "react-native";
 import { ActivityIndicator, Button, Modal, Portal, Text, TextInput } from "react-native-paper";
 import { useEffect, useState } from "react";
-import { useMyRecoveryTeam } from "../../../hooks/recovery/useMyRecoveryTeam";
-import { useCreateRecoveryTeam } from "../../../hooks/recovery/useCreateRecoveryTeam";
-import { useRecoveryTeams } from "../../../hooks/recovery/useRecoveryTeams";
-import { useJoinRecoveryTeam } from "../../../hooks/recovery/useJoinRecoveryTeam";
-import useConfirmRecoveryTeam from "../../../hooks/recovery/useConfirmRecoveryTeam";
-import { useRecoverAccount } from "../../../hooks/recovery/useRecoverAccount";
-import { useSignerStore } from "../../../hooks/useSignerStore";
+import { useMyRecoveryTeam } from "../../../../hooks/recovery/useMyRecoveryTeam";
+import { useCreateRecoveryTeam } from "../../../../hooks/recovery/useCreateRecoveryTeam";
+import { useRecoveryTeams } from "../../../../hooks/recovery/useRecoveryTeams";
+import { useJoinRecoveryTeam } from "../../../../hooks/recovery/useJoinRecoveryTeam";
+import { useRecoverAccount } from "../../../../hooks/recovery/useRecoverAccount";
+import { useSignerStore } from "../../../../hooks/useSignerStore";
+import { useAccountContext } from "../../../../hooks/useAccountContext";
+import { useRouter } from "expo-router";
 
 interface RecoveryModalProps {
     onConfirm: ({ email1, email2 }: { email1: string; email2: string }) => void
@@ -18,29 +19,31 @@ function AddRecoveryModal({ onConfirm, visible, onDismiss }: RecoveryModalProps)
     const [email1, setEmail1] = useState('')
     const [email2, setEmail2] = useState('')
     return (
-        <Modal visible={visible} onDismiss={onDismiss}>
-            <View className="items-center self-center p-8 w-4/5 justify-center bg-white">
-                <TextInput
-                    className="w-3/4"
-                    placeholder="Recoverer 1 Email"
-                    mode="outlined"
-                    value={email1}
-                    onChangeText={val => setEmail1(val.toLowerCase())}
-                    autoCapitalize="none"
-                />
-                <TextInput
-                    className="w-3/4 mt-4"
-                    placeholder="Recoverer 2 Email"
-                    mode="outlined"
-                    value={email2}
-                    onChangeText={val => setEmail2(val.toLowerCase())}
-                    autoCapitalize="none"
-                />
-                <Button mode="contained" className="w-3/4 mt-4" onPress={() => onConfirm({ email1, email2 })} disabled={!email1 || !email2}>
-                    Add Recovery
-                </Button>
-            </View>
-        </Modal>
+        <Portal>
+            <Modal visible={visible} onDismiss={onDismiss}>
+                <View className="items-center self-center p-8 w-4/5 justify-center bg-white">
+                    <TextInput
+                        className="w-3/4"
+                        placeholder="Recoverer 1 Email"
+                        mode="outlined"
+                        value={email1}
+                        onChangeText={val => setEmail1(val.toLowerCase())}
+                        autoCapitalize="none"
+                    />
+                    <TextInput
+                        className="w-3/4 mt-4"
+                        placeholder="Recoverer 2 Email"
+                        mode="outlined"
+                        value={email2}
+                        onChangeText={val => setEmail2(val.toLowerCase())}
+                        autoCapitalize="none"
+                    />
+                    <Button mode="contained" className="w-3/4 mt-4" onPress={() => onConfirm({ email1, email2 })} disabled={!email1 || !email2}>
+                        Add Recovery
+                    </Button>
+                </View>
+            </Modal>
+        </Portal>
     )
 }
 
@@ -94,8 +97,9 @@ function RecoveryCodeSection() {
 function MyRecoveryTeam() {
     const [modalVisible, setModalVisible] = useState(false);
     const myTeam = useMyRecoveryTeam()
-    const confirmMutation = useConfirmRecoveryTeam()
     const createRecoveryTeam = useCreateRecoveryTeam()
+    const { accountType } = useAccountContext()
+    const router = useRouter();
 
     useEffect(() => {
         if (createRecoveryTeam.isSuccess) {
@@ -114,10 +118,16 @@ function MyRecoveryTeam() {
                 <Button
                     mode="contained"
                     className="w-3/4 mt-4 self-center"
+                    disabled={accountType !== "multisig"}
                     onPress={() => setModalVisible(true)}
                 >
                     Create Recovery Team
                 </Button>
+                {accountType !== "multisig" && (
+                    <Text className="text-red-700 text-center mt-4">
+                        You need a Pro account for this
+                    </Text>
+                )}
                 <AddRecoveryModal
                     onConfirm={({ email1, email2 }) => createRecoveryTeam.mutate({ email1, email2 })}
                     visible={modalVisible}
@@ -140,11 +150,16 @@ function MyRecoveryTeam() {
                 <View className="flex-row">
                     <Text className="text-lg">Recoverer 2: {recoverer2Email}</Text>
                 </View>
-                {!confirmed && recoverer1Address && recoverer1Address && (
+                {(!recoverer1Address || !recoverer2Address) && (
+                    <View className="flex-row">
+                        <Text className="text-sm text-red-400">Pending confirmation from recoverers</Text>
+                    </View>
+                )}
+                {(recoverer1Address && recoverer2Address && !confirmed) && (
                     <Button
                         mode="contained"
                         className="w-3/4 mt-4"
-                        onPress={() => confirmMutation.mutate({ teamId: id, address1: recoverer1Address!, address2: recoverer2Address! })}
+                        onPress={() => router.navigate(`/(auth)/(tabs)/security/confirm-team`)}
                     >
                         Confirm
                     </Button>
@@ -158,6 +173,7 @@ function WhoIProtectSection() {
     const recoveryTeams = useRecoveryTeams()
     const joinTeamMutation = useJoinRecoveryTeam()
     const signRecoveryMutation = useRecoverAccount();
+    const router = useRouter();
     
     if (recoveryTeams.isLoading) {
         return <ActivityIndicator />
@@ -187,7 +203,13 @@ function WhoIProtectSection() {
                     <Button
                         disabled={signRecoveryMutation.isPending}
                         loading={signRecoveryMutation.isPending}
-                        onPress={() => signRecoveryMutation.mutate({ recoveryTeam: team })} mode="contained"
+                        onPress={() => {
+                            if (team.request?.aggregatedSignature) {
+                                router.navigate({ pathname: `/(auth)/(tabs)/security/complete-recovery`, params: { id: team.id } })
+                            } else {
+                                signRecoveryMutation.mutate({ recoveryTeam: team })
+                            }
+                        }} mode="contained"
                     >
                             Sign Recovery
                     </Button>
@@ -201,16 +223,18 @@ function WhoIProtectSection() {
 }
 export default function SecurityScreen() {
     return (
-        <SafeAreaView className="flex-1 p-4">
-            <View className="w-5/6 p-4 mx-4 border-b self-center">
-                <WhoIProtectSection />
-            </View>
-            <View className="w-5/6 flex-1 mt-4 mx-4 border-b self-center">
-                <MyRecoveryTeam />
-            </View>
-            <View className="w-full flex-1 mt-4">
-                <RecoveryCodeSection />
-            </View>
+        <SafeAreaView className="flex-1 p-4 overflow-hidden">
+            <ScrollView className="flex-1" contentContainerStyle={{ paddingBottom: 8 }}>
+                <View className="w-5/6 m-4 py-4 border-b self-center">
+                    <WhoIProtectSection />
+                </View>
+                <View className="w-5/6 flex-1 mt-4 pb-4 mx-4 border-b self-center">
+                    <MyRecoveryTeam />
+                </View>
+                <View className="w-full flex-1 mt-4">
+                    <RecoveryCodeSection />
+                </View>
+            </ScrollView>
         </SafeAreaView>
     )
 }

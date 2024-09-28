@@ -3,7 +3,11 @@ import styles from '../../../styles/styles';
 import { useAccountContext } from "../../../hooks/useAccountContext";
 import { Redirect } from "expo-router";
 export default function InitializeAccountScreen() {
-    const { initializing } = useAccountContext();
+    const { initializing, accountType } = useAccountContext();
+
+    if (!accountType) {
+        return <Redirect href={'/(auth)/initialize-account/type-selection'} />
+    }
 
     if (!initializing) {
         return <Redirect href={'/(auth)/initialize-account/remember'} />

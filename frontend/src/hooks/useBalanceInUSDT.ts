@@ -20,10 +20,10 @@ export function useBalanceInUSDT() {
   const [error, setError] = useState<string | null>(null);
 
   let {
-    balance: dataUseBalance,
-    loading: loadingUseBalance,
+    data: dataUseBalance,
+    isLoading: loadingUseBalance,
     error: errorUseBalance,
-    refreshData: refreshDataUseBalance,
+    refetch,
   } = useBalance();
 
   let {
@@ -34,7 +34,7 @@ export function useBalanceInUSDT() {
   } = useTokenBalance();
 
   const refetchFunction = () => {
-    refreshDataUseBalance();
+    refetch();
     refreshDataUseTokenBalance();
   };
 
@@ -55,7 +55,7 @@ export function useBalanceInUSDT() {
     console.log("Updating quotes for tokens...");
 
     // Add ETH balance to tokenBalances
-    if (dataUseBalance !== null) {
+    if (dataUseBalance) {
       dataUseTokenBalance.ETH = dataUseBalance;
     }
 

@@ -1,12 +1,13 @@
-import { useMutation } from "@tanstack/react-query"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 import uballet from "../../api/uballet"
 import { JoinedRecoveryTeam } from "../../api/uballet/types"
 import { useAccountContext } from "../useAccountContext"
-import { useEffect } from "react"
 import { Signature } from "@account-kit/smart-contracts"
 
 export function useRecoverAccount() {
-    const { account, createMultsigClient } = useAccountContext()
+    const { lightAccount, initiator, createMultsigClient } = useAccountContext()
+    const account = lightAccount || initiator
+    const client = useQueryClient();
     const mutation = useMutation({
         mutationFn: async ({ recoveryTeam }: { recoveryTeam: JoinedRecoveryTeam }) => {
             const recoveryRequest = recoveryTeam.request
@@ -16,17 +17,15 @@ export function useRecoverAccount() {
             const isFirstSignature = !recoveryRequest.signature1
             const signer = account!.account.getSigner()
             const recoveryClient = await createMultsigClient(signer, recoveryRequest.walletAddress)
-            console.log({ recoveryRequest })
             if (isFirstSignature) {
-                const uo = account!.encodeUpdateOwnership({
+                const uo = recoveryClient!.encodeUpdateOwnership({
                     args: [[recoveryRequest.newAddress1, recoveryRequest.newAddress2], [], 2n],
                 })
                 const { signatureObj, aggregatedSignature, request } = await recoveryClient.proposeUserOperation({
                     uo: uo
                 })
 
-                console.log({ uo, signatureObj, aggregatedSignature })
-                const updatedRecoverRequet = await uballet.recovery.signRecovery({ id: recoveryRequest.id, signature: signatureObj.signature, aggregatedSignature, callData: request.callData })
+                const updatedRecoverRequest = await uballet.recovery.signRecovery({ id: recoveryRequest.id, signature: signatureObj.signature, aggregatedSignature, callData: request.callData })
             } else {
                 const { callData, signature1, aggregatedSignature } = recoveryRequest
                 const signature: Signature = {
@@ -45,12 +44,14 @@ export function useRecoverAccount() {
                     }
                 })
 
-                const result = await recoveryClient!.waitForUserOperationTransaction(tx)
-
-                console.log({ result })
+                // const result = await recoveryClient!.waitForUserOperationTransaction(tx)
 
                 await uballet.recovery.confirmRecoveryRequest({ id: recoveryRequest.id })
             }
+        },
+        onSuccess: () => {
+            client.refetchQueries({ queryKey: ['recovery-teams'] })
+            client.refetchQueries({ queryKey: ['my-recovery-team'] })
         }
     })
 

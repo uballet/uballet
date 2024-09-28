@@ -31,6 +31,8 @@ export default function SeedPhraseRecoveryScreen() {
             <TextInput
                 multiline={true}
                 numberOfLines={5}
+                returnKeyType="done"
+                blurOnSubmit
                 mode="outlined"
                 className="w-3/4 h-40"
                 value={seedPhrase}

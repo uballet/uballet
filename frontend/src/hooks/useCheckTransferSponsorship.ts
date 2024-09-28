@@ -5,7 +5,8 @@ import { parseEther } from "viem";
 export function useCheckTransferSponsorship() {
     const [isSponsored, setIsSponsored] = useState<boolean | null>(null)
     const [loading, setLoading] = useState(false)
-    const { account } = useAccountContext()
+    const { lightAccount, initiator } = useAccountContext()
+    const account = initiator || lightAccount
     const checkTransferSponsorship = useCallback(async (address: `0x${string}`, etherAmount: string) => {
         setLoading(true)
         setIsSponsored(null)

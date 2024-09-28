@@ -1,10 +1,11 @@
 import { useCallback, useState } from "react";
 import { useAccountContext } from "./useAccountContext";
-import { parseEther } from "viem";
+import { parseEther, toHex } from "viem";
 import { ethers } from "ethers";
+import { formatUoEstimation } from "./useGasEstimation";
 
 export function useTransfer() {
-  const { account } = useAccountContext();
+  const { lightAccount, initiator, submitter } = useAccountContext();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
   const [txHash, setTxHash] = useState<null | string>(null);
@@ -12,19 +13,46 @@ export function useTransfer() {
     async (address: `0x${string}`, etherAmount: string) => {
       try {
         setLoading(true);
-        // const uo = await account!.sendUserOperation({
-        //   uo: {
-        //     target: address,
-        //     data: "0x",
-        //     value: parseEther(etherAmount),
-        //   },
-        //   context: {
-        //     aggregatedSignature: "0x",
-        //     signatures: [],
-        //   },
-        // });
-        // const txHash = await account!.waitForUserOperationTransaction(uo);
-        // setTxHash(txHash);
+        if (lightAccount) {
+          const uo = await lightAccount!.sendUserOperation({
+            uo: {
+              target: address,
+              data: "0x",
+              value: parseEther(etherAmount),
+            },
+          });
+          const txHash = await lightAccount!.waitForUserOperationTransaction(uo);
+          setTxHash(txHash);
+        } else {
+          const { signatureObj, aggregatedSignature, request } = await initiator!.proposeUserOperation({
+            uo: {
+              target: address,
+              data: "0x",
+              value: parseEther(etherAmount),
+            },
+            overrides: {
+              preVerificationGas: toHex(50400n),
+            }
+          })
+
+          const tx = await submitter!.sendUserOperation({
+            uo: request.callData,
+            context: {
+              signatures: [signatureObj],
+              aggregatedSignature,
+              userOpSignatureType: 'UPPERLIMIT',
+            },
+            overrides: {
+              preVerificationGas: request.preVerificationGas,
+              callGasLimit: request.callGasLimit,
+              verificationGasLimit: request.verificationGasLimit,
+              maxFeePerGas: request.maxFeePerGas,
+              maxPriorityFeePerGas: request.maxPriorityFeePerGas,
+              // @ts-ignore
+              paymasterAndData: request.paymasterAndData ?? request.paymasterData,
+            }
+          })
+        }
       } catch (e) {
         console.error({ error: e });
         setError(true);
@@ -32,7 +60,7 @@ export function useTransfer() {
         setLoading(false);
       }
     },
-    [account]
+    [lightAccount, initiator, submitter]
   );
 
   const transferTokenToAddress = useCallback(
@@ -50,17 +78,49 @@ export function useTransfer() {
           address,
           ethers.parseUnits(amount, 18),
         ]);
+        if (lightAccount) {
+          const uo = await lightAccount!.sendUserOperation({
+            uo: {
+              target: tokenContractAddress,
+              data: data as `0x${string}`,
+              value: BigInt(0),
+            },
+          });
+          const txHash = await lightAccount.waitForUserOperationTransaction(uo);
+          setTxHash(txHash);
+        } else {
+          const { signatureObj, aggregatedSignature, request } = await initiator!.proposeUserOperation({
+            uo: {
+              target: tokenContractAddress,
+              data: data as `0x${string}`,
+              value: BigInt(0),
+            },
+            overrides: {
+              preVerificationGas: toHex(50400n),
+            }
+          })
 
-        // const uo = await account.sendUserOperation({
-        //   account,
-        //   uo: {
-        //     target: tokenContractAddress,
-        //     data: data as `0x${string}`,
-        //     value: BigInt(0),
-        //   },
-        // });
-        // const txHash = await account.waitForUserOperationTransaction(uo);
-        setTxHash(txHash);
+          const tx = await submitter!.sendUserOperation({
+            uo: request.callData,
+            context: {
+              signatures: [signatureObj],
+              aggregatedSignature,
+              userOpSignatureType: 'UPPERLIMIT',
+            },
+            overrides: {
+              preVerificationGas: request.preVerificationGas,
+              callGasLimit: request.callGasLimit,
+              verificationGasLimit: request.verificationGasLimit,
+              maxFeePerGas: request.maxFeePerGas,
+              maxPriorityFeePerGas: request.maxPriorityFeePerGas,
+              // @ts-ignore
+              paymasterAndData: request.paymasterAndData ?? request.paymasterData,
+            }
+          })
+
+          const txHash = await submitter!.waitForUserOperationTransaction(tx)
+          setTxHash(txHash);
+        }
       } catch (e) {
         console.error({ error: e });
         setError(true);
@@ -68,7 +128,7 @@ export function useTransfer() {
         setLoading(false);
       }
     },
-    [account]
+    [lightAccount]
   );
 
   return {

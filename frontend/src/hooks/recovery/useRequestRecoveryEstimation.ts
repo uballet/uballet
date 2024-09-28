@@ -3,8 +3,8 @@ import { useAuthContext } from "../../providers/AuthProvider";
 import { useAccountContext } from "../useAccountContext";
 import { generateMnemonic } from "bip39";
 import { LocalAccountSigner } from "@aa-sdk/core";
-import { formatEther } from "ethers";
-import { hexToBigInt } from "viem";
+import { formatUoEstimation } from "../useGasEstimation";
+import { formatEther, parseEther } from "viem";
 
 export function useRequestRecoveryEstimation() {
     const { user } = useAuthContext();
@@ -25,25 +25,11 @@ export function useRequestRecoveryEstimation() {
                     userOpSignatureType: 'UPPERLIMIT'
                 },
             })
-            console.log({ uo: encodedTransfer })
-            // @ts-expect-error
-            const callGasLimit = hexToBigInt(uo.callGasLimit!);
-            // @ts-expect-error
-            const verificationGasLimit = hexToBigInt(uo.verificationGasLimit!);
-            // @ts-expect-error
-            const preVerificationGas = hexToBigInt(uo.preVerificationGas!);
-            
-            const totalGas = callGasLimit + verificationGasLimit + preVerificationGas;
-
-            const gasPrice = uo.maxPriorityFeePerGas!;
-            // @ts-expect-error
-            const estimation = totalGas * gasPrice;
+            const estimation = await formatUoEstimation(uo)
             return {
-                balance: formatEther(currentBalance.toBigInt()),
-                totalEstimation: formatEther(estimation),
-                preVerificationGas,
-                verificationGasLimit,
-                callGasLimit
+                estimation: estimation.formatted,
+                currentBalance: formatEther(currentBalance.toBigInt()),
+                isEnough: currentBalance.gt(estimation.bigint)
             }
         },
         enabled: !!user

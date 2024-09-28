@@ -25,13 +25,11 @@ async function getStoredSeedphrase(user: User): Promise<string | null> {
 }
 
 async function storeSeedPhrase(user: User, seedPhrase: string) {
-    console.log("WHAT1?")
     await SecureStore.setItemAsync(`seedphrase-${user.id}`, seedPhrase);
     return getSignersFromSeedphrase(seedPhrase);
 }
 
 async function storeRecoverySeedPhrase(user: User, seedphrase: string): Promise<SignerPair> {
-    console.log("WHAT2?")
     await SecureStore.setItemAsync(`recovery-seedphrase-${user.id}`, seedphrase);
     return getSignersFromSeedphrase(seedphrase);
 }
@@ -46,7 +44,6 @@ async function promoteRecoverySeedPhrase(user: User) {
     if (!recoverySeedphrase) {
         return
     }
-    console.log("WHAT3?")
     await SecureStore.setItemAsync(`seedphrase-${user.id}`, recoverySeedphrase);
     await SecureStore.deleteItemAsync(`recovery-seedphrase-${user.id}`);
 }

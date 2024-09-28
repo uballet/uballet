@@ -8,7 +8,8 @@ interface TokenBalances {
 }
 
 export function useTokenBalance() {
-  const { sdkClient, account } = useAccountContext();
+  const { sdkClient, lightAccount, initiator } = useAccountContext();
+  const account = initiator || lightAccount;
   const [tokenBalances, setTokenBalances] = useState<TokenBalances>({});
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);

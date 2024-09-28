@@ -104,7 +104,6 @@ const startEmailLogin = async ({ email }: { email: string }) => {
 
 const getCurrentUser = async () => {
   const { data: user } = await uballetAxios.get<User>(`/user`);
-  console.log({ user })
   return user;
 };
 

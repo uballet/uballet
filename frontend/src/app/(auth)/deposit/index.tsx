@@ -11,7 +11,8 @@ import * as Clipboard from "expo-clipboard";
 import { useAccountContext } from "../../../hooks/useAccountContext";
 
 const DepositScreen = () => {
-  const { account } = useAccountContext();
+  const { lightAccount, initiator } = useAccountContext();
+  const account = initiator || lightAccount;
   const address = account!.getAddress();
 
   // Function to copy the account address

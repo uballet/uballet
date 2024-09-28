@@ -24,8 +24,8 @@ type TokensData = {
 };
 
 function TransferScreen() {
-  const { account } = useAccountContext()
-
+  const { lightAccount, initiator } = useAccountContext()
+  const account = initiator || lightAccount
   const currencyScanned = useLocalSearchParams<{ currency: string }>()?.currency;
   const addressScanned = useLocalSearchParams<{ address: string }>()?.address;
   const amountScanned = useLocalSearchParams<{ amount: string }>()?.amount;
@@ -99,10 +99,11 @@ function TransferScreen() {
 
   const handleAmountChange = (amount: string) => {
     // Allow only numbers and a single dot with up to 18 decimal places
-    const validAmount = amount.match(/^\d*\.?\d{0,18}$/);
+    let amountWithPunctuation = amount.replace(',', '.')
+    const validAmount = amountWithPunctuation.match(/^\d*\.?\d{0,18}$/);
     if (validAmount) {
-      setAmount(amount);
-      setIsAmountValid(parseFloat(amount) > 0);
+      setAmount(amountWithPunctuation);
+      setIsAmountValid(parseFloat(amountWithPunctuation) > 0);
     }
   };
 
@@ -156,7 +157,7 @@ function TransferScreen() {
             {`From:\n${account?.getAddress()}`}
           </Text>
           <EstimateGasFees
-            target={`0x${toAddress}`}
+            // target={`0x${toAddress}`}
             data={"0x"}
           />
           <View style={{ flexDirection: "row", alignItems: "center" }}>

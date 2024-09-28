@@ -25,11 +25,15 @@ function NotificationScreen() {
   const setNotificationsSeen = useSetNotificationsSeen();
   useEffect(() => {
     if (data) {
-      const t = setTimeout(() => {
-        setNotificationsSeen.mutate({ lastNotificationId: data[data.length - 1].id })
-      }, 10000)
+      if (data.length && !data[0].seen) {
+        setTimeout(() => {
+          if (data.length && !data[0].seen) {
+            setNotificationsSeen.mutate({ lastNotificationId: data[0].id })
+          }
+        }, 5000)
+      }
     }
-  }, [data])
+  }, [data, !!data?.[0]?.seen])
 
   if (isLoading) {
     return <ActivityIndicator />;

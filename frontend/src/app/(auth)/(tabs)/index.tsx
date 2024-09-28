@@ -16,7 +16,7 @@ const formatBalance = (balance: number | null, significantFigures: number) => {
 };
 
 const HomeScreen: React.FC = () => {
-  const { balance } = useBalance();
+  const { data: balance, isLoading } = useBalance();
   const { fromTransfers, toTransfers } = useRecentTransactions();
   const { user } = useAuthContext();
 
@@ -31,7 +31,7 @@ const HomeScreen: React.FC = () => {
         <Card style={styles.movementsCard} mode="contained">
           <Card.Content>
             <Text variant="titleLarge">Balance</Text>
-            {balance !== null ? (
+            {!isLoading && balance ? (
               <Text style={styles.balance}>
                 {formatBalance(parseFloat(balance), 4)} ETH
               </Text>

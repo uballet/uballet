@@ -5,8 +5,8 @@ import { AssetTransfersCategory, AssetTransfersWithMetadataResult } from "alchem
 export function useRecentTransactions() {
   const [fromTransfers, setFromTransfers] = useState<AssetTransfersWithMetadataResult[] | null>(null);
   const [toTransfers, setToTransfers] = useState<AssetTransfersWithMetadataResult[] | null>(null);
-  const { sdkClient, account } = useAccountContext();
-
+  const { sdkClient, lightAccount, initiator } = useAccountContext();
+  const account = initiator || lightAccount;
   useEffect(() => {
     sdkClient.core
       .getAssetTransfers({
