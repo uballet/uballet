@@ -5,15 +5,13 @@ import { useCompleteEmailSignIn } from "../../hooks/useCompleteEmailSignIn";
 import { Button, TextInput } from "react-native-paper";
 
 export default function EmailSignInScreen() {
-    const { complete, isPending, isError, isSuccess } = useCompleteEmailSignIn()
+    const { complete, isPending, isError } = useCompleteEmailSignIn()
     const { email } = useLocalSearchParams() as { email: string }
     const [code, setCode ] = useState('')
 
     if (!email) {
         return <Redirect href={'/(public)/login'} />
     }
-
-    console.log({ complete, isPending })
 
     return (
         <View className="flex-1 items-center justify-center">
@@ -27,6 +25,7 @@ export default function EmailSignInScreen() {
                 keyboardType="number-pad"
                 placeholder="Input Code"
             />
+            {isError && <Text className="text-red-500">Invalid code. Check your email.</Text>}
             <Button className="m-4" mode="contained" disabled={isPending} onPress={() => complete({ email, code })}>
                 <Text>Submit Code</Text>
             </Button>

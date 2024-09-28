@@ -8,7 +8,7 @@ import { useVerifyEmail } from "../../hooks/useVerifyEmail";
 export default function VerifyEmailScreen() {
     const { user } = useAuthContext()
     const [code, setCode] = useState<string>('')
-    const { verifyEmail, isPending, isSuccess } = useVerifyEmail()
+    const { verifyEmail, isPending, isSuccess, isError } = useVerifyEmail()
     const isLoading = isPending || isSuccess
     const disabled = isLoading || !code
 
@@ -30,6 +30,7 @@ export default function VerifyEmailScreen() {
                 selectTextOnFocus={false}
                 editable={!isPending}
             />
+            {isError && <Text className="text-red-500 mt-2">Invalid code. Check your email.</Text>}
             <Button mode="contained" className="m-8 w-2/3" disabled={disabled} loading={isLoading} onPress={() => verifyEmail({ code })}>
                 <Text>Submit Code</Text>
             </Button>

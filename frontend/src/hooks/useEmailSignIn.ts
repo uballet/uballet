@@ -17,19 +17,15 @@ export async function getEncryptionKey(privOrPub: 'pub' | 'priv'): Promise<Uint8
 
 export function useEmailSignIn() {
     const startEmailSignIn = useCallback(async ({ email }: { email: string }) => {
-        try {
-            // const priv = secp256k1.utils.randomPrivateKey();
-            // const pub = secp256k1.getPublicKey(priv);
+        // const priv = secp256k1.utils.randomPrivateKey();
+        // const pub = secp256k1.getPublicKey(priv);
 
-            // await Promise.all([
-            //     setEncryptionKey('priv', priv),
-            //     setEncryptionKey('pub', pub)
-            // ])
-            // const targetPublicKey = Buffer.from(pub).toString('base64')
-            await uballet.startEmailLogin({ email })
-        } catch (error) {
-            console.error(error)
-        }
+        // await Promise.all([
+        //     setEncryptionKey('priv', priv),
+        //     setEncryptionKey('pub', pub)
+        // ])
+        // const targetPublicKey = Buffer.from(pub).toString('base64')
+        await uballet.startEmailLogin({ email })
     }, [])
 
     const { mutate: signIn, isError, isSuccess, isPending } = useMutation({

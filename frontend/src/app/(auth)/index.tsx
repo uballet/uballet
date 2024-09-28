@@ -1,9 +1,10 @@
 import { Redirect } from "expo-router";
-import { ActivityIndicator } from "react-native";
+import { View } from "react-native";
 import { useAuthContext } from "../../providers/AuthProvider";
 import { useUserPasskeys } from "../../hooks/useUserPasskeys";
 import { useAccountContext } from "../../hooks/useAccountContext";
 import { Passkey } from "react-native-passkey";
+import { ActivityIndicator } from "react-native-paper";
 
 export default function AuthIndex() {
     const { passkeysOnboarded, user } = useAuthContext()
@@ -24,11 +25,19 @@ export default function AuthIndex() {
     }
 
     if (loadingPasskeys) {
-        return <ActivityIndicator />
+        return (
+            <View className="flex-1 justify-center items-center">
+                <ActivityIndicator />
+            </View>
+        )
     }
 
     if (!account) {
-        return <ActivityIndicator />
+        return (
+            <View className="flex-1 justify-center items-center">
+                <ActivityIndicator />
+            </View>
+        )
     }
 
     return <Redirect href={'/(auth)/(tabs)'} />
