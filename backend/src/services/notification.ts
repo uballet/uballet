@@ -22,9 +22,7 @@ async function createNotification({
     newNotification.title = title
     newNotification.body = body
     newNotification.type = type
-    if (data) {
-        newNotification.data = JSON.stringify(data)
-    }
+    newNotification.data = JSON.stringify(data ?? {})
     newNotification.userId = userId
     newNotification.seen = false
     newNotification.createdAt = new Date()
@@ -47,7 +45,7 @@ async function readNotifications({ userId, lastNotificationId }: { userId: strin
     const notifications = await Notification.find({ where: { userId, seen: false }, order: { createdAt: 'DESC' } })
     const indexOfLastNotification = notifications.findIndex(n => n.id === lastNotificationId)
 
-    if (indexOfLastNotification > -1) {
+    if (indexOfLastNotification === -1) {
         return
     }
 
