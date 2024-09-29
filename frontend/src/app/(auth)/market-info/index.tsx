@@ -10,7 +10,7 @@ import { ActivityIndicator, Card, Text } from "react-native-paper";
 import { Entypo, FontAwesome5 } from "@expo/vector-icons";
 import { useLocalSearchParams } from "expo-router";
 import { useBalanceInUSDT } from "../../../hooks/useBalanceInUSDT";
-import config from "../../../../netconfig/blockchain.default.json";
+import { useBlockchainContext } from "../../../providers/BlockchainProvider";
 
 function MarketInfoScreen() {
   const { symbol, name } = useLocalSearchParams<{
@@ -18,7 +18,8 @@ function MarketInfoScreen() {
     name: string;
   }>();
 
-  const token = config.sepolia.erc20_tokens.find((t) => t.symbol === symbol);
+  const { blockchain } = useBlockchainContext();
+  const token = blockchain.erc20_tokens.find((t) => t.symbol === symbol);
 
   let tokenCMCUrl =
     token?.cmc_url ?? "https://coinmarketcap.com/currencies/ethereum/";

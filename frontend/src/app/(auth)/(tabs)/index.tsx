@@ -1,13 +1,14 @@
-import { AssetTransfersWithMetadataResult } from "alchemy-sdk";
 import { Link } from "expo-router";
-import React from "react";
-import { ScrollView, View } from "react-native";
+import React, { useState } from "react";
+import { ScrollView, View, RefreshControl } from "react-native";
 import { ActivityIndicator, Avatar, Card, FAB, Text } from "react-native-paper";
 import { useBalance } from "../../../hooks/useBalance";
 import { useRecentTransactions } from "../../../hooks/useRecentTransactions";
 import styles from "../../../styles/styles";
 import { useAuthContext } from "../../../providers/AuthProvider";
 import MovementsList from "../../../components/movementsList";
+import { useFocusEffect } from "@react-navigation/native";
+import { useAccountContext } from "../../../hooks/useAccountContext";
 
 const formatBalance = (balance: number | null, significantFigures: number) => {
   if (balance == null) return "N/A";
@@ -16,16 +17,44 @@ const formatBalance = (balance: number | null, significantFigures: number) => {
 };
 
 const HomeScreen: React.FC = () => {
-  const { balance } = useBalance();
-  const { fromTransfers, toTransfers } = useRecentTransactions();
+  const { balance, refreshData } = useBalance();
+  const { fromTransfers, toTransfers, refreshTransactions } = useRecentTransactions();
   const { user } = useAuthContext();
+  const [refreshing, setRefreshing] = useState(false);
+  const { contractDeployed } = useAccountContext(); // Get contractDeployed from AccountContext
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await Promise.all([refreshData(), refreshTransactions()]);
+    setRefreshing(false);
+  };
+
+  useFocusEffect(
+    React.useCallback(() => {
+      onRefresh();
+    }, [])
+  );
 
   return (
-    <ScrollView>
+    <ScrollView
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }
+    >
       <View style={styles.container}>
         <View style={styles.horizontalContainer}>
-          <Avatar.Icon style={styles.userSettings} size={30} icon="account" />
-          <Text variant="titleLarge">{`Hi ${user?.email}!`}</Text>
+          <Avatar.Icon
+            style={[
+              styles.userSettings,
+              {
+                backgroundColor: contractDeployed ? "green" : "gray",
+              },
+            ]}
+            size={30}
+            icon="account"
+            color="white"
+          />
+          <Text style={{ flex: 1, left: 50 }} variant="titleLarge">{`${user?.email}`}</Text>
         </View>
 
         <Card style={styles.movementsCard} mode="contained">

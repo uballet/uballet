@@ -116,8 +116,12 @@ const MovementsList: React.FC<MovementsListProps> = ({ toTransfers, fromTransfer
 
   return (
     <List.Section>
-      {!sortedTransfers.length ? (
+      {isLoading ? (
         <ActivityIndicator />
+      ) : !sortedTransfers.length ? (
+        <View style={{ padding: 16 }}>
+          <Text style={{ fontSize: 12, color: 'gray' }}>No transactions found</Text>
+        </View>
       ) : (
         displayedTransfers.map((transfer, index) =>
           EthereumTransactionItem(
@@ -133,5 +137,6 @@ const MovementsList: React.FC<MovementsListProps> = ({ toTransfers, fromTransfer
     </List.Section>
   );
 };
+
 
 export default MovementsList;

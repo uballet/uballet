@@ -1,98 +1,98 @@
 {
   "arbitrum": {
+    "name": "Arbitrum",
     "block_explorer": "https://arbiscan.io/tx/",
     "erc20_tokens": [],
-    "sdk_name": "ARB_MAINNET"
+    "sdk_name": "arb-mainnet",
+    "api_key_endpoint": "https://arb-mainnet.g.alchemy.com/v2/",
+    "supports_internal_transaction_history": false
   },
   "arbitrumSepolia": {
+    "name": "Arbitrum Sepolia",
     "block_explorer": "https://sepolia.arbiscan.io/tx/",
     "erc20_tokens": [],
-    "sdk_name": "ARB_SEPOLIA"
+    "sdk_name": "arb-sepolia",
+    "api_key_endpoint": "https://arb-sepolia.g.alchemy.com/v2/",
+    "supports_internal_transaction_history": false
   },
   "base": {
+    "name": "Base",
     "block_explorer": "https://base.blockscout.com/tx/",
     "erc20_tokens": [],
-    "sdk_name": "BASE_MAINNET"
+    "sdk_name": "base-mainnet",
+    "api_key_endpoint": "https://base-mainnet.g.alchemy.com/v2/",
+    "supports_internal_transaction_history": false
   },
   "baseSepolia": {
+    "name": "Base Sepolia",
     "block_explorer": "https://base-sepolia.blockscout.com/tx/",
     "erc20_tokens": [],
-    "sdk_name": "BASE_SEPOLIA"
+    "sdk_name": "base-sepolia",
+    "api_key_endpoint": "https://base-sepolia.g.alchemy.com/v2/",
+    "supports_internal_transaction_history": false
   },
   "mainnet": {
+    "name": "Ethereum",
     "block_explorer": "https://etherscan.io/tx/",
     "erc20_tokens": [],
-    "sdk_name": "ETH_MAINNET"
+    "sdk_name": "eth-mainnet",
+    "api_key_endpoint": "https://eth-mainnet.g.alchemy.com/v2/",
+    "supports_internal_transaction_history": true
   },
   "optimism": {
+    "name": "Optimism",
     "block_explorer": "https://optimistic.etherscan.io/tx/",
     "erc20_tokens": [],
-    "sdk_name": "OPT_MAINNET"
+    "sdk_name": "opt-mainnet",
+    "api_key_endpoint": "https://opt-mainnet.g.alchemy.com/v2/",
+    "supports_internal_transaction_history": false
   },
   "optimismSepolia": {
+    "name": "Optimism Sepolia",
     "block_explorer": "https://sepolia-optimism.etherscan.io/tx/",
-    "erc20_tokens": [],
-    "sdk_name": "OPT_SEPOLIA"
-  },
-  "polygon": {
-    "block_explorer": "https://polygonscan.com/address/",
-    "erc20_tokens": [],
-    "sdk_name": "MATIC_MAINNET"
-  },
-  "polygonAmoy": {
-    "block_explorer": "https://amoy.polygonscan.com/address/",
-    "erc20_tokens": [],
-    "sdk_name": "MATIC_AMOY"
+    "erc20_tokens": [
+      {
+        "name": "USD Coin",
+        "symbol": "USDC",
+        "address": "0x5fd84259d66Cd46123540766Be93DFE6D43130D7"
+      }
+    ],
+    "sdk_name": "opt-sepolia",
+    "api_key_endpoint": "https://opt-sepolia.g.alchemy.com/v2/",
+    "supports_internal_transaction_history": false
   },
   "sepolia": {
+    "name": "Sepolia",
     "block_explorer": "https://sepolia.etherscan.io/tx/",
     "erc20_tokens": [
       {
         "name": "DAI",
         "symbol": "DAI",
-        "address": "0xff34b3d4aee8ddcd6f9afffb6fe49bd371b8a357",
-        "decimals": 18,
-        "color": "#FF8C00",
-        "cmc_url": "https://coinmarketcap.com/currencies/dai/",
-        "logo_url": "https://cryptologos.cc/logos/multi-collateral-dai-dai-logo.png"
+        "address": "0xff34b3d4aee8ddcd6f9afffb6fe49bd371b8a357"
       },
       {
         "name": "Tether USD",
         "symbol": "USDT",
-        "address": "0xaA8E23Fb1079EA71e0a56F48a2aA51851D8433D0",
-        "decimals": 6,
-        "color": "#26A17B",
-        "cmc_url": "https://coinmarketcap.com/currencies/tether/",
-        "logo_url": "https://cryptologos.cc/logos/tether-usdt-logo.png"
+        "address": "0xaA8E23Fb1079EA71e0a56F48a2aA51851D8433D0"
       },
       {
         "name": "USD Coin",
         "symbol": "USDC",
-        "address": "0x94a9D9AC8a22534E3FaCa9F4e7F2E2cf85d5E4C8",
-        "decimals": 6,
-        "color": "#2775CA",
-        "cmc_url": "https://coinmarketcap.com/currencies/usd-coin/",
-        "logo_url": "https://cryptologos.cc/logos/usd-coin-usdc-logo.png"
+        "address": "0x94a9D9AC8a22534E3FaCa9F4e7F2E2cf85d5E4C8"
       },
       {
         "name": "Wrapped Bitcoin",
         "symbol": "WBTC",
-        "address": "0x29f2D40B0605204364af54EC677bD022dA425d03",
-        "decimals": 8,
-        "color": "#F7931A",
-        "cmc_url": "https://coinmarketcap.com/currencies/wrapped-bitcoin/",
-        "logo_url": "https://cryptologos.cc/logos/wrapped-bitcoin-wbtc-logo.png"
+        "address": "0x29f2D40B0605204364af54EC677bD022dA425d03"
       },
       {
         "name": "Aave",
         "symbol": "AAVE",
-        "address": "0x88541670E55cC00bEEFD87eB59EDd1b7C511AC9a",
-        "decimals": 18,
-        "color": "#2EBAC6",
-        "cmc_url": "https://coinmarketcap.com/currencies/aave/",
-        "logo_url": "https://cryptologos.cc/logos/aave-aave-logo.png"
+        "address": "0x88541670E55cC00bEEFD87eB59EDd1b7C511AC9a"
       }
     ],
-    "sdk_name": "ETH_SEPOLIA"
+    "sdk_name": "eth-sepolia",
+    "api_key_endpoint": "https://eth-sepolia.g.alchemy.com/v2/",
+    "supports_internal_transaction_history": true
   }
 }

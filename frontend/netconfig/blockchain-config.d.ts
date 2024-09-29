@@ -1,17 +1,30 @@
 declare module "*.json" {
-    const value: any;
-    export default value;
-  }
+  const value: any;
+  export default value;
+}
 
 export interface ERC20Token {
-    name: string;
-    symbol: string;
-    address: string;
-  }
+  name: string;
+  symbol: string;
+  address: string;
+}
+
+export interface ERC20TokenInfo {
+  name: string,
+  symbol: string,
+  decimals: number;
+  color: string;
+  cmc_url: string;
+  logo_url: string;
+}
 
 export interface BlockchainConfig {
-    block_explorer: string;
-    erc20_tokens: ERC20Token[];
+  name: string;
+  block_explorer: string;
+  api_key_endpoint: string;
+  erc20_tokens: ERC20Token[];
+  sdk_name: Network;
+  supports_internal_transaction_history: boolean;
 }
 
 export interface Config {
@@ -22,7 +35,9 @@ export interface Config {
   mainnet: BlockchainConfig;
   optimism: BlockchainConfig;
   optimismSepolia: BlockchainConfig;
-  polygon: BlockchainConfig;
-  polygonAmoy: BlockchainConfig;
   sepolia: BlockchainConfig;
+}
+
+export interface ERC20TokenInfoConfig {
+  erc20_tokens: ERC20TokenInfo;
 }
