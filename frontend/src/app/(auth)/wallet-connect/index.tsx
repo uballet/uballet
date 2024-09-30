@@ -1,6 +1,6 @@
-import { useState, useEffect, useCallback } from "react";
-import {isAddress, isHexString, toUtf8String, ut, Wallet} from 'ethers';
-import * as SecureStore from 'expo-secure-store'
+import { useState, useEffect } from "react";
+import { Wallet } from "ethers";
+import * as SecureStore from "expo-secure-store";
 import { View, Image } from "react-native";
 import { Button, Card, Modal, Snackbar, Text } from "react-native-paper";
 import { router, useLocalSearchParams } from "expo-router";
@@ -10,14 +10,14 @@ import Client, { Web3Wallet, Web3WalletTypes } from "@walletconnect/web3wallet";
 import { buildApprovedNamespaces, getSdkError } from "@walletconnect/utils";
 import { useSafeLightAccount } from "../../../hooks/useLightAccount";
 import styles from "../../../styles/styles";
-import { SessionTypes, SignClientTypes } from "@walletconnect/types";
+import { SessionTypes } from "@walletconnect/types";
 import { Separator } from "../../../components/Separator/Separator";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Toast from "react-native-toast-message";
-import {formatJsonRpcError, formatJsonRpcResult} from '@json-rpc-tools/utils';
-import { approveEIP155Request, rejectEIP155Request } from "./EIP155RequestHandlerUtil";
-import { useAccountContext } from "../../../hooks/useAccountContext";
-import { getStoredSigner } from "../../../providers/AccountProvider";
+import {
+  approveEIP155Request,
+  rejectEIP155Request,
+} from "./EIP155RequestHandlerUtil";
 import { useAuthContext } from "../../../providers/AuthProvider";
 
 const projectId = "bcf04074fe19f9c2663524759ae56420";
@@ -25,7 +25,7 @@ const WALLET_CONNECTIONS = "wallet_connections";
 // 2. Create config
 const metadata = {
   name: "Uballet",
-  description: "Uballtt dApp using smartcontracts",
+  description: "Uballet dApp using smartcontracts",
   url: "https://github.com/uballet/uballet",
   icons: ["https://avatars.githubusercontent.com/u/37784886"],
   redirect: {
@@ -37,13 +37,19 @@ async function initConnector(setConnector: any) {
   const core = new Core({
     projectId: projectId,
   });
-
-  const web3wallet = await Web3Wallet.init({
+  console.log("Core initialized");
+  await Web3Wallet.init({
     core, // <- pass the shared `core` instance
     metadata: metadata,
-  });
-  setConnector(web3wallet);
+  }).then((connector) => {
+    console.log("Web3Wallet initialized");
+    setConnector(connector);
+    return connector;
+  }).catch((error) => {
+    console.log("Error initializing Web3Wallet: ", error);
+  }); 
 }
+
 
 const SessionCard = (session: SessionTypes.Struct) => {
   return (
@@ -183,25 +189,33 @@ const WalletConnectScreen = () => {
     );
   }
 
-  async function handlePersionalSign(connector: Client, requestEvent: Web3WalletTypes.SessionRequest) {
+  async function handlePersionalSign(
+    connector: Client,
+    requestEvent: Web3WalletTypes.SessionRequest
+  ) {
     const { topic } = requestEvent;
     setModalVisible(true);
     setApprovedCallback(() => async () => {
-      try {     
-        const privateKey = await SecureStore.getItemAsync(`signer-${user!!.id}`);
-        const response = await approveEIP155Request(requestEvent, new Wallet(privateKey!!), account);
+      try {
+        const privateKey = await SecureStore.getItemAsync(
+          `signer-${user!!.id}`
+        );
+        const response = await approveEIP155Request(
+          requestEvent,
+          new Wallet(privateKey!!),
+          account
+        );
         console.log("Response: ", response);
         await connector.respondSessionRequest({
           topic,
           response,
         });
-       
       } catch (error: any) {
         console.error(error);
         console.log(error.message);
       }
     });
-   
+
     setRejectedCallback(() => async () => {
       try {
         let response = rejectEIP155Request(requestEvent);
@@ -214,11 +228,10 @@ const WalletConnectScreen = () => {
         return;
       }
     });
-    
   }
 
   async function loadActiveSessions(connector: Client) {
-    let jsonData = undefined
+    let jsonData = undefined;
     var activeSessions = {};
     if (jsonData) {
       console.log("Active sessions from storage");
