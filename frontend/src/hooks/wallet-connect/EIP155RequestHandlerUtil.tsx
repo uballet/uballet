@@ -3,12 +3,12 @@ import { formatJsonRpcError, formatJsonRpcResult } from "@json-rpc-tools/utils";
 import { SignClientTypes } from "@walletconnect/types";
 import { getSdkError } from "@walletconnect/utils";
 
-import { EIP155_SIGNING_METHODS } from "./PresetsUtil";
 import {
   getSignParamsMessage,
 } from "./HelperUtil";
 import { LightAccount } from "@alchemy/aa-accounts"
 import { AlchemySmartAccountClient } from "@alchemy/aa-alchemy";
+import { EIP155_SIGNING_METHODS } from "./PresetsUtil";
 type RequestEventArgs = Omit<
   SignClientTypes.EventArguments["session_request"],
   "verifyContext"
