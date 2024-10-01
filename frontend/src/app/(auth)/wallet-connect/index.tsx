@@ -19,6 +19,7 @@ import {
   rejectEIP155Request,
 } from "./EIP155RequestHandlerUtil";
 import { useAuthContext } from "../../../providers/AuthProvider";
+import { useAccountContext } from "../../../hooks/useAccountContext";
 
 const projectId = "bcf04074fe19f9c2663524759ae56420";
 const WALLET_CONNECTIONS = "wallet_connections";
@@ -86,6 +87,7 @@ const SessionCard = (session: SessionTypes.Struct) => {
 const WalletConnectScreen = () => {
   const account = useSafeLightAccount();
   const { user } = useAuthContext();
+  const { client } = useAccountContext();
   const wcuriScanned = useLocalSearchParams<{ wcuri: string }>()?.wcuri;
   const [connector, setConnector] = useState<Client>();
   const [modalVisible, setModalVisible] = useState(false);
@@ -182,12 +184,58 @@ const WalletConnectScreen = () => {
           case "personal_sign":
           case "eth_sign":
             handlePersionalSign(connector, requestEvent);
+          case "eth_sendTransaction":
+            handleSendTransaction(connector, requestEvent);
+            break;
           default:
             console.log("onSessionRequest", requestEvent);
         }
       }
     );
   }
+
+  async function handleSendTransaction(
+    connector: Client,
+    requestEvent: Web3WalletTypes.SessionRequest
+  ) {
+    const { topic } = requestEvent;
+    setModalVisible(true);
+    setApprovedCallback(() => async () => {
+      try {
+        const privateKey = await SecureStore.getItemAsync(
+          `signer-${user!!.id}`
+        );
+        const response = await approveEIP155Request(
+          requestEvent,
+          new Wallet(privateKey!!),
+          account,
+          client
+        );
+        console.log("Response: ", response);
+        await connector.respondSessionRequest({
+          topic,
+          response,
+        });
+      } catch (error: any) {
+        console.error(error);
+        console.log(error.message);
+      }
+    });
+
+    setRejectedCallback(() => async () => {
+      try {
+        let response = rejectEIP155Request(requestEvent);
+        await connector.respondSessionRequest({
+          topic,
+          response,
+        });
+      } catch (e) {
+        console.log((e as Error).message, "error");
+        return;
+      }
+    });
+  }
+
 
   async function handlePersionalSign(
     connector: Client,
@@ -203,7 +251,8 @@ const WalletConnectScreen = () => {
         const response = await approveEIP155Request(
           requestEvent,
           new Wallet(privateKey!!),
-          account
+          account,
+          client
         );
         console.log("Response: ", response);
         await connector.respondSessionRequest({

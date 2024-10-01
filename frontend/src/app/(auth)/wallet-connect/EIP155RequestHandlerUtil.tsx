@@ -1,4 +1,4 @@
-import { ethers, isAddress, JsonRpcProvider, Provider, verifyMessage, Wallet } from "ethers";
+import { ethers, isAddress, JsonRpcProvider, parseEther, Provider, verifyMessage, Wallet } from "ethers";
 import { formatJsonRpcError, formatJsonRpcResult } from "@json-rpc-tools/utils";
 import { SignClientTypes } from "@walletconnect/types";
 import { getSdkError } from "@walletconnect/utils";
@@ -8,6 +8,8 @@ import {
   getSignParamsMessage,
 } from "./HelperUtil";
 import { LightAccount } from "@alchemy/aa-accounts"
+import { useAccountContext } from "../../../hooks/useAccountContext";
+import { AlchemySmartAccountClient } from "@alchemy/aa-alchemy";
 type RequestEventArgs = Omit<
   SignClientTypes.EventArguments["session_request"],
   "verifyContext"
@@ -15,11 +17,12 @@ type RequestEventArgs = Omit<
 export async function approveEIP155Request(
   requestEvent: RequestEventArgs,
   wallet: Wallet,
-  account: LightAccount
+  account: LightAccount,
+  client: AlchemySmartAccountClient,
 ) {
   const { params, id } = requestEvent;
   const { chainId, request } = params;
-
+ 
 
   switch (request.method) {
     case EIP155_SIGNING_METHODS.PERSONAL_SIGN:
@@ -38,18 +41,25 @@ export async function approveEIP155Request(
         
         // Unlike Web3.js, Ethers seperates the provider instance and wallet instance, so we must also create a wallet instance
         
-        const signedMe = await account.signMessage({message: message1});
-        const signedMessage = await wallet.signMessage(message1);
+        const signedMe = await client.signMessage({
+          account: account,
+          message: message
+        });
+
+        const verified = await client.verifyMessage({
+          address: account.address,
+          message: message,
+          signature: signedMe
+        });
+
         const signerAddress = verifyMessage(message, signedMe);
-        const signedAddress = verifyMessage(message1, signedMessage);
 
         console.log('Recovered Address:', signerAddress);
-        console.log('Recovered Address:', signedAddress);
         console.log(`signedMe ${signedMe}`);
-        console.log(`signedMessage ${signedMessage}`);
+        console.log(`verified ${verified}`);
         console.log('User Address:', account.address);
        
-        return formatJsonRpcResult(id, signedMessage);
+        return formatJsonRpcResult(id, signedMe);
       } catch (error: any) {
         console.error(error);
         console.log(error.message);
@@ -58,12 +68,20 @@ export async function approveEIP155Request(
 
     case EIP155_SIGNING_METHODS.ETH_SEND_TRANSACTION:
       try {
-        const chainData = PresetsUtil.getChainData(chainId.split(":")[1]);
-        const provider = new JsonRpcProvider(chainData.rpcUrl);
-        //const sendTransaction = request.params[0];
-        //const connectedWallet = wallet.connect(provider);
-        //const { hash } = await connectedWallet.sendTransaction(sendTransaction);
-        return formatJsonRpcResult(id, "hash");
+        const toAddress = request.params[0].to;
+        const amount = parseInt(request.params[0].value).toString();
+        console.log(`sendTransaction with amount: ${amount} to ${toAddress}`);
+        const uo = await client.sendUserOperation({
+          account,
+          uo: {
+            target: toAddress,
+            data: "0x",
+            value: parseEther("0.0000001"),
+          },
+        });
+        const txHash = await client.waitForUserOperationTransaction(uo);
+        console.log(`sent transaction with hash: ${txHash}`);
+        return formatJsonRpcResult(id, txHash);
       } catch (error: any) {
         console.error(error);
         console.log(error.message);
