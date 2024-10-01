@@ -4,7 +4,18 @@ import { useTokenBalance } from "./useTokenBalance";
 import UballetAPI from "../api/uballet";
 
 interface Balances {
-  [key: string]: { balance: number; quote: number };
+  [key: string]: {
+    balance: number;
+    balanceInUSDT: number;
+    quote: number;
+    maxSupply?: number;
+    circulatingSupply?: number;
+    totalSupply?: number;
+    volume24h?: number;
+    percentChange24h?: number;
+    marketCap?: number;
+    marketCapDominance?: number;
+  };
 }
 
 const roundNumber = (num: number, decimalPlaces: number) => {
@@ -77,22 +88,41 @@ export function useBalanceInUSDT() {
       const response = await UballetAPI.getQuote({ coin: query });
 
       // Convert token balances to USDT
-      const tokenBalancesInUSD: {
-        [key: string]: { balance: number; quote: number };
+      const tokensInfo: {
+        [key: string]: {
+          balance: number;
+          balanceInUSDT: number;
+          quote: number;
+          maxSupply?: number;
+          circulatingSupply?: number;
+          totalSupply?: number;
+          volume24h?: number;
+          percentChange24h?: number;
+          marketCap?: number;
+          marketCapDominance?: number;
+        };
       } = {};
       for (const token in tokenBalancesParsed) {
         // Round balance to 4 decimal places
         const balance = tokenBalancesParsed[token];
-        const quote = response[token] * tokenBalancesParsed[token];
-        tokenBalancesInUSD[token] = {
+        const quote = response[token].quote * tokenBalancesParsed[token];
+        tokensInfo[token] = {
           balance: balance,
-          quote: roundNumber(quote, 2),
+          balanceInUSDT: roundNumber(quote, 2),
+          quote: response[token].quote,
+          maxSupply: response[token].max_supply,
+          circulatingSupply: response[token].circulating_supply,
+          totalSupply: response[token].total_supply,
+          volume24h: response[token].volume_24h,
+          percentChange24h: response[token].percent_change_24h,
+          marketCap: response[token].market_cap,
+          marketCapDominance: response[token].market_cap_dominance,
         };
       }
 
       // Sort tokenBalancesInUSD by quote field
-      const sortedTokens = Object.entries(tokenBalancesInUSD).sort(
-        (a, b) => b[1].quote - a[1].quote
+      const sortedTokens = Object.entries(tokensInfo).sort(
+        (a, b) => b[1].balanceInUSDT - a[1].balanceInUSDT
       );
       let sortedTokenBalances: Balances = Object.fromEntries(sortedTokens);
 
@@ -104,7 +134,7 @@ export function useBalanceInUSDT() {
       // Calculate total sum of all tokens
       let totalSum = 0;
       for (const token in sortedTokenBalances) {
-        totalSum += sortedTokenBalances[token].quote;
+        totalSum += sortedTokenBalances[token].balanceInUSDT;
       }
 
       setTotalSumData(totalSum);

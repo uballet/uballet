@@ -1,4 +1,10 @@
-import { View, ScrollView, Image, RefreshControl } from "react-native";
+import {
+  View,
+  ScrollView,
+  Image,
+  RefreshControl,
+  Pressable,
+} from "react-native";
 import {
   Card,
   Text,
@@ -8,14 +14,13 @@ import {
 } from "react-native-paper";
 import { useBalanceInUSDT } from "../../../hooks/useBalanceInUSDT";
 import styles from "../../../styles/styles";
-import arrowPNG from "../../../../assets/arrow.png";
-import images from "../../../../assets/imageMap";
 import { router } from "expo-router";
-import { useState, useEffect } from "react";
-import config from "../../../../netconfig/blockchain.default.json";
+import { useState } from "react";
+import AntDesign from "@expo/vector-icons/AntDesign";
+import tokenInfo from "../../../../netconfig/erc20-token-info.json";
 
 const BalanceScreen = () => {
-  const tokens = config.sepolia.erc20_tokens;
+  const tokens = tokenInfo.erc20_tokens;
 
   let tokensNames: { [key: string]: string } = {};
   tokensNames["ETH"] = "Ethereum";
@@ -23,7 +28,11 @@ const BalanceScreen = () => {
     tokensNames[token.symbol] = token.name;
   }
 
-  const tokenPNGs = images;
+  let tokensLogosUris: { [key: string]: string } = {};
+  tokensLogosUris["ETH"] = "https://cryptologos.cc/logos/ethereum-eth-logo.png";
+  for (const token of tokens) {
+    tokensLogosUris[token.symbol] = token.logo_url;
+  }
 
   const [showZeroBalance, setShowZeroBalance] = useState(true);
   const { data, totalSumData, loading, error, refetch } = useBalanceInUSDT();
@@ -67,11 +76,17 @@ const BalanceScreen = () => {
             ) : (
               <View className="flex flex-row justify-start w-50 items-center mt-2">
                 <Text className="text-3xl font-bold">
-                  {totalSumData.toFixed(2)}
+                  {totalSumData ? totalSumData.toFixed(2) : "0.00"}
                 </Text>
                 <Text className="mt-2"> USDT</Text>
-                <Image source={arrowPNG} className="w-3 h-2 mt-2 ml-1" />
-                <Image source={arrowPNG} className="w-3 h-2 mt-2 -ml-1" />
+                <View className="-mb-2 ml-1">
+                  <AntDesign
+                    name="doubleright"
+                    size={20}
+                    color="black"
+                    className=""
+                  />
+                </View>
               </View>
             )}
           </Card.Content>
@@ -90,8 +105,21 @@ const BalanceScreen = () => {
           </Text>
         </Button>
 
+        <Button
+          style={{ ...styles.button, backgroundColor: "black" }}
+          textColor="white"
+          className="-mt-0.5"
+          onPress={() => {
+            router.push("/(auth)/import");
+          }}
+        >
+          <Text className="text-white text-center font-medium">
+            Import Tokens
+          </Text>
+        </Button>
+
         {/* Checkbox to toggle zero balance tokens */}
-        <View className="flex flex-row  justify-left mb-1">
+        <View className="flex flex-row justify-left mb-1">
           <Text>Hide tokens with zero balance</Text>
           <Switch
             className="-mt-0.5 w-12"
@@ -111,21 +139,41 @@ const BalanceScreen = () => {
             ) : (
               <View className="flex flex-col justify-between mt-2 items-center text-center">
                 {Object.entries(data ?? {})
-                  .filter(([_, { balance }]) => !showZeroBalance || balance > 0)
+                  .filter(
+                    ([key, { balance }]) =>
+                      key == "ETH" || !showZeroBalance || balance > 0
+                  )
                   .map(([symbol, amount]) => (
                     <View
                       key={symbol}
                       className="flex flex-row w-full justify-between"
                     >
                       <View className="flex flex-row text-center items-center">
-                        <Image source={tokenPNGs[symbol]} className="w-6 h-6" />
+                        <Image
+                          source={{
+                            uri: tokensLogosUris[symbol],
+                          }}
+                          className="w-6 h-6"
+                        />
                         <View className="flex flex-col ml-2 w-20 justify-start">
-                          <Text className="font-bold text-xl text-[#277ca5] ">
-                            {symbol}
-                          </Text>
-                          <Text className="text-gray-500">
-                            {tokensNames[symbol]}
-                          </Text>
+                          <Pressable
+                            onPress={() => {
+                              router.push({
+                                pathname: "/(auth)/market-info",
+                                params: {
+                                  symbol: symbol,
+                                  name: tokensNames[symbol],
+                                },
+                              });
+                            }}
+                          >
+                            <Text className="font-bold text-xl text-[#277ca5] ">
+                              {symbol}
+                            </Text>
+                            <Text className="text-gray-500">
+                              {tokensNames[symbol]}
+                            </Text>
+                          </Pressable>
                         </View>
                       </View>
 
@@ -135,12 +183,12 @@ const BalanceScreen = () => {
                           adjustsFontSizeToFit
                           numberOfLines={1}
                         >
-                          {data?.[symbol].balance.toString() ?? "-"}
+                          {data?.[symbol]?.balance?.toString() ?? "-"}
                         </Text>
                         <Text>
                           {data?.[symbol] === undefined
                             ? "-"
-                            : data[symbol].quote.toFixed(2)}{" "}
+                            : data[symbol].balanceInUSDT.toFixed(2)}{" "}
                           USDT
                         </Text>
                       </View>

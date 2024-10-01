@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useAccountContext } from "./useAccountContext";
 import { ethers } from "ethers";
-import config from "../../netconfig/blockchain.default.json";
+import { useBlockchainContext } from "../providers/BlockchainProvider";
 
 interface TokenBalances {
   [key: string]: string; // Adjust the type as needed
@@ -15,7 +15,8 @@ export function useTokenBalance() {
   const [error, setError] = useState<string | null>(null);
   const [refreshKey, setRefreshKey] = useState(0); // Key to trigger refresh
 
-  const tokens = config.sepolia.erc20_tokens;
+  const { blockchain } = useBlockchainContext();
+  const tokens = blockchain.erc20_tokens;
 
   if (!account) {
     throw new Error("Account not ready");

@@ -10,12 +10,22 @@ uballetAxios.interceptors.request.use(
     async (config) => {
         const token = await getUballetToken();
         if (token) {
-        config.headers["Authorization"] = `Bearer ${token}`;
+            config.headers["Authorization"] = `Bearer ${token}`;
         }
         return config;
     },
     (error) => Promise.reject(error)
 );
+
+export function setChainHeader(blockchain: string) {
+    uballetAxios.interceptors.request.use(
+        async (config) => {
+            config.headers["Chain"] = blockchain;
+            return config;
+        },
+        (error) => Promise.reject(error)
+    )
+}
 
 const UBALLET_JWT_KEY = "uballet_jwt";
 

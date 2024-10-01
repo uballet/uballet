@@ -9,6 +9,7 @@ export function useTransfer() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
   const [txHash, setTxHash] = useState<null | string>(null);
+  
   const transferToAddress = useCallback(
     async (address: `0x${string}`, etherAmount: string) => {
       try {

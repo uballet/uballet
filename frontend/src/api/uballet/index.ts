@@ -149,6 +149,10 @@ async function registerDeviceToken({ token }: { token: string }) {
   const { data } = await uballetAxios.post('/user/device-token', {
     token,
   });
+}
+
+async function deleteContact({ id }: { id: string }) {
+  const { data } = await uballetAxios.delete(`/contacts/${id}`);
   return data;
 }
 
@@ -177,12 +181,12 @@ async function setUserWalletAddress({
     walletAddress,
     walletType
   });
-  console.log(data);
   return data;
 }
 
 export default {
   addContact,
+  deleteContact,
   completeSignIn,
   getPasskeyAuthenticationOptions,
   getPasskeyRegistrationOptions,
