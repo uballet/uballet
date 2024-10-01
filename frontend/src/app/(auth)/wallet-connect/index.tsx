@@ -1,6 +1,4 @@
 import { useState, useEffect } from "react";
-import { Wallet } from "ethers";
-import * as SecureStore from "expo-secure-store";
 import { View, Image } from "react-native";
 import { Button, Card, Modal, Snackbar, Text } from "react-native-paper";
 import { router, useLocalSearchParams } from "expo-router";
@@ -202,12 +200,8 @@ const WalletConnectScreen = () => {
     setModalVisible(true);
     setApprovedCallback(() => async () => {
       try {
-        const privateKey = await SecureStore.getItemAsync(
-          `signer-${user!!.id}`
-        );
         const response = await approveEIP155Request(
           requestEvent,
-          new Wallet(privateKey!!),
           account,
           client
         );
@@ -245,12 +239,8 @@ const WalletConnectScreen = () => {
     setModalVisible(true);
     setApprovedCallback(() => async () => {
       try {
-        const privateKey = await SecureStore.getItemAsync(
-          `signer-${user!!.id}`
-        );
         const response = await approveEIP155Request(
           requestEvent,
-          new Wallet(privateKey!!),
           account,
           client
         );
