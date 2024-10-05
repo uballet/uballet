@@ -19,26 +19,26 @@ const AssetsAllocationChart = () => {
   // Get the data from the useBalanceInUSDT hook
   const { data, loading, error } = useBalanceInUSDT();
   useEffect(() => {
-    if (data) {
-      setSubtitle("In USDT values");
-    }
+    setSubtitle("In USDT values");
   }, [data]);
 
   // Filter tokens with zero balance
   const filteredData = Object.entries(data || {}).filter(
-    ([key, value]) => value.quote > 0
+    ([key, value]) => value.balanceInUSDT > 0
   );
 
   // Parse data
   const parsedData = filteredData.map(([key, value]) => ({
     name: key,
-    balance: value.quote,
+    balance: value.balanceInUSDT,
     // Get the color from the colors object, or use a random color
     color:
       colors[key] || "#" + Math.floor(Math.random() * 16777215).toString(16),
     legendFontColor: colors[key],
     legendFontSize: 15,
   }));
+
+  console.log("parsedData", parsedData);
 
   const chartConfig = {
     backgroundGradientFrom: "#1E2923",
@@ -50,13 +50,27 @@ const AssetsAllocationChart = () => {
   };
 
   // Conditionally render the chart only when data is available
-  if ((error || parsedData.length === 0) && !loading) {
+  if (error) {
     return (
       <View>
         <Text style={{ ...styles.screenHeader, textAlign: "left" }}>
           {title}
         </Text>
-        <Text>No data available</Text>
+        <Text>Error: no data available</Text>
+      </View>
+    );
+  }
+
+  if (parsedData.length === 0 && !loading) {
+    return (
+      <View>
+        <Text style={{ ...styles.screenHeader, textAlign: "left" }}>
+          {title}
+        </Text>
+        <Text className="text-left -mt-5">{subtitle}</Text>
+        <Text className="text-left mt-2 text-lg">
+          No balances to show! Try adding tokens to your wallet
+        </Text>
       </View>
     );
   }
