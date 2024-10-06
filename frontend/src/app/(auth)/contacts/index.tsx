@@ -8,7 +8,7 @@ import { router } from "expo-router";
 import { useAccountContext } from "../../../hooks/useAccountContext";
 import { ethers } from "ethers";
 import { Alchemy, Network } from "alchemy-sdk";
-import { ALCHEMY_API_URL } from "../../../env";
+import { ALCHEMY_API_KEY } from "../../../env";
 
 function ContactsScreen() {
   const { contacts, isLoading } = useContacts();
@@ -18,13 +18,12 @@ function ContactsScreen() {
   const resolveName = useCallback(
     async (address: string) => {
       // Using Alchemy SDK to resolve ENS names with the Alchemy API in the mainnet network
-      if (ALCHEMY_API_URL === undefined) {
+      if (ALCHEMY_API_KEY === undefined) {
         throw new Error("ALCHEMY_API_URL is not defined");
       }
-      const alchemyApiEthMainnetUrl = ALCHEMY_API_URL.replace(
-        "eth-sepolia",
-        "eth-mainnet"
-      );
+      const alchemyApiEthMainnetUrl =
+        "https://eth-mainnet.g.alchemy.com/v2/" + ALCHEMY_API_KEY;
+
       const sdkMainnet = new Alchemy({
         url: alchemyApiEthMainnetUrl,
         network: Network.ETH_MAINNET,
