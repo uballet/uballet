@@ -31,6 +31,7 @@ export default function RecoverWithTeamScreen() {
                 <Text className="text-lg font-bold">Estimated Recovery Fee</Text>
                 <Text className="text-xl font-bold">{estimationQuery.data?.estimation.slice(0, 8)} ETH</Text>
             </View>
+            <Text className="text-blue-500 mt-2">You will be charged when the recovery is complete.</Text>
             <View className="w-3/4 p-4 border rounded-md mt-4 flex-row justify-between">
                 <View>
                     <Text className="text-lg font-bold">Current Balance</Text>
@@ -41,18 +42,18 @@ export default function RecoverWithTeamScreen() {
                     {!isEnough && <MaterialIcons name="cancel" size={36} color="red" />}
                 </View>
             </View>
-            {!isEnough && <Text className="text-red-500 mt-2">Not enough balance to request recovery</Text>}
+            {!isEnough && <Text className="text-red-500 mt-2">You can start the recovery process. But you'll need more ETH to complete it</Text>}
             <View className="w-3/4 mt-4">
                 <Text className="text-xl font-semibold my-4">Recovery Team</Text>
                 <Text className="text-lg">· Recoverer 1: {myRecoveryTeam?.recoverer1Email}</Text>
                 <Text className="text-lg">· Recoverer 2: {myRecoveryTeam?.recoverer2Email}</Text>
             </View>
             {myRecoveryTeam && !pendingRequest && (
-                <Button mode="contained" disabled={requestRecoveryMutation.isPending || !isEnough} loading={requestRecoveryMutation.isPending} className="w-3/4 mt-8" onPress={() => requestRecoveryMutation.mutate()}>
+                <Button mode="contained" disabled={requestRecoveryMutation.isPending} loading={requestRecoveryMutation.isPending} className="w-3/4 mt-8" onPress={() => requestRecoveryMutation.mutate()}>
                     Request Recovery
                 </Button>
             )}
-            {pendingRequest && <Text className="text-red-500">Your Recovery is in process - Contact your team</Text>}
+            {pendingRequest && <Text className="text-blue-500">Your Recovery is in process - Contact your team</Text>}
         </SafeAreaView>
     )
 }
