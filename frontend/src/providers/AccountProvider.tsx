@@ -19,7 +19,6 @@ import { User } from "../api/uballet/types";
 import { useSignerStore } from "../hooks/useSignerStore";
 import { DEFAULT_CONFIG, useBlockchainContext } from "./BlockchainProvider";
 import { BlockchainConfig } from "../../netconfig/blockchain-config";
-import { getL1Allowance } from "viem/zksync";
 
 global.Buffer = global.Buffer || require('buffer').Buffer;
 
@@ -31,7 +30,7 @@ const getAlchemyChain = (name: string) => {
       return arbitrumSepolia;
     case "base":
       return base;
-    case "baseSepolia":
+    case "base-sepolia":
       return baseSepolia;
     case "mainnet":
       return mainnet;
@@ -138,7 +137,7 @@ const getAlchemyPolicyId = (name: string) => {
       return ARB_SEPOLIA_ALCHEMY_POLICY_ID;
     case "base":
       return "";
-    case "baseSepolia":
+    case "base-sepolia":
       return BASE_SEPOLIA_ALCHEMY_POLICY_ID;
     case "mainnet":
       return "";
