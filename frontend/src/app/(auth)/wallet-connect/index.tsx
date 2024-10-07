@@ -12,11 +12,13 @@ import {
 import { router, useLocalSearchParams } from "expo-router";
 import "@walletconnect/react-native-compat";
 import styles from "../../../styles/styles";
+import {  getSdkError } from "@walletconnect/utils";
 import { SessionTypes } from "@walletconnect/types";
 import { Separator } from "../../../components/Separator/Separator";
 import { useWalletConnect } from "../../../hooks/wallet-connect/useWalletConnect";
+import Client from "@walletconnect/web3wallet";
 
-const SessionCard = (session: SessionTypes.Struct) => {
+const SessionCard = (session: SessionTypes.Struct, connector: Client | undefined) => {
   return (
     <Card
       style={{
@@ -35,8 +37,10 @@ const SessionCard = (session: SessionTypes.Struct) => {
             icon="close"
             size={16}
             iconColor="black"
-            onPress={() => {
-              console.log("Disconnecting session: ", session.topic);
+            onPress={async () => {
+              const topic = session.topic;
+              console.log("Disconnecting session: ", topic);
+              await connector?.disconnectSession(topic, getSdkError('USER_DISCONNECTED'));
             }}
           />
         )}
@@ -93,7 +97,9 @@ const WalletConnectScreen = () => {
     if (wcuriScanned) {
       console.log("Scanned WCURI: ", wcuriScanned);
       try {
-        connector?.pair({ uri: wcuriScanned });
+        connector?.pair({ uri: wcuriScanned }).then(() => {
+          console.log("Paired successfully");
+        });
       } catch (error) {
         // some error happens while pairing - check Expected errors section
       }
@@ -120,7 +126,7 @@ const WalletConnectScreen = () => {
           </Button>
           <>
             {activeSessions &&
-              Object.values(activeSessions).map((value) => SessionCard(value))}
+              Object.values(activeSessions).map((value) => SessionCard(value, connector))}
           </>
           <Modal
             style={{ justifyContent: "center", margin: 16 }}
