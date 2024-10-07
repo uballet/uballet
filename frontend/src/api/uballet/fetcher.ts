@@ -6,8 +6,11 @@ const uballetAxios = axios.create({
     baseURL: UBALLET_API_URL,
 });
   
+let chain = 'sepolia';
+
 uballetAxios.interceptors.request.use(
     async (config) => {
+        config.headers["Chain"] = chain;
         const token = await getUballetToken();
         if (token) {
             config.headers["Authorization"] = `Bearer ${token}`;
@@ -18,13 +21,7 @@ uballetAxios.interceptors.request.use(
 );
 
 export function setChainHeader(blockchain: string) {
-    uballetAxios.interceptors.request.use(
-        async (config) => {
-            config.headers["Chain"] = blockchain;
-            return config;
-        },
-        (error) => Promise.reject(error)
-    )
+    chain = blockchain
 }
 
 const UBALLET_JWT_KEY = "uballet_jwt";

@@ -31,11 +31,6 @@ async function getMyRecoveryRequest() {
     return data
 }
 
-async function getOngoingRequests() {
-    const { data } = await uballetAxios.get<ReceivedRecoveryRequest[]>('/recovery/requests', { params: { recoverer: true }});
-    return data
-}
-
 async function requestRecovery({ address1, address2 }: { address1: string, address2: string }) {
     const { data } = await uballetAxios.post<MyRecoveryRequest>('/recovery/requests', { address1, address2 });
     return data
@@ -57,7 +52,6 @@ export default {
     confirmRecoveryRequest,
     getMyRecoveryTeam,
     getMyRecoveryRequest,
-    getOngoingRequests,
     getRecoveryTeams,
     joinRecoveryTeam,
     requestRecovery,

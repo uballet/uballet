@@ -2,27 +2,44 @@ import { User } from "../entity/User"
 import { RecoveryTeam } from "../entity/RecoveryTeam";
 import { RecoveryRequest } from "../entity/RecoveryRequest";
 import { Address, Hex } from "../types";
-
+import EmailService from "./email"
 import NotificationService from "./notification"
 
-async function createRecoveryTeam({ user, recoverer1Email, recoverer2Email }: { user: User; recoverer1Email: string; recoverer2Email: string }) {
+async function createRecoveryTeam({ user, recoverer1Email, recoverer2Email, chain }: { user: User; recoverer1Email: string; recoverer2Email: string; chain: string }) {
     const recoveryTeam = new RecoveryTeam()
     recoveryTeam.user = user
-    const recoverer1 = await User.findOneOrFail({ where: { email: recoverer1Email } })
-    const recoverer2 = await User.findOneOrFail({ where: { email: recoverer2Email } })
+    const recoverer1 = await User.findOne({ where: { email: recoverer1Email } })
+    const recoverer2 = await User.findOne({ where: { email: recoverer2Email } })
+    let notificationPromises = []
+    if (!recoverer1) {
+        const newUser = new User();
+        newUser.email = recoverer1Email
+        recoveryTeam.recoverer1 = await newUser.save()
+        notificationPromises.push(EmailService.sendEmail(recoverer1Email, 'UBALLET - Join Recovery Team', `User ${user.email} wants you to be their recoverer. Join now!`))
+    } else {
+        recoveryTeam.recoverer1 = recoverer1
+        notificationPromises.push(NotificationService.createNotification({ userId: recoverer1.id, title: `${recoverer1.email}: Join Recovery Team`, body: `User ${user.email} wants you to be their recoverer.`, type: 'recovery-team-invite', sendPush: true }))
 
-    recoveryTeam.recoverer1 = recoverer1
-    recoveryTeam.recoverer2 = recoverer2
-    await Promise.all([
-        NotificationService.createNotification({ userId: recoverer1.id, title: `${recoverer1.email}: Join Recovery Team`, body: `User ${user.email} wants you to be their recoverer.`, type: 'recovery-team-invite', sendPush: true }),
-        NotificationService.createNotification({ userId: recoverer2.id, title: `${recoverer2.email}: Join Recovery Team`, body: `User ${user.email} wants you to be their recoverer.`, type: 'recovery-team-invite', sendPush: true }),
-    ])
+    }
+
+    if (!recoverer2) {
+        const newUser = new User();
+        newUser.email = recoverer2Email
+        recoveryTeam.recoverer2 = await newUser.save()
+        notificationPromises.push(EmailService.sendEmail(recoverer2Email, 'UBALLET - Join Recovery Team', `User ${user.email} wants you to be their recoverer. Join now!`))
+    } else {
+        recoveryTeam.recoverer2 = recoverer2
+        notificationPromises.push(NotificationService.createNotification({ userId: recoverer2.id, title: `${recoverer2.email}: Join Recovery Team`, body: `User ${user.email} wants you to be their recoverer.`, type: 'recovery-team-invite', sendPush: true }))
+    }
+
+    recoveryTeam.chain = chain
+    await Promise.all(notificationPromises)
     await recoveryTeam.save()
     return recoveryTeam
 }
 
-async function getMyRecoveryTeam({ user }: { user: User }) {
-    return await RecoveryTeam.findOne({ where: { userId: user.id }, loadEagerRelations: true })
+async function getMyRecoveryTeam({ user, chain }: { user: User; chain: string }) {
+    return await RecoveryTeam.findOne({ where: { userId: user.id, chain }, loadEagerRelations: true })
 }
 
 async function joinRecoveryTeam({ user, recoveryTeamId, address }: { user: User; recoveryTeamId: string, address: Address }) {
@@ -55,12 +72,12 @@ async function confirmRecoveryTeam({ user, recoveryTeamId }: { user: User; recov
     return recoveryTeam
 }
 
-async function getJoinedTeams({ user }: { user: User }) {
-    return await RecoveryTeam.find({ where: [{ recoverer1Id: user.id }, { recoverer2Id: user.id }], loadEagerRelations: true })
+async function getJoinedTeams({ user, chain }: { user: User, chain: string }) {
+    return await RecoveryTeam.find({ where: [{ recoverer1Id: user.id, chain }, { recoverer2Id: user.id, chain }], loadEagerRelations: true })
 }
 
-async function requestRecovery({ user, address1, address2 }: { user: User; address1: Address; address2: Address }) {
-    const team = await RecoveryTeam.findOneOrFail({ where: { userId: user.id, userConfirmed: true }, loadEagerRelations: true })
+async function requestRecovery({ user, address1, address2, chain }: { user: User; address1: Address; address2: Address, chain: string }) {
+    const team = await RecoveryTeam.findOneOrFail({ where: { userId: user.id, userConfirmed: true, chain }, loadEagerRelations: true })
 
     const newRequest = new RecoveryRequest()
     newRequest.recoveryTeam = team
@@ -75,16 +92,16 @@ async function requestRecovery({ user, address1, address2 }: { user: User; addre
     return newRequest
 }
 
-async function getOngoingRecoveryRequests({ user }: { user: User }) {
+async function getOngoingRecoveryRequests({ user, chain }: { user: User; chain: string }) {
     const requests = await RecoveryRequest
-        .find({ where: { recoveryTeam: [{ recoverer1Id: user.id }, { recoverer2Id: user.id }], status: "pending" }, loadEagerRelations: true })
+        .find({ where: { recoveryTeam: [{ recoverer1Id: user.id, chain }, { recoverer2Id: user.id, chain }], status: "pending" }, loadEagerRelations: true })
 
     return requests
 }
 
-async function getMyRecoveryRequest({ user }: { user: User }) {
+async function getMyRecoveryRequest({ user, chain }: { user: User; chain: string }) {
     const requests = await RecoveryRequest
-        .findOne({ where: { recoveryTeam: { userId: user.id }, status: "pending" }, loadEagerRelations: true })
+        .findOne({ where: { recoveryTeam: { userId: user.id, chain }, status: "pending" }, loadEagerRelations: true })
 
     return requests
 }

@@ -35,4 +35,7 @@ export class RecoveryTeam extends BaseEntity {
     
     @Column({ default: false })
     userConfirmed: boolean
+
+    @Column({ default: 'sepolia' })
+    chain: string
 }

@@ -117,8 +117,9 @@ function formatReceivedRequest(request: RecoveryRequest, user: User): ReceivedRe
 }
 router.post('/teams', authenticateToken, async (req: Request, res: Response) => {
     const user = res.locals.user
+    const chain = req.headers["chain"] as string
     const { email1, email2 } = req.body
-    const recoveryTeam = await RecoveryService.createRecoveryTeam({ user, recoverer1Email: email1, recoverer2Email: email2 })
+    const recoveryTeam = await RecoveryService.createRecoveryTeam({ user, recoverer1Email: email1, recoverer2Email: email2, chain })
     return res.status(200).json(formatJoinedTeam(recoveryTeam, user))
 })
 router.post('/teams/:id/join', authenticateToken, async (req: Request, res: Response) => {
@@ -138,33 +139,36 @@ router.post('/teams/:id/confirm', authenticateToken, async (req: Request, res: R
 
 router.get('/teams', authenticateToken, async (req: Request, res: Response) => {
     const user = res.locals.user
+    const chain = req.headers["chain"] as string
     const { recoverer } = req.query
 
     if (recoverer === "true") {
-        const recoveryTeams = await RecoveryService.getJoinedTeams({ user })
-        const requests = await RecoveryService.getOngoingRecoveryRequests({ user })
+        const recoveryTeams = await RecoveryService.getJoinedTeams({ user, chain })
+        const requests = await RecoveryService.getOngoingRecoveryRequests({ user, chain })
         return res.status(200).json(recoveryTeams.map((team => formatJoinedTeam(team, user, requests))))
     }
-    const recoveryTeam = await RecoveryService.getMyRecoveryTeam({ user })
+    const recoveryTeam = await RecoveryService.getMyRecoveryTeam({ user, chain })
     return res.status(200).json(formatOwnedTeam(recoveryTeam))
 })
 
 router.post('/requests', authenticateToken, async (req: Request, res: Response) => {
     const user = res.locals.user
+    const chain = req.headers["chain"] as string
     const { address1, address2 } = req.body
 
-    const request = await RecoveryService.requestRecovery({ user, address1, address2 })
+    const request = await RecoveryService.requestRecovery({ user, address1, address2, chain })
     return res.status(200).json(formatMyRequest(request))
 })
 
 router.get('/requests', authenticateToken, async (req: Request, res: Response) => {
     const user = res.locals.user
+    const chain = req.headers["chain"] as string
     const { recoverer } = req.query
     if (recoverer === "true") {
-        const recoveryRequests = await RecoveryService.getOngoingRecoveryRequests({ user })
+        const recoveryRequests = await RecoveryService.getOngoingRecoveryRequests({ user, chain })
         return res.status(200).json(recoveryRequests.map((request => formatReceivedRequest(request, user))))
     }
-    const request = await RecoveryService.getMyRecoveryRequest({ user })
+    const request = await RecoveryService.getMyRecoveryRequest({ user, chain })
     return res.status(200).json(formatMyRequest(request))
 })
 
