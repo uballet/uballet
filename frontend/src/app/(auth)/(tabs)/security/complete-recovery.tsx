@@ -12,7 +12,7 @@ import { useRecoverAccount } from "../../../../hooks/recovery/useRecoverAccount"
 
 function useRecoveryEstimation({ address1, address2, recoveryAddress }: { recoveryAddress?: Address; address1?: Address; address2?: Address }) {
     const { createMultsigClient, lightAccount, initiator } = useAccountContext();
-    const getTeamCreationEstimation = useCallback(async () => {
+    const getRecoveryEstimation = useCallback(async () => {
         if (!address1 || !address2 || !recoveryAddress) return null
         const account = lightAccount || initiator
         const signer = account!.account.getSigner()
@@ -44,7 +44,7 @@ function useRecoveryEstimation({ address1, address2, recoveryAddress }: { recove
 
     const query = useQuery({
         queryKey: ['account-recovery-estimation', address1, address2],
-        queryFn: getTeamCreationEstimation,
+        queryFn: getRecoveryEstimation,
     })
 
     return query
@@ -95,10 +95,10 @@ export default function CompleteRecoveryScreen() {
                 loading={recoverAccountMutation.isPending}
                 onPress={() => recoverAccountMutation.mutate({ recoveryTeam: team })}
             >
-                Confirm Team
+                Complete Recovery
             </Button>
             {!estimationQuery.data.isEnough && (
-                <Text className="text-red-500 mt-1">Not enough balance</Text>
+                <Text className="text-red-500 mt-1">Not enough balance. Transfer more ETH to complete recovery</Text>
             )}
             <Button mode="outlined" className="w-3/4 mt-4 self-center" onPress={() => router.back()}>
                 Go Back
