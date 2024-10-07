@@ -1,31 +1,139 @@
 import { StyleSheet, View } from "react-native";
-import { ActivityIndicator, Button, Card, Text } from "react-native-paper";
-import { router } from "expo-router";
+import {
+  ActivityIndicator,
+  Button,
+  Text,
+  Menu,
+  Divider,
+  Card,
+} from "react-native-paper";
+import { useState, useEffect } from "react";
 import { useLogout } from "../../../hooks/useLogout";
 import { usePasskeyRegistration } from "../../../hooks/usePasskeyRegistration";
 import { useUserPasskeys } from "../../../hooks/useUserPasskeys";
 import styles from "../../../styles/styles";
 import { theme } from "../../../styles/color";
-import { Separator } from "../../../components/Separator/Separator";
+import { useBlockchainContext } from "../../../providers/BlockchainProvider";
+import { useNavigation, CommonActions } from "@react-navigation/native";
+import { useAuthContext } from "../../../providers/AuthProvider";
+import { useAccountContext } from "../../../hooks/useAccountContext";
+import { router } from "expo-router";
+
+const networkLabels: Record<string, string> = {
+  arbitrum: "Arbitrum",
+  arbitrumSepolia: "Arbitrum Sepolia",
+  base: "Base",
+  baseSepolia: "Base Sepolia",
+  mainnet: "Ethereum",
+  optimism: "Optimism",
+  optimismSepolia: "Optimism Sepolia",
+  sepolia: "Sepolia",
+};
 
 function SettingsScreen() {
   const logout = useLogout();
-
   const { register } = usePasskeyRegistration();
   const { passkeys, isLoading } = useUserPasskeys();
+  const { setNetwork, blockchain } = useBlockchainContext();
+  const [networkLabel, setNetworkLabel] = useState(blockchain.name);
+  const [menuVisible, setMenuVisible] = useState(false);
+  const { user } = useAuthContext();
+  const { initWalletForNetwork } = useAccountContext();
 
   const hasNoPasskeys = !passkeys?.length && !isLoading;
   const hasPasskeys = !!passkeys?.length;
 
+  const openMenu = () => setMenuVisible(true);
+  const closeMenu = () => setMenuVisible(false);
+
+  const navigation = useNavigation();
+
+  const handleNetworkChange = async (
+    networkKey: string,
+    networkName: string
+  ) => {
+    // @ts-ignore
+    setNetwork(networkKey);
+    setNetworkLabel(networkName);
+    if (user) {
+      await initWalletForNetwork(user, networkKey);
+    } else {
+      console.error(
+        "User is null or undefined. Cannot initialize wallet for network."
+      );
+    }
+    closeMenu();
+
+    navigation.dispatch(
+      CommonActions.reset({
+        index: 0,
+        routes: [{ name: "index" }],
+      })
+    );
+  };
+
+  useEffect(() => {
+    const currentNetworkKey = blockchain?.name;
+    if (currentNetworkKey && networkLabels[currentNetworkKey]) {
+      setNetworkLabel(networkLabels[currentNetworkKey]);
+    }
+  }, [blockchain]);
+
   return (
-    <>
-      <View
-        style={{
-          ...styles.container,
-          justifyContent: "space-between",
-          alignItems: "stretch",
-        }}
-      >
+    <View
+      style={{
+        ...styles.container,
+        justifyContent: "space-between",
+        alignItems: "stretch",
+      }}
+    >
+      {/* Network Selection Section */}
+      <View style={settingsStyles.sectionContainer}>
+        <Text style={settingsStyles.sectionHeader}>Network selection</Text>
+        <Menu
+          visible={menuVisible}
+          onDismiss={closeMenu}
+          anchor={
+            <Button
+              mode="outlined"
+              onPress={openMenu}
+              contentStyle={{ justifyContent: "space-between" }}
+              style={settingsStyles.networkDropdown}
+            >
+              {networkLabel}
+            </Button>
+          }
+        >
+          <Menu.Item
+            onPress={() => handleNetworkChange("sepolia", "Sepolia")}
+            title={"Sepolia"}
+          />
+          <Divider />
+          <Menu.Item
+            onPress={() =>
+              handleNetworkChange("optimismSepolia", "Optimism Sepolia")
+            }
+            title={"Optimism Sepolia"}
+          />
+          <Divider />
+          <Menu.Item
+            onPress={() =>
+              handleNetworkChange("arbitrumSepolia", "Arbitrum Sepolia")
+            }
+            title={"Arbitrum Sepolia"}
+          />
+          <Divider />
+          <Menu.Item
+            onPress={() => handleNetworkChange("baseSepolia", "Base Sepolia")}
+            title={"Base Sepolia"}
+          />
+        </Menu>
+      </View>
+
+      <Separator />
+
+      {/* Passkeys Section */}
+      <>
         <View style={{ flex: 1 }}>
           <Card>
             <Card.Content>
@@ -76,10 +184,16 @@ function SettingsScreen() {
         >
           Connections
         </Button>
-      </View>
-    </>
+      </>
+    </View>
   );
 }
+
+const Separator = () => (
+  <View
+    style={{ height: 1, backgroundColor: theme.colors.primary, width: "90%" }}
+  />
+);
 
 const settingsStyles = StyleSheet.create({
   emptyText: {
@@ -88,12 +202,18 @@ const settingsStyles = StyleSheet.create({
   sectionHeader: {
     alignSelf: "center",
     fontSize: 18,
-    marginBottom: 32,
+    marginTop: 12,
+    marginBottom: 22,
     color: theme.colors.primary,
   },
   sectionContainer: {
     width: "90%",
     padding: 8,
+  },
+  networkDropdown: {
+    width: "70%",
+    alignSelf: "center",
+    marginVertical: 16,
   },
 });
 

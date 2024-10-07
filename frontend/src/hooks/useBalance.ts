@@ -16,30 +16,24 @@ export function useBalance() {
     setError(null);
 
     try {
-      console.log("Fetching ETH balance...");
       client
         .getBalance({ address: account.address })
         .then((b) => setBalance(formatEther(b)));
-      setLoading(false);
     } catch {
       console.error("Error fetching balance");
       setError("Error fetching balance");
       setLoading(false);
     } finally {
-      console.log("ETH balance fetched");
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    console.log("Running useBalance useEffect...");
     if (account.address) {
       getBalance();
     }
-    console.log("Finished useBalance useEffect");
   }, [refreshKey]);
 
-  // Function to trigger data refresh
   const refreshData = () => {
     setRefreshKey((prevKey) => prevKey + 1);
   };

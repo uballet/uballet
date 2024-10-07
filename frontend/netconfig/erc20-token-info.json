@@ -1,0 +1,45 @@
+{
+    "erc20_tokens": [
+        {
+            "name": "DAI",
+            "symbol": "DAI",
+            "decimals": 18,
+            "color": "#FF8C00",
+            "cmc_url": "https://coinmarketcap.com/currencies/dai/",
+            "logo_url": "https://cryptologos.cc/logos/multi-collateral-dai-dai-logo.png"
+        },
+        {
+            "name": "Tether USD",
+            "symbol": "USDT",
+            "decimals": 6,
+            "color": "#26A17B",
+            "cmc_url": "https://coinmarketcap.com/currencies/tether/",
+            "logo_url": "https://cryptologos.cc/logos/tether-usdt-logo.png"
+        },
+        {
+            "name": "USD Coin",
+            "symbol": "USDC",
+            "decimals": 6,
+            "color": "#2775CA",
+            "cmc_url": "https://coinmarketcap.com/currencies/usd-coin/",
+            "logo_url": "https://cryptologos.cc/logos/usd-coin-usdc-logo.png"
+        },
+        {
+            "name": "Wrapped Bitcoin",
+            "symbol": "WBTC",
+            "decimals": 8,
+            "color": "#F7931A",
+            "cmc_url": "https://coinmarketcap.com/currencies/wrapped-bitcoin/",
+            "logo_url": "https://cryptologos.cc/logos/wrapped-bitcoin-wbtc-logo.png"
+        },
+        {
+            "name": "Aave",
+            "symbol": "AAVE",
+            "decimals": 18,
+            "color": "#2EBAC6",
+            "cmc_url": "https://coinmarketcap.com/currencies/aave/",
+            "logo_url": "https://cryptologos.cc/logos/aave-aave-logo.png"
+        }
+    ]
+  }
+  
