@@ -12,8 +12,6 @@ export default function AuthIndex() {
     const account = lightAccount || initiator
     const { isSuccess, isLoading: loadingPasskeys, passkeys } = useUserPasskeys()
 
-    console.log({ loadingPasskeys, passkeys, account })
-
     if (needsRecovery) {
         return <Redirect href={'/(auth)/account-recovery'} />
     }
