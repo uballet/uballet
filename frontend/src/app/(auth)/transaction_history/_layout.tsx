@@ -1,11 +1,20 @@
 import React from "react";
-import { ScrollView } from "react-native";
-import { Card, List, Text } from "react-native-paper";
+import { ScrollView, View } from "react-native";
+import { ActivityIndicator, Card, List, Text } from "react-native-paper";
 import { useRecentTransactions } from "../../../hooks/useRecentTransactions";
 import MovementsList from "../../../components/movementsList";
 
 const TransactionHistory: React.FC = () => {
-  const { fromTransfers, toTransfers } = useRecentTransactions();
+  const { data, isLoading } = useRecentTransactions();
+
+  if (isLoading || !data) {
+    return (
+      <View className="items-center justify-center">
+        <ActivityIndicator />
+        <Text className="text-sm">Loading Transactions</Text>
+      </View>
+    );
+  }
 
   return (
     <ScrollView>
@@ -13,8 +22,8 @@ const TransactionHistory: React.FC = () => {
         <Card.Content>
           <Card.Title title="All Transaction History" />
           <MovementsList 
-            toTransfers={toTransfers} 
-            fromTransfers={fromTransfers} 
+            toTransfers={data.toTransfers} 
+            fromTransfers={data.fromTransfers}
           />
         </Card.Content>
       </Card>

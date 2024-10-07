@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
 import { useAccountContext } from "./useAccountContext";
 import { AssetTransfersCategory, AssetTransfersWithMetadataResult } from "alchemy-sdk";
 import { useBlockchainContext } from "../providers/BlockchainProvider";
+import { useQuery } from "@tanstack/react-query";
 
 const getTransferCategory = (supports_internal: boolean) => [
   AssetTransfersCategory.ERC1155,
@@ -12,17 +12,15 @@ const getTransferCategory = (supports_internal: boolean) => [
 ]
 
 export function useRecentTransactions() {
-  const [fromTransfers, setFromTransfers] = useState<AssetTransfersWithMetadataResult[] | null>(null);
-  const [toTransfers, setToTransfers] = useState<AssetTransfersWithMetadataResult[] | null>(null);
   const { sdkClient, lightAccount, initiator } = useAccountContext();
   const account = initiator || lightAccount;
-  const [refreshKey, setRefreshKey] = useState(0);
   const { blockchain } = useBlockchainContext();
-
-  const fetchTransfers = async () => {
-    try {
-      console.log({ sdkNetwork: sdkClient!.config.network })
-      // Fetch from transfers
+  const query = useQuery({
+    queryKey: ['recent-transactions', sdkClient?.config.network],
+    queryFn: async () => {
+      if (!account) {
+        return null;
+      }
       const [fromTransfersResponse, toTransfersResponse] = await Promise.all([
         sdkClient!.core.getAssetTransfers({
           fromBlock: "0x0",
@@ -38,25 +36,13 @@ export function useRecentTransactions() {
           withMetadata: true,
         })
       ])
-      console.log({ fromTransfersResponse, toTransfersResponse })
-      setFromTransfers(fromTransfersResponse.transfers);
-      setToTransfers(toTransfersResponse.transfers);
-    } catch (error) {
-      console.error("Error fetching transfers:", error);
+
+      return {
+        fromTransfers: fromTransfersResponse.transfers,
+        toTransfers: toTransfersResponse.transfers,
+      }
     }
-  };
+  })
 
-  useEffect(() => {
-    fetchTransfers();
-  }, [account?.getAddress(), sdkClient?.config.network]);
-
-  const refreshTransactions = () => {
-    setRefreshKey((prevKey) => prevKey + 1);
-  };
-
-  return {
-    toTransfers,
-    fromTransfers,
-    refreshTransactions,
-  };
+  return query
 }

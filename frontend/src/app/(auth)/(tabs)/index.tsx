@@ -7,7 +7,6 @@ import { useRecentTransactions } from "../../../hooks/useRecentTransactions";
 import styles from "../../../styles/styles";
 import { useAuthContext } from "../../../providers/AuthProvider";
 import MovementsList from "../../../components/movementsList";
-import { useFocusEffect } from "@react-navigation/native";
 import { useAccountContext } from "../../../hooks/useAccountContext";
 
 const formatBalance = (balance: number | null, significantFigures: number) => {
@@ -17,10 +16,9 @@ const formatBalance = (balance: number | null, significantFigures: number) => {
 };
 
 const HomeScreen: React.FC = () => {
-  const { data: balance, isLoading, refetch } = useBalance();
-  const { fromTransfers, toTransfers, refreshTransactions } = useRecentTransactions();
+  const { data: balance, isLoading, refetch, isRefetching } = useBalance();
+  const { data: transactionsData, isLoading: isLoadingTransactions, refetch: refreshTransactions, isRefetching: isRefetchingTransactions } = useRecentTransactions();
   const { user } = useAuthContext();
-  const [refreshing, setRefreshing] = useState(false);
   const { lightAccount, initiator } = useAccountContext(); // Get contractDeployed from AccountContext
   const [isDeployed, setIsDeployed] = useState(false);
 
@@ -32,11 +30,11 @@ const HomeScreen: React.FC = () => {
     }
   }, [account]);
   
-  const onRefresh = async () => {
-    setRefreshing(true);
-    await Promise.all([refetch(), refreshTransactions()]);
-    setRefreshing(false);
-  };
+  const onRefresh = () => {
+    refetch();
+    refreshTransactions();
+  }
+  const refreshing = isRefetching || isRefetchingTransactions;
 
   return (
     <ScrollView
@@ -87,11 +85,14 @@ const HomeScreen: React.FC = () => {
         <Card style={styles.movementsCard} mode="elevated">
           <Card.Content>
             <Card.Title title="Transaction History" />
-            <MovementsList
-              toTransfers={toTransfers}
-              fromTransfers={fromTransfers}
-              maxRows={4}
-            />
+            {isLoadingTransactions && <ActivityIndicator />}
+            {!isLoadingTransactions && transactionsData && (
+              <MovementsList
+                toTransfers={transactionsData.toTransfers}
+                fromTransfers={transactionsData.fromTransfers}
+                maxRows={4}
+              />
+            )}
             <Link href="/(auth)/transaction_history" push>
               <Text variant="bodyMedium" style={{ margin: 8 }}>
                 See all history
