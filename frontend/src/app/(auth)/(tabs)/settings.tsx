@@ -88,47 +88,52 @@ function SettingsScreen() {
       }}
     >
       {/* Network Selection Section */}
-      <View style={settingsStyles.sectionContainer}>
-        <Text style={settingsStyles.sectionHeader}>Network selection</Text>
-        <Menu
-          visible={menuVisible}
-          onDismiss={closeMenu}
-          anchor={
-            <Button
-              mode="outlined"
-              onPress={openMenu}
-              contentStyle={{ justifyContent: "space-between" }}
-              style={settingsStyles.networkDropdown}
-            >
-              {networkLabel}
-            </Button>
-          }
-        >
-          <Menu.Item
-            onPress={() => handleNetworkChange("sepolia", "Sepolia")}
-            title={"Sepolia"}
-          />
-          <Divider />
-          <Menu.Item
-            onPress={() =>
-              handleNetworkChange("optimismSepolia", "Optimism Sepolia")
+      <Card>
+        <Card.Content>
+          <Text variant="titleMedium" style={styles.item}>
+            Network selection
+          </Text>
+
+          <Menu
+            visible={menuVisible}
+            onDismiss={closeMenu}
+            anchor={
+              <Button
+                mode="outlined"
+                onPress={openMenu}
+                contentStyle={{ justifyContent: "space-between" }}
+                style={settingsStyles.networkDropdown}
+              >
+                {networkLabel}
+              </Button>
             }
-            title={"Optimism Sepolia"}
-          />
-          <Divider />
-          <Menu.Item
-            onPress={() =>
-              handleNetworkChange("arbitrumSepolia", "Arbitrum Sepolia")
-            }
-            title={"Arbitrum Sepolia"}
-          />
-          <Divider />
-          <Menu.Item
-            onPress={() => handleNetworkChange("baseSepolia", "Base Sepolia")}
-            title={"Base Sepolia"}
-          />
-        </Menu>
-      </View>
+          >
+            <Menu.Item
+              onPress={() => handleNetworkChange("sepolia", "Sepolia")}
+              title={"Sepolia"}
+            />
+            <Divider />
+            <Menu.Item
+              onPress={() =>
+                handleNetworkChange("optimismSepolia", "Optimism Sepolia")
+              }
+              title={"Optimism Sepolia"}
+            />
+            <Divider />
+            <Menu.Item
+              onPress={() =>
+                handleNetworkChange("arbitrumSepolia", "Arbitrum Sepolia")
+              }
+              title={"Arbitrum Sepolia"}
+            />
+            <Divider />
+            <Menu.Item
+              onPress={() => handleNetworkChange("baseSepolia", "Base Sepolia")}
+              title={"Base Sepolia"}
+            />
+          </Menu>
+        </Card.Content>
+      </Card>
 
       <Separator />
 
@@ -191,7 +196,12 @@ function SettingsScreen() {
 
 const Separator = () => (
   <View
-    style={{ height: 1, backgroundColor: theme.colors.primary, width: "90%" }}
+    style={{
+      height: 1,
+      backgroundColor: theme.colors.primary,
+      width: "100%",
+      marginVertical: 16,
+    }}
   />
 );
 
