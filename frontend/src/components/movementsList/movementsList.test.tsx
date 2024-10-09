@@ -20,6 +20,7 @@ const mockTransfers: AssetTransfersWithMetadataResult[] = [
       blockTimestamp: new Date().toISOString(),
     },
     uniqueId: 'unique-id-1',
+    // @ts-ignore
     category: 'external',
     blockNum: '12345678',
     erc721TokenId: null,
@@ -36,6 +37,7 @@ const mockTransfers: AssetTransfersWithMetadataResult[] = [
       blockTimestamp: new Date().toISOString(),
     },
     uniqueId: 'unique-id-2',
+    // @ts-ignore
     category: 'external',
     blockNum: '12345679',
     erc721TokenId: null,
