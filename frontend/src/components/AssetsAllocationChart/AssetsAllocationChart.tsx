@@ -3,7 +3,7 @@ import { View, Text, ActivityIndicator } from "react-native";
 import styles from "../../styles/styles";
 import { useBalanceInUSDT } from "../../hooks/useBalanceInUSDT";
 import { useEffect, useState } from "react";
-import config from "../../../netconfig/blockchain.default.json";
+import config from "../../../netconfig/erc20-token-info.json";
 
 const AssetsAllocationChart = () => {
   const title = "Assets Allocation";
@@ -12,7 +12,7 @@ const AssetsAllocationChart = () => {
   // Define colors for the chart
   let colors: { [key: string]: string } = {};
   colors.ETH = "black";
-  for (const token of config.sepolia.erc20_tokens) {
+  for (const token of config.erc20_tokens) {
     colors[token.symbol] = token.color;
   }
 
@@ -37,8 +37,6 @@ const AssetsAllocationChart = () => {
     legendFontColor: colors[key],
     legendFontSize: 15,
   }));
-
-  console.log("parsedData", parsedData);
 
   const chartConfig = {
     backgroundGradientFrom: "#1E2923",
@@ -84,20 +82,22 @@ const AssetsAllocationChart = () => {
         <Text className="text-left -mt-5">{subtitle}</Text>
         {loading ? (
           <View className="m-10">
-            <ActivityIndicator size="small" color="#0000ff" />
+            <ActivityIndicator testID="ActivityIndicator" size="small" color="#0000ff" />
           </View>
         ) : (
-          <PieChart
-            data={parsedData}
-            width={375}
-            height={220}
-            chartConfig={chartConfig}
-            accessor={"balance"}
-            backgroundColor={"transparent"}
-            paddingLeft={"50"}
-            center={[0, 0]}
-            avoidFalseZero={true}
-          />
+          <View testID="assets-allocation-pie-chart">
+            <PieChart
+              data={parsedData}
+              width={375}
+              height={220}
+              chartConfig={chartConfig}
+              accessor={"balance"}
+              backgroundColor={"transparent"}
+              paddingLeft={"50"}
+              center={[0, 0]}
+              avoidFalseZero={true}
+            />
+          </View>
         )}
       </View>
     </>
