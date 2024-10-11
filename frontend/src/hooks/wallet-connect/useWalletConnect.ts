@@ -187,6 +187,9 @@ export function useWalletConnect() {
           case "eth_sendTransaction":
             handleSendTransaction(connector, requestEvent);
             break;
+          case "eth_signTypedData_v4":
+            handlePersonalSign(connector, requestEvent);
+            break;
           default:
             console.log("onSessionRequest", requestEvent);
         }
@@ -213,10 +216,17 @@ export function useWalletConnect() {
       setActiveSessions(activeSessions);
     } else {
       console.log("Active sessions from connector");
-      activeSessions = connector.getActiveSessions();
+      let activeSessions = connector.getActiveSessions();
+      console.log("Active sessions: ", activeSessions);
+      for(const [key, value] of Object.entries(activeSessions)) {
+          connector.extendSession({topic : value.topic}).then(() => {
+            console.log("Session updated: ", value.topic);
+          }).catch((error) => {
+            console.log("Error updating session: ", getSdkError(error));
+        });
+      }
       setActiveSessions(activeSessions);
     }
-    console.log("Active sessions: ", activeSessions);
   }
 
   function handleSessionProposal(connector: Client) {
@@ -296,7 +306,37 @@ export function useWalletConnect() {
     let activeSessions = connector.getActiveSessions();
     const jsonData = JSON.stringify(activeSessions);
     await AsyncStorage.setItem(WALLET_CONNECTIONS, jsonData);
-    loadActiveSessions(connector);
+    // loadActiveSessions(connector);
+  }
+
+  async function deleteSession(topic: string) {
+    if(connector) {
+      await connector.disconnectSession({
+        topic,
+        reason: getSdkError("USER_DISCONNECTED"),
+      });
+      loadActiveSessions(connector);
+      setSnackbarData({
+        visible: true,
+        text: "Session deleted",
+      });
+    }
+  }
+
+  async function pairWcuri(wcuri: string) {
+    if (connector) {
+      try {
+        await connector.pair({ uri: wcuri });
+        setSnackbarData({
+          visible: true,
+          text: "Session paired",
+        });
+        await saveSession(connector);
+        loadActiveSessions(connector);
+      } catch (error) {
+        console.log("Error pairing session: ", getSdkError(error));
+      }
+    }
   }
 
   useEffect(() => {
@@ -304,6 +344,7 @@ export function useWalletConnect() {
     console.log("Initializing connector");
     const core = new Core({
       projectId: projectId,
+      name: "Uballet",
     });
     Web3Wallet.init({
       core, // <- pass the shared `core` instance
@@ -332,5 +373,7 @@ export function useWalletConnect() {
     snackbarData,
     approvedCallback,
     rejectedCallback,
+    deleteSession,
+    pairWcuri
   };
 }

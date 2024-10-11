@@ -8,17 +8,21 @@ import {
   Modal,
   Snackbar,
   Text,
+  TextInput,
 } from "react-native-paper";
 import { router, useLocalSearchParams } from "expo-router";
 import "@walletconnect/react-native-compat";
 import styles from "../../../styles/styles";
-import {  getSdkError } from "@walletconnect/utils";
+import { getSdkError } from "@walletconnect/utils";
 import { SessionTypes } from "@walletconnect/types";
 import { Separator } from "../../../components/Separator/Separator";
 import { useWalletConnect } from "../../../hooks/wallet-connect/useWalletConnect";
 import Client from "@walletconnect/web3wallet";
 
-const SessionCard = (session: SessionTypes.Struct, connector: Client | undefined) => {
+const SessionCard = (
+  session: SessionTypes.Struct,
+  deleteSession: (topic: string) => void
+) => {
   return (
     <Card
       style={{
@@ -40,7 +44,7 @@ const SessionCard = (session: SessionTypes.Struct, connector: Client | undefined
             onPress={async () => {
               const topic = session.topic;
               console.log("Disconnecting session: ", topic);
-              await connector?.disconnectSession(topic, getSdkError('USER_DISCONNECTED'));
+              deleteSession(topic);
             }}
           />
         )}
@@ -73,6 +77,7 @@ const SessionCard = (session: SessionTypes.Struct, connector: Client | undefined
 const WalletConnectScreen = () => {
   const wcuriScanned = useLocalSearchParams<{ wcuri: string }>()?.wcuri;
 
+  const [wcuri, setWcuri] = useState<string>("");
   const {
     connector,
     activeSessions,
@@ -81,6 +86,8 @@ const WalletConnectScreen = () => {
     snackbarData,
     approvedCallback,
     rejectedCallback,
+    deleteSession,
+    pairWcuri
   } = useWalletConnect();
   const [modalVisible, setModalVisible] = useState(false);
   const [snackbarVisible, setSnackbarVisible] = useState(false);
@@ -97,14 +104,16 @@ const WalletConnectScreen = () => {
     if (wcuriScanned) {
       console.log("Scanned WCURI: ", wcuriScanned);
       try {
-        connector?.pair({ uri: wcuriScanned }).then(() => {
-          console.log("Paired successfully");
-        });
+        pairWcuri(wcuriScanned);
       } catch (error) {
         // some error happens while pairing - check Expected errors section
       }
     }
   }, [wcuriScanned]);
+
+  const handleWcuriChange = (wcuri: string) => {
+    setWcuri(wcuri);
+  };
 
   return (
     <>
@@ -124,9 +133,28 @@ const WalletConnectScreen = () => {
           >
             Add connection via QR
           </Button>
+          <TextInput
+            mode="outlined"
+            placeholder="Paste WC URI"
+            value={wcuri}
+            onChangeText={handleWcuriChange}
+            keyboardType="default"
+          />
+          <Button
+            mode="contained"
+            disabled={!wcuri}
+            style={styles.button}
+            onPress={() => {
+              pairWcuri(wcuri);
+            }}
+          >
+            Add connection via text
+          </Button>
           <>
             {activeSessions &&
-              Object.values(activeSessions).map((value) => SessionCard(value, connector))}
+              Object.values(activeSessions).map((value) =>
+                SessionCard(value, deleteSession)
+              )}
           </>
           <Modal
             style={{ justifyContent: "center", margin: 16 }}
