@@ -327,10 +327,6 @@ export function useWalletConnect() {
     if (connector) {
       try {
         await connector.pair({ uri: wcuri });
-        setSnackbarData({
-          visible: true,
-          text: "Session paired",
-        });
         await saveSession(connector);
         loadActiveSessions(connector);
       } catch (error) {

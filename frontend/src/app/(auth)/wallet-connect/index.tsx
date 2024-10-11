@@ -146,6 +146,7 @@ const WalletConnectScreen = () => {
             style={styles.button}
             onPress={() => {
               pairWcuri(wcuri);
+              setWcuri("");
             }}
           >
             Add connection via text
@@ -178,12 +179,13 @@ const WalletConnectScreen = () => {
                   <Button
                     mode="contained"
                     style={styles.button}
+                    textColor="white"
                     onPress={() => {
                       setModalVisible(false);
                       approvedCallback();
                     }}
                   >
-                    <Text>Approve</Text>
+                    Approve
                   </Button>
                   <Button
                     style={styles.button}
@@ -193,7 +195,7 @@ const WalletConnectScreen = () => {
                       rejectedCallback();
                     }}
                   >
-                    <Text>Reject</Text>
+                    Reject
                   </Button>
                 </Card.Actions>
               </Card>
