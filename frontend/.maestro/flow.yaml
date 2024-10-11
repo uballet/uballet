@@ -1,0 +1,12 @@
+appId: com.flperez.uballet
+---
+- launchApp
+
+- runFlow:
+    when:
+      visible:
+        text: "Sign In"
+    commands:
+      - tapOn:
+          text: "Email"
+- inputText: "test-email"
