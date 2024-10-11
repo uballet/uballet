@@ -35,8 +35,6 @@ export async function approveEIP155Request(
           message: message,
         });
 
-        console.log("User Address:", account.address);
-
         return formatJsonRpcResult(id, signedMessage);
       } catch (error: any) {
         console.error(error);
@@ -56,8 +54,6 @@ export async function approveEIP155Request(
           typedData: { domain, types, message: data, primaryType: "Mail" },
           account: account,
         };
-        console.log("signTypedData with args:");
-        console.log(args.typedData);
         const signedMessage = await client.signTypedData(args);
         return formatJsonRpcResult(id, signedMessage);
       } catch (error: any) {

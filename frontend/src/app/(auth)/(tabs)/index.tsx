@@ -6,7 +6,7 @@ import { useBalance } from "../../../hooks/useBalance";
 import { useRecentTransactions } from "../../../hooks/useRecentTransactions";
 import styles from "../../../styles/styles";
 import { useAuthContext } from "../../../providers/AuthProvider";
-import MovementsList from "../../../components/movementsList";
+import MovementsList from "../../../components/movementsList/movementsList";
 import { useFocusEffect } from "@react-navigation/native";
 import { useAccountContext } from "../../../hooks/useAccountContext";
 
