@@ -1,0 +1,29 @@
+[submodule "test-infra/erc-4337-devnet/modular-account/lib/forge-std"]
+	path = test-infra/erc-4337-devnet/modular-account/lib/forge-std
+	url = https://github.com/foundry-rs/forge-std
+[submodule "test-infra/erc-4337-devnet/modular-account/lib/account-abstraction"]
+	path = test-infra/erc-4337-devnet/modular-account/lib/account-abstraction
+	url = https://github.com/eth-infinitism/account-abstraction
+	branch = ver0.6.0
+[submodule "test-infra/erc-4337-devnet/modular-account/lib/openzeppelin-contracts"]
+	path = test-infra/erc-4337-devnet/modular-account/lib/openzeppelin-contracts
+	url = https://github.com/OpenZeppelin/openzeppelin-contracts
+	branch = release-v4.9
+[submodule "test-infra/erc-4337-devnet/modular-account/lib/light-account"]
+	path = test-infra/erc-4337-devnet/modular-account/lib/light-account
+	url = https://github.com/alchemyplatform/light-account
+
+[submodule "test-infra/erc-4337-devnet/multisig-plugin/lib/forge-std"]
+	path = test-infra/erc-4337-devnet/multisig-plugin/lib/forge-std
+	url = https://github.com/foundry-rs/forge-std
+[submodule "test-infra/erc-4337-devnet/multisig-plugin/lib/account-abstraction"]
+	path = test-infra/erc-4337-devnet/multisig-plugin/lib/account-abstraction
+	url = https://github.com/eth-infinitism/account-abstraction
+	branch = ver0.6.0
+[submodule "test-infra/erc-4337-devnet/multisig-plugin/lib/openzeppelin-contracts"]
+	path = test-infra/erc-4337-devnet/multisig-plugin/lib/openzeppelin-contracts
+	url = https://github.com/OpenZeppelin/openzeppelin-contracts
+	branch = release-v4.9
+[submodule "test-infra/erc-4337-devnet/multisig-plugin/lib/modular-acount"]
+	path = test-infra/erc-4337-devnet/multisig-plugin/lib/modular-account
+	url = https://github.com/alchemyplatform/modular-account
