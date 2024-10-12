@@ -21,6 +21,13 @@ const globalStyles = StyleSheet.create({
   item: {
     marginVertical: 8,
   },
+  infoText: {
+    fontSize: 12,
+    color: '#9E9E9E', 
+    fontFamily: 'Roboto',
+    marginVertical: 4,
+    textAlign: 'center',
+  },
   image: {
     width: 100,
     height: 100,
