@@ -69,6 +69,14 @@ function TabsLayout() {
             }}
           />
           <MaterialBottomTabs.Screen
+            name="balance"
+            options={{
+              tabBarIcon: ({ color }) => (
+                <MaterialIcons name="balance" size={24} color={color} />
+              ),
+            }}
+          />
+          <MaterialBottomTabs.Screen
             name="transfer"
             options={{
               title: "Transfer",
@@ -86,14 +94,7 @@ function TabsLayout() {
               ),
             }}
           />
-          <MaterialBottomTabs.Screen
-            name="balance"
-            options={{
-              tabBarIcon: ({ color }) => (
-                <MaterialIcons name="balance" size={24} color={color} />
-              ),
-            }}
-          />
+          
           <MaterialBottomTabs.Screen
             name="notifications"
             options={{
