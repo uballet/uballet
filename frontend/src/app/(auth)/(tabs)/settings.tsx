@@ -1,15 +1,23 @@
 import { StyleSheet, View } from "react-native";
-import { ActivityIndicator, Button, Text, Menu, Divider } from "react-native-paper";
+import {
+  ActivityIndicator,
+  Button,
+  Text,
+  Menu,
+  Divider,
+  Card,
+} from "react-native-paper";
 import { useState, useEffect } from "react";
 import { useLogout } from "../../../hooks/useLogout";
-import styles from "../../../styles/styles";
 import { usePasskeyRegistration } from "../../../hooks/usePasskeyRegistration";
 import { useUserPasskeys } from "../../../hooks/useUserPasskeys";
+import styles from "../../../styles/styles";
 import { theme } from "../../../styles/color";
 import { useBlockchainContext } from "../../../providers/BlockchainProvider";
-import { useNavigation, CommonActions } from '@react-navigation/native';
-import { useAuthContext  } from "../../../providers/AuthProvider";
+import { useNavigation, CommonActions } from "@react-navigation/native";
+import { useAuthContext } from "../../../providers/AuthProvider";
 import { useAccountContext } from "../../../hooks/useAccountContext";
+import { router } from "expo-router";
 
 const networkLabels: Record<string, string> = {
   arbitrum: "Arbitrum",
@@ -40,21 +48,26 @@ function SettingsScreen() {
 
   const navigation = useNavigation();
 
-  const handleNetworkChange = async (networkKey: string, networkName: string) => {
+  const handleNetworkChange = async (
+    networkKey: string,
+    networkName: string
+  ) => {
     // @ts-ignore
     setNetwork(networkKey);
     setNetworkLabel(networkName);
     if (user) {
       await initWalletForNetwork(user, networkKey);
     } else {
-      console.error("User is null or undefined. Cannot initialize wallet for network.");
+      console.error(
+        "User is null or undefined. Cannot initialize wallet for network."
+      );
     }
     closeMenu();
 
     navigation.dispatch(
       CommonActions.reset({
         index: 0,
-        routes: [{ name: 'index' }],
+        routes: [{ name: "index" }],
       })
     );
   };
@@ -67,86 +80,129 @@ function SettingsScreen() {
   }, [blockchain]);
 
   return (
-    <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+    <View
+      style={{
+        ...styles.container,
+        justifyContent: "space-between",
+        alignItems: "stretch",
+      }}
+    >
       {/* Network Selection Section */}
-      <View style={settingsStyles.sectionContainer}>
-        <Text style={settingsStyles.sectionHeader}>Network selection</Text>
-        <Menu
-          visible={menuVisible}
-          onDismiss={closeMenu}
-          anchor={
-            <Button
-              mode="outlined"
-              onPress={openMenu}
-              contentStyle={{ justifyContent: "space-between" }}
-              style={settingsStyles.networkDropdown}
-            >
-              {networkLabel}
-            </Button>
-          }
-        >
-          <Menu.Item
-            onPress={() => handleNetworkChange("sepolia", "Sepolia")}
-            title={"Sepolia"}
-          />
-          <Divider />
-          <Menu.Item
-            onPress={() => handleNetworkChange("optimismSepolia", "Optimism Sepolia")}
-            title={"Optimism Sepolia"}
-          />
-          <Divider />
-          <Menu.Item
-            onPress={() => handleNetworkChange("arbitrumSepolia", "Arbitrum Sepolia")}
-            title={"Arbitrum Sepolia"}
-          />
-          <Divider />
-          <Menu.Item
-            onPress={() => handleNetworkChange("baseSepolia", "Base Sepolia")}
-            title={"Base Sepolia"}
-          />
-         
-        </Menu>
-      </View>
+      <Card>
+        <Card.Content>
+          <Text variant="titleMedium" style={styles.item}>
+            Network selection
+          </Text>
+
+          <Menu
+            visible={menuVisible}
+            onDismiss={closeMenu}
+            anchor={
+              <Button
+                mode="outlined"
+                onPress={openMenu}
+                contentStyle={{ justifyContent: "space-between" }}
+                style={settingsStyles.networkDropdown}
+              >
+                {networkLabel}
+              </Button>
+            }
+          >
+            <Menu.Item
+              onPress={() => handleNetworkChange("sepolia", "Sepolia")}
+              title={"Sepolia"}
+            />
+            <Divider />
+            <Menu.Item
+              onPress={() =>
+                handleNetworkChange("optimismSepolia", "Optimism Sepolia")
+              }
+              title={"Optimism Sepolia"}
+            />
+            <Divider />
+            <Menu.Item
+              onPress={() =>
+                handleNetworkChange("arbitrumSepolia", "Arbitrum Sepolia")
+              }
+              title={"Arbitrum Sepolia"}
+            />
+            <Divider />
+            <Menu.Item
+              onPress={() => handleNetworkChange("baseSepolia", "Base Sepolia")}
+              title={"Base Sepolia"}
+            />
+          </Menu>
+        </Card.Content>
+      </Card>
 
       <Separator />
 
       {/* Passkeys Section */}
-      <View style={settingsStyles.sectionContainer}>
-        <Text style={settingsStyles.sectionHeader}>Passkeys</Text>
-        {hasNoPasskeys && (
-          <Text style={settingsStyles.emptyText}>You don't have any passkeys</Text>
-        )}
-        {hasPasskeys &&
-          passkeys?.map((passkey) => (
-            <View key={passkey.id} style={{ flexDirection: "row", justifyContent: "space-between" }}>
-              <Text>{passkey.name.slice(0, 16) + "..."}</Text>
-              <Text>
-                {"Registered At: " + passkey.registeredAt.toLocaleDateString()}
+      <>
+        <View style={{ flex: 1 }}>
+          <Card>
+            <Card.Content>
+              <Text variant="titleMedium" style={styles.item}>
+                Passkeys
               </Text>
-            </View>
-          ))}
-        {isLoading && <ActivityIndicator />}
-        <Button
-          style={[styles.button, { width: "70%" }]}
-          mode="outlined"
-          onPress={() => register()}
-          disabled={isLoading}
-        >
-          Register New Passkey
+              {hasNoPasskeys && (
+                <Text style={settingsStyles.emptyText}>
+                  You don't have any passkeys
+                </Text>
+              )}
+              {hasPasskeys &&
+                passkeys?.map((passkey) => (
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    <Text>{passkey.name.slice(0, 16) + "..."}</Text>
+                    <Text>
+                      {"Registered At: " +
+                        passkey.registeredAt.toLocaleDateString()}
+                    </Text>
+                  </View>
+                ))}
+              {isLoading && <ActivityIndicator />}
+              <Button
+                style={styles.button}
+                mode="contained"
+                onPress={() => register()}
+                disabled={isLoading}
+              >
+                Register New Passkey
+              </Button>
+            </Card.Content>
+          </Card>
+        </View>
+        <Separator />
+        <Button style={styles.button} mode="outlined" onPress={logout}>
+          Log Out
         </Button>
-      </View>
 
-      <Separator />
-
-      <Button style={styles.button} onPress={logout}>
-        Log Out
-      </Button>
+        <Button
+          mode="outlined"
+          style={styles.button}
+          onPress={() => router.push({ pathname: "wallet-connect" })}
+        >
+          Connections
+        </Button>
+      </>
     </View>
   );
 }
 
 const Separator = () => (
-  <View style={{ height: 1, backgroundColor: theme.colors.primary, width: "90%" }} />
+  <View
+    style={{
+      height: 1,
+      backgroundColor: theme.colors.primary,
+      width: "100%",
+      marginVertical: 16,
+    }}
+  />
 );
 
 const settingsStyles = StyleSheet.create({
