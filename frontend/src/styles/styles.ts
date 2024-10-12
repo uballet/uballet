@@ -8,6 +8,12 @@ const globalStyles = StyleSheet.create({
     padding: 16,
     marginTop: 20,
   },
+  containerTransfer: {
+    flex: 1,
+    alignItems: 'stretch',
+    padding: 16,
+    marginTop: 20,
+  },
   containerLogin: {
     height: '100%',
     justifyContent: 'space-between',

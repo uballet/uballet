@@ -14,7 +14,9 @@ const statusBarHeight = Platform.OS === 'android' ? StatusBar.currentHeight : 0;
 const { Navigator } = createMaterialBottomTabNavigator();
 export const MaterialBottomTabs = withLayoutContext<
   MaterialBottomTabNavigationOptions,
-  typeof Navigator
+  typeof Navigator,
+  any,
+  any
 >(Navigator);
 
 function TabsLayout() {
