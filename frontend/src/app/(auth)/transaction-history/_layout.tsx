@@ -2,7 +2,7 @@ import React from "react";
 import { ScrollView } from "react-native";
 import { Card, List, Text } from "react-native-paper";
 import { useRecentTransactions } from "../../../hooks/useRecentTransactions";
-import MovementsList from "../../../components/movementsList/movementsList";
+import MovementsList from "../../../components/MovementsList/MovementsList";
 
 const TransactionHistory: React.FC = () => {
   const { fromTransfers, toTransfers } = useRecentTransactions();

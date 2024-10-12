@@ -6,7 +6,7 @@ import { useBalance } from "../../../hooks/useBalance";
 import { useRecentTransactions } from "../../../hooks/useRecentTransactions";
 import styles from "../../../styles/styles";
 import { useAuthContext } from "../../../providers/AuthProvider";
-import MovementsList from "../../../components/movementsList/movementsList";
+import MovementsList from "../../../components/MovementsList/MovementsList";
 import { useFocusEffect } from "@react-navigation/native";
 import { useAccountContext } from "../../../hooks/useAccountContext";
 
@@ -89,7 +89,7 @@ const HomeScreen: React.FC = () => {
               fromTransfers={fromTransfers}
               maxRows={4}
             />
-            <Link href="/(auth)/transaction_history" push>
+            <Link href="/(auth)/transaction-history" push>
               <Text variant="bodyMedium" style={{ margin: 8 }}>
                 See all history
               </Text>

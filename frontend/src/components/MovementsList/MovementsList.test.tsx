@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react-native';
-import MovementsList from './movementsList';
+import MovementsList from './MovementsList';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AssetTransfersWithMetadataResult } from 'alchemy-sdk';
 import { useContacts } from '../../hooks/contacts/useContacts';
