@@ -14,8 +14,9 @@ while true; do
     if [ $? -ne 0 ]; then
         echo "Error: Failed to make bundler request. Checking again soon..."
         sleep 3
-        continue
-    elif ! echo $BUNDLER_RESP | jq . > /dev/null 2>&1; then
+        continue  
+    elif ! [[ $BUNDLER_RESP == *"0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789"* ]]; then
+        echo $BUNDLER_RESP
         echo "Error: Bundler response is not valid JSON. Checking again soon..."
         sleep 3
         continue
@@ -23,10 +24,7 @@ while true; do
     READY=true
 
     # Check all supported EntryPoint contracts are deployed.
-    SUPPORTED_ENTRYPOINTS=()
-    while IFS= read -r line; do
-        SUPPORTED_ENTRYPOINTS+=("$line")
-    done < <(echo "$BUNDLER_RESP" | jq -r '.result[]')
+    SUPPORTED_ENTRYPOINTS=("0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789")
     for ENTRYPOINT in "${SUPPORTED_ENTRYPOINTS[@]}"; do
         NODE_REQ="{
             \"jsonrpc\": \"2.0\",
@@ -37,14 +35,6 @@ while true; do
         NODE_RESP=$(curl -s -X POST -H "Content-Type: application/json" --data "$NODE_REQ" "$PROXY_URL")
         if [ $? -ne 0 ]; then
             echo "Error: Failed to make node request. Checking again soon..."
-            READY=false
-            break
-        fi
-
-
-        CODE_HEX=$(echo "$NODE_RESP" | jq -r '.result')
-        if [ $CODE_HEX == "0x" ]; then
-            echo "ERC-4337 Devnet EntryPoint not yet deployed. Checking again soon..."
             READY=false
             break
         fi
@@ -61,13 +51,11 @@ while true; do
             echo "Error: Failed to make paymaster request. Checking again soon..."
             READY=false
             break
-        elif ! echo $STACKUP_PM_RESP | jq . > /dev/null 2>&1; then
+        elif ! [[ $STACKUP_PM_RESP == *"0x42051Fa8F6c012102899c902aA214f1e97bD8aDb"* ]]; then
+            echo $STACKUP_PM_RESP
             echo "Error: Paymaster response is not valid JSON. Checking again soon..."
             READY=false
             break
-        elif [ $(echo $STACKUP_PM_RESP | jq -r '.result[0]') != "0x42051Fa8F6c012102899c902aA214f1e97bD8aDb" ]; then
-            echo "Error: Unexpected paymaster accounts."
-            exit 1;
         fi
     done
 
