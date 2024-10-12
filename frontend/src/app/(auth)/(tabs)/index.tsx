@@ -9,6 +9,7 @@ import { useAuthContext } from "../../../providers/AuthProvider";
 import MovementsList from "../../../components/MovementsList/MovementsList";
 import { useFocusEffect } from "@react-navigation/native";
 import { useAccountContext } from "../../../hooks/useAccountContext";
+import UserInfo from "../../../components/UserInfo/UserInfo";
 
 const formatBalance = (balance: number | null, significantFigures: number) => {
   if (balance == null) return "N/A";
@@ -42,20 +43,8 @@ const HomeScreen: React.FC = () => {
       }
     >
       <View style={styles.container}>
-        <View style={styles.horizontalContainer}>
-          <Avatar.Icon
-            style={[
-              styles.userSettings,
-              {
-                backgroundColor: contractDeployed ? "green" : "gray",
-              },
-            ]}
-            size={30}
-            icon="account"
-            color="white"
-          />
-          <Text style={{ flex: 1, left: 50 }} variant="titleLarge">{`${user?.email}`}</Text>
-        </View>
+        
+        <UserInfo email={`${user?.email}`} contractDeployed={contractDeployed} />
 
         <Card style={styles.movementsCard} mode="contained">
           <Card.Content>
