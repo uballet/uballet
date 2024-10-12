@@ -7,7 +7,7 @@ import { useCheckTransferSponsorship } from "../../../hooks/useCheckTransferSpon
 import { useBlockchainContext } from "../../../providers/BlockchainProvider";
 import { Text, Button, TextInput, Card } from "react-native-paper";
 import styles from "../../../styles/styles";
-import EstimateGasFees from "../../../components/EstimateGasFees";
+import EstimateGasFees from "../../../components/EstimateGasFees/EstimateGasFees";
 import { Link, useLocalSearchParams } from "expo-router";
 import { ethers } from "ethers";
 import { useAlchemyClient } from "../../../hooks/useAlchemyClient";
