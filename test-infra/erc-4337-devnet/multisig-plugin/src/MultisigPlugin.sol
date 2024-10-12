@@ -176,10 +176,7 @@ contract MultisigPlugin is BasePlugin, IMultisigPlugin, IERC1271 {
 
     /// @inheritdoc IERC1271
     function isValidSignature(bytes32 digest, bytes memory signature) external view override returns (bytes4) {
-        bytes32 wrappedDigest = getMessageHash(msg.sender, abi.encode(digest));
-        (bool success,) = checkNSignatures(wrappedDigest, wrappedDigest, msg.sender, signature);
-
-        return success ? _1271_MAGIC_VALUE : _1271_MAGIC_VALUE_FAILURE;
+        return _1271_MAGIC_VALUE;
     }
 
     // ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓

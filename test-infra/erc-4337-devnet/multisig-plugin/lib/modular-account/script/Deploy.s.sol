@@ -63,8 +63,8 @@ contract Deploy is Script {
         console.log("Chain: ", block.chainid);
         console.log("EP: ", entryPointAddr);
         console.log("Factory owner: ", owner);
-
-        vm.startBroadcast();
+        uint256 deployerPrivateKey = vm.envUint("DEPLOYER_PRIVATE_KEY");
+        vm.startBroadcast(deployerPrivateKey);
 
         // Deploy ma impl
         if (maImpl == address(0)) {
