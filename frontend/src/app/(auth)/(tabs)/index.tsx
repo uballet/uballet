@@ -1,7 +1,7 @@
 import { Link } from "expo-router";
 import React, { useState } from "react";
 import { ScrollView, View, RefreshControl } from "react-native";
-import { ActivityIndicator, Avatar, Card, FAB, Text } from "react-native-paper";
+import { ActivityIndicator, Card, FAB, Text } from "react-native-paper";
 import { useBalance } from "../../../hooks/useBalance";
 import { useRecentTransactions } from "../../../hooks/useRecentTransactions";
 import styles from "../../../styles/styles";
@@ -10,6 +10,7 @@ import MovementsList from "../../../components/MovementsList/MovementsList";
 import { useFocusEffect } from "@react-navigation/native";
 import { useAccountContext } from "../../../hooks/useAccountContext";
 import UserInfo from "../../../components/UserInfo/UserInfo";
+import { useSafeLightAccount } from "../../../hooks/useLightAccount";
 
 const formatBalance = (balance: number | null, significantFigures: number) => {
   if (balance == null) return "N/A";
@@ -23,6 +24,7 @@ const HomeScreen: React.FC = () => {
   const { user } = useAuthContext();
   const [refreshing, setRefreshing] = useState(false);
   const { contractDeployed } = useAccountContext(); // Get contractDeployed from AccountContext
+  const account = useSafeLightAccount();
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -44,7 +46,11 @@ const HomeScreen: React.FC = () => {
     >
       <View style={styles.container}>
         
-        <UserInfo email={`${user?.email}`} contractDeployed={contractDeployed} />
+        <UserInfo
+          email={`${user?.email}`}
+          contractDeployed={contractDeployed}
+          publicAddress={ account.address }
+        />
 
         <Card style={styles.movementsCard} mode="contained">
           <Card.Content>

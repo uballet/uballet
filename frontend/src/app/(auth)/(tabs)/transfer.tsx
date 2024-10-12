@@ -12,7 +12,6 @@ import { Link, useLocalSearchParams } from "expo-router";
 import { ethers } from "ethers";
 import { useAlchemyClient } from "../../../hooks/useAlchemyClient";
 import { router } from "expo-router";
-import config from "../../../../netconfig/blockchain.default.json";
 
 function TransferScreen() {
   const account = useSafeLightAccount();
@@ -138,9 +137,6 @@ function TransferScreen() {
                 Amount must be greater than 0
               </Text>
             )}
-            <Text variant="bodySmall" selectable={true} style={{ margin: 8 }}>
-              {`From:\n${account.address}`}
-            </Text>
 
             <TouchableOpacity onPress={() => setIsGasFeeCardExpanded(!isGasFeeCardExpanded)}>
               <View style={{ margin: 8, backgroundColor: '#f5f5f5', padding: 16 }}>
