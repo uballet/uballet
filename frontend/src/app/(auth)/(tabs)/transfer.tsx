@@ -12,6 +12,7 @@ import { Link, useLocalSearchParams } from "expo-router";
 import { ethers } from "ethers";
 import { useAlchemyClient } from "../../../hooks/useAlchemyClient";
 import { router } from "expo-router";
+import TransferInput from "../../../components/TransferInput/TransferInput";
 
 function TransferScreen() {
   const eth_symbol = "ETH";
@@ -106,40 +107,19 @@ function TransferScreen() {
       <View style={styles.containerTransfer}>
         <Card >
           <Card.Content>
+
+            {/* Transfer Input */}
             <Card.Title title="Transfer Amount:" />
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                width: "100%",
-              }}
-            >
-              <TextInput
-                mode="outlined"
-                placeholder="0.0000"
-                value={amount}
-                onChangeText={handleAmountChange}
-                style={{ margin: 8, flex: 1 }}
-                keyboardType="numeric"
-                error={!isAmountValid}
-              />
-              <Picker
-                selectedValue={currency}
-                style={{ width: 150 }}
-                onValueChange={(itemValue: string) => setCurrency(itemValue)}
-              >
-                {currencies.map((curr, index) => (
-                  <Picker.Item key={index} label={curr} value={curr} />
-                ))}
-              </Picker>
-            </View>
+            <TransferInput
+              amount={amount}
+              currency={currency}
+              currencies={currencies}
+              isAmountValid={isAmountValid}
+              handleAmountChange={handleAmountChange}
+              setCurrency={setCurrency}
+            />
 
-            {!isAmountValid && (
-              <Text style={{ color: "red", marginLeft: 8 }}>
-                Amount must be greater than 0
-              </Text>
-            )}
-
+            {/* Estimate Gas Fees */}
             <TouchableOpacity
               onPress={() => setIsGasFeeCardExpanded(!isGasFeeCardExpanded)}
             >
