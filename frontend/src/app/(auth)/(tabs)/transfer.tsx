@@ -13,6 +13,7 @@ import { ethers } from "ethers";
 import { useAlchemyClient } from "../../../hooks/useAlchemyClient";
 import { router } from "expo-router";
 import TransferInput from "../../../components/TransferInput/TransferInput";
+import ContactInput from "../../../components/ContactInput/ContactInput";
 
 function TransferScreen() {
   const eth_symbol = "ETH";
@@ -57,7 +58,6 @@ function TransferScreen() {
     {}
   );
 
-  // State to control the visibility of the EstimateGasFees card
   const [isGasFeeCardExpanded, setIsGasFeeCardExpanded] = useState(false);
 
   useEffect(() => {
@@ -138,6 +138,7 @@ function TransferScreen() {
               </Card>
             )}
 
+            {/* Address Input */}
             <View style={{ flexDirection: "row", alignItems: "center" }}>
               <Text variant="titleMedium" style={{ margin: 8 }}>
                 To Address:{" "}
@@ -148,21 +149,14 @@ function TransferScreen() {
                 </Text>
               </Link>
             </View>
-            <TextInput
-              mode="outlined"
-              style={{ margin: 8 }}
-              placeholder="Address without 0x prefix"
-              value={toAddress}
-              left={<TextInput.Affix text="0x" />}
-              onChangeText={handleAddressChange}
-              error={!isAddressValid}
+            
+            <ContactInput
+              toAddress={ toAddress }
+              handleAddressChange={ handleAddressChange }
+              isAddressValid={ isAddressValid }
             />
-            {!isAddressValid && (
-              <Text style={{ color: "red", marginLeft: 8 }}>
-                Invalid Ethereum address
-              </Text>
-            )}
 
+            {/* Scan QR */}
             <Button
               mode="outlined"
               style={styles.button}
@@ -171,79 +165,61 @@ function TransferScreen() {
               Scan QR
             </Button>
 
-            {currency === eth_symbol ? (
-              <>
-                <Button
-                  style={{
-                    ...styles.button,
-                    backgroundColor: !sponsorshipCheckDisabled
-                      ? "black"
-                      : loadingSponsorship
-                      ? "#CCCCCC"
-                      : isSponsored
-                      ? "green"
-                      : "red",
-                  }}
-                  loading={loadingSponsorship}
-                  disabled={
-                    sponsorshipCheckDisabled || !isAddressValid || !isAmountValid
-                  }
-                  onPress={() =>
-                    checkTransferSponsorship(`0x${toAddress}`, amount)
-                  }
-                  textColor="white"
-                >
-                  {isSponsored
-                    ? "We'll pay for gas!"
-                    : isSponsored === null
-                    ? "Check sponsorship"
-                    : "You'll pay for gas"}
-                </Button>
-                <Button
-                  mode="contained"
-                  style={{
-                    ...styles.button,
-                    backgroundColor:
-                      loading ||
-                      !toAddress ||
-                      !amount ||
-                      !isAddressValid ||
-                      !isAmountValid
-                        ? "#CCCCCC"
-                        : "black",
-                  }}
-                  onPress={() => transferToAddress(`0x${toAddress}`, amount)}
-                  disabled={loading || !isAddressValid || !isAmountValid}
-                >
-                  Transfer ETH! {loading ? "Sending..." : ""}
-                </Button>
-              </>
-            ) : (
+            {/* Paymaster check */}
+            {currency === eth_symbol && (
               <Button
-                mode="contained"
                 style={{
                   ...styles.button,
-                  backgroundColor:
-                    loading ||
-                    !toAddress ||
-                    !amount ||
-                    !isAddressValid ||
-                    !isAmountValid
-                      ? "#CCCCCC"
-                      : "black",
+                  backgroundColor: !sponsorshipCheckDisabled
+                    ? "black"
+                    : loadingSponsorship
+                    ? "#CCCCCC"
+                    : isSponsored
+                    ? "green"
+                    : "red",
                 }}
-                onPress={() =>
-                  transferTokenToAddress(
-                    tokenAddresses[currency],
-                    `0x${toAddress}`,
-                    amount
-                  )
-                }
-                disabled={loading || !isAddressValid || !isAmountValid}
+                loading={loadingSponsorship}
+                disabled={sponsorshipCheckDisabled || !isAddressValid || !isAmountValid}
+                onPress={() => checkTransferSponsorship(`0x${toAddress}`, amount)}
+                textColor="white"
               >
-                Transfer!
+                {isSponsored
+                  ? "We'll pay for gas!"
+                  : isSponsored === null
+                  ? "Check sponsorship"
+                  : "You'll pay for gas"}
               </Button>
             )}
+
+            {/* Transfer Button */}
+            <Button
+              mode="contained"
+              style={{
+                ...styles.button,
+                backgroundColor:
+                  loading ||
+                  !toAddress ||
+                  !amount ||
+                  !isAddressValid ||
+                  !isAmountValid
+                    ? "#CCCCCC"
+                    : "black",
+              }}
+              onPress={
+                currency === eth_symbol
+                  ? () => transferToAddress(`0x${toAddress}`, amount)
+                  : () =>
+                      transferTokenToAddress(
+                        tokenAddresses[currency],
+                        `0x${toAddress}`,
+                        amount
+                      )
+              }
+              disabled={loading || !isAddressValid || !isAmountValid}
+            >
+              {currency === eth_symbol ? `Transfer ETH! ${loading ? "Sending..." : ""}` : "Transfer!"}
+            </Button>
+
           </Card.Content>
         </Card>
       </View>
