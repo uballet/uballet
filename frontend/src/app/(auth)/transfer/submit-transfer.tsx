@@ -6,13 +6,11 @@ import { useCheckTransferSponsorship } from "../../../hooks/useCheckTransferSpon
 import { useBlockchainContext } from "../../../providers/BlockchainProvider";
 import { Text, Button, TextInput, Card } from "react-native-paper";
 import styles from "../../../styles/styles";
-import EstimateGasFees from "../../../components/EstimateGasFees/EstimateGasFees";
 import { useLocalSearchParams } from "expo-router";
 import { useAlchemyClient } from "../../../hooks/useAlchemyClient";
 import { router } from "expo-router";
-import TransferInput from "../../../components/TransferInput/TransferInput";
 
-function TransferScreen() {
+function SubmitTransferScreen() {
   const { toAddress, amount, currency } = useLocalSearchParams<{ 
     toAddress: `0x${string}`, 
     amount: string, 
@@ -21,11 +19,10 @@ function TransferScreen() {
 
   const eth_symbol = "ETH";
 
-  const account = useSafeLightAccount();
   const currencyScanned = useLocalSearchParams<{ currency: string }>()?.currency;
   const addressScanned = useLocalSearchParams<{ address: string }>()?.address;
   const amountScanned = useLocalSearchParams<{ amount: string }>()?.amount;
-  const client = useAlchemyClient();
+  
   const [isAmountValid, setIsAmountValid] = useState(true);
   const {
     transferToAddress,
@@ -36,7 +33,6 @@ function TransferScreen() {
     txHash,
   } = useTransfer();
   const {
-    checkTransferSponsorship,
     loading: loadingSponsorship,
     setIsSponsored,
     isSponsored,
@@ -45,7 +41,6 @@ function TransferScreen() {
 
   const { blockchain } = useBlockchainContext();
   const tokens = blockchain.erc20_tokens;
-  const currencies = [eth_symbol, ...tokens.map((token) => token.symbol)];
   const tokenAddresses = tokens.reduce<{ [key: string]: `0x${string}` }>(
     (acc, token) => {
       acc[token.symbol] = token.address as `0x${string}`;
@@ -79,63 +74,12 @@ function TransferScreen() {
       <View style={styles.containerTransfer}>
         <Card >
           <Card.Content>
-
-            {/* Estimate Gas Fees */}
-            <TouchableOpacity
-              onPress={() => setIsGasFeeCardExpanded(!isGasFeeCardExpanded)}
-            >
-              <View style={{ margin: 8, backgroundColor: "#f5f5f5", padding: 16 }}>
-                <Text style={{ fontWeight: "bold" }}>Estimate Gas Fees</Text>
-              </View>
-            </TouchableOpacity>
-            {isGasFeeCardExpanded && (
-              <Card style={{ margin: 8 }}>
-                <EstimateGasFees
-                  client={client}
-                  account={account}
-                  target={toAddress}
-                  data={"0x"}
-                />
-              </Card>
-            )}
-
-            {/* Paymaster check */}
-            {currency === eth_symbol && (
-              <Button
-                style={{
-                  ...styles.button,
-                  backgroundColor: !sponsorshipCheckDisabled
-                    ? "black"
-                    : loadingSponsorship
-                    ? "#CCCCCC"
-                    : isSponsored
-                    ? "green"
-                    : "red",
-                }}
-                loading={loadingSponsorship}
-                disabled={sponsorshipCheckDisabled || !isAmountValid}
-                onPress={() => checkTransferSponsorship(toAddress, amount)}
-                textColor="white"
-              >
-                {isSponsored
-                  ? "We'll pay for gas!"
-                  : isSponsored === null
-                  ? "Check sponsorship"
-                  : "You'll pay for gas"}
-              </Button>
-            )}
-
             {/* Transfer Button */}
             <Button
               mode="contained"
               style={{
                 ...styles.button,
-                backgroundColor:
-                  loading ||
-                  !amount ||
-                  !isAmountValid
-                    ? "#CCCCCC"
-                    : "black",
+                backgroundColor: loading ? "#CCCCCC" : "black",
               }}
               onPress={
                 currency === eth_symbol
@@ -158,4 +102,4 @@ function TransferScreen() {
   );
 }
 
-export default TransferScreen;
+export default SubmitTransferScreen;

@@ -5,6 +5,7 @@ import { router } from "expo-router";
 import { ethers } from "ethers";
 import styles from "../../../styles/styles";
 import ContactInput from "../../../components/ContactInput/ContactInput";
+import { theme } from "../../../styles/color"
 
 function InputAddress() {
   const [toAddress, setAddress] = useState("");
@@ -24,7 +25,7 @@ function InputAddress() {
   };
 
   return (
-    <View style={{ flex: 1, justifyContent: 'space-between' }}>
+    <View style={{ flex: 1, justifyContent: 'space-between', backgroundColor: theme.colors.background }}>
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
         <View style={{ width: '100%', paddingHorizontal: 20 }}>
             <Text style={ styles.infoText }> Enter an address</Text>
