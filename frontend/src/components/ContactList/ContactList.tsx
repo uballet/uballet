@@ -8,7 +8,7 @@ interface ContactListProps {
   contacts: { id: string; name: string; address: string }[];
   resolveName: (address: string) => Promise<string>;
   isPending: boolean;
-  enableDelete?: boolean; // Optional prop
+  enableDelete?: boolean;
 }
 
 const ContactList: React.FC<ContactListProps> = ({ contacts, resolveName, enableDelete = true }) => {
@@ -38,9 +38,9 @@ const ContactList: React.FC<ContactListProps> = ({ contacts, resolveName, enable
             key={contact.id}
             onPress={async () => {
               const resolvedAddress = await resolveName(contact.address);
-              router.navigate({
-                pathname: "/(auth)/(tabs)/transfer",
-                params: { address: resolvedAddress },
+              router.push({
+                pathname: "/transfer/amount-and-currency",
+                params: { toAddress: resolvedAddress },
               });
             }}
             className="mb-2 bg-white border border-gray-300 rounded-lg shadow-md p-3 flex-row items-center"

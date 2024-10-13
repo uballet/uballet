@@ -18,7 +18,7 @@ function InputAddress() {
 
   const handleNext = () => {
     router.push({
-      pathname: "transfer/transfer_old",
+      pathname: "transfer/amount-and-currency",
       params: { toAddress: `0x${toAddress}` },
     });
   };

@@ -13,9 +13,11 @@ import { router } from "expo-router";
 import TransferInput from "../../../components/TransferInput/TransferInput";
 
 function TransferScreen() {
-  const { toAddress } = useLocalSearchParams<{ toAddress: `0x${string}` }>();
-  console.log(toAddress);
-
+  const { toAddress, amount, currency } = useLocalSearchParams<{ 
+    toAddress: `0x${string}`, 
+    amount: string, 
+    currency: string 
+  }>();
 
   const eth_symbol = "ETH";
 
@@ -24,8 +26,6 @@ function TransferScreen() {
   const addressScanned = useLocalSearchParams<{ address: string }>()?.address;
   const amountScanned = useLocalSearchParams<{ amount: string }>()?.amount;
   const client = useAlchemyClient();
-  const [amount, setAmount] = useState("");
-  const [currency, setCurrency] = useState(eth_symbol);
   const [isAmountValid, setIsAmountValid] = useState(true);
   const {
     transferToAddress,
@@ -59,47 +59,26 @@ function TransferScreen() {
   useEffect(() => {
     if (txHash) {
       setError(false);
-      setAmount("");
-      setCurrency(eth_symbol);
       router.push({
         pathname: `transaction`,
         params: { txHash: txHash },
       });
     }
 
-    if (currencyScanned) {
-      setCurrency(currencyScanned);
-    }
+    // if (currencyScanned) {
+    //   setCurrency(currencyScanned);
+    // }
 
-    if (amountScanned) {
-      handleAmountChange(amountScanned);
-    }
+    // if (amountScanned) {
+    //   handleAmountChange(amountScanned);
+    // }
   }, [txHash, currencyScanned, addressScanned, amountScanned]);
-
-  const handleAmountChange = (amount: string) => {
-    const validAmount = amount.match(/^\d*\.?\d{0,18}$/);
-    if (validAmount) {
-      setAmount(amount);
-      setIsAmountValid(parseFloat(amount) > 0);
-    }
-  };
 
   return (
     <ScrollView>
       <View style={styles.containerTransfer}>
         <Card >
           <Card.Content>
-
-            {/* Transfer Input */}
-            <Card.Title title="Transfer Amount:" />
-            <TransferInput
-              amount={amount}
-              currency={currency}
-              currencies={currencies}
-              isAmountValid={isAmountValid}
-              handleAmountChange={handleAmountChange}
-              setCurrency={setCurrency}
-            />
 
             {/* Estimate Gas Fees */}
             <TouchableOpacity
