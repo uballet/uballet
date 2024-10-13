@@ -44,24 +44,26 @@ const renderComponent = (client: any, account: any, target: `0x${string}`, data:
 };
 
 describe('EstimateGasFees Component', () => {
-  // it('renders the gas fee estimates with valid data', async () => {
-  //   renderComponent(mockClient, mockAccount, "0xabcdef1234567890abcdef1234567890abcdef12", "0x123456");
+  it('renders the gas fee estimates with valid data', async () => {
+    renderComponent(mockClient, mockAccount, "0xabcdef1234567890abcdef1234567890abcdef12", "0x123456");
 
-  //   const preVerificationGas = await screen.findByText(/Pre Verification Gas Estimated: 21000/);
-  //   expect(preVerificationGas).toBeTruthy();
+    await waitFor(async () => {
+      const preVerificationGas = await screen.findByText(/Pre Verification Gas Estimated: 21000/);
+      expect(preVerificationGas).toBeTruthy();
 
-  //   const callGasLimit = await screen.findByText(/Call Gas Limit Estimated: 21000/);
-  //   expect(callGasLimit).toBeTruthy();
+      const callGasLimit = await screen.findByText(/Call Gas Limit Estimated: 21000/);
+      expect(callGasLimit).toBeTruthy();
 
-  //   const verificationGasLimit = await screen.findByText(/Verification Gas Limit Estimated: 21000/);
-  //   expect(verificationGasLimit).toBeTruthy();
+      const verificationGasLimit = await screen.findByText(/Verification Gas Limit Estimated: 21000/);
+      expect(verificationGasLimit).toBeTruthy();
 
-  //   const maxPriorityFeePerGas = await screen.findByText(/Max Priority Fee Per Gas in gwei: 2/);
-  //   expect(maxPriorityFeePerGas).toBeTruthy();
+      const maxPriorityFeePerGas = await screen.findByText(/Max Priority Fee Per Gas in gwei: 2/);
+      expect(maxPriorityFeePerGas).toBeTruthy();
 
-  //   const maxFeePerGas = await screen.findByText(/Max Fee Per Gas in gwei: 2/);
-  //   expect(maxFeePerGas).toBeTruthy();
-  // });
+      const maxFeePerGas = await screen.findByText(/Max Fee Per Gas in gwei: 2/);
+      expect(maxFeePerGas).toBeTruthy();
+    });
+  });
 
   it('renders the loading indicator while fetching data', async () => {
     renderComponent(mockClient, mockAccount, "0xabcdef1234567890abcdef1234567890abcdef12", "0x123456");
@@ -70,14 +72,16 @@ describe('EstimateGasFees Component', () => {
     expect(activityIndicator).toBeTruthy();
 
     await waitFor(() => {
-        expect(screen.queryByTestId('ActivityIndicator')).toBeNull();
+      expect(screen.queryByTestId('ActivityIndicator')).toBeNull();
     });
   });
 
   it('renders message when no data is available', async () => {
     renderComponent(mockClientNoData, mockAccount, "0xabcdef1234567890abcdef1234567890abcdef12", "0x");
 
-    const message = await screen.findByText(/No data is available/);
-    expect(message).toBeTruthy();
+    await waitFor(async () => {
+      const message = await screen.findByText(/No data is available/);
+      expect(message).toBeTruthy();
+    });
   });
 });
