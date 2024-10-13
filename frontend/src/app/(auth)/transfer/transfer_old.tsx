@@ -7,28 +7,25 @@ import { useBlockchainContext } from "../../../providers/BlockchainProvider";
 import { Text, Button, TextInput, Card } from "react-native-paper";
 import styles from "../../../styles/styles";
 import EstimateGasFees from "../../../components/EstimateGasFees/EstimateGasFees";
-import { Link, useLocalSearchParams } from "expo-router";
-import { ethers } from "ethers";
+import { useLocalSearchParams } from "expo-router";
 import { useAlchemyClient } from "../../../hooks/useAlchemyClient";
 import { router } from "expo-router";
 import TransferInput from "../../../components/TransferInput/TransferInput";
-import ContactInput from "../../../components/ContactInput/ContactInput";
 
 function TransferScreen() {
+  const { toAddress } = useLocalSearchParams<{ toAddress: `0x${string}` }>();
+  console.log(toAddress);
+
+
   const eth_symbol = "ETH";
 
   const account = useSafeLightAccount();
   const currencyScanned = useLocalSearchParams<{ currency: string }>()?.currency;
   const addressScanned = useLocalSearchParams<{ address: string }>()?.address;
   const amountScanned = useLocalSearchParams<{ amount: string }>()?.amount;
-  const { address } = useLocalSearchParams<{ address: string }>();
-  const [toAddress, setAddress] = useState(
-    address?.startsWith("0x") ? address.slice(2) : ""
-  );
   const client = useAlchemyClient();
   const [amount, setAmount] = useState("");
   const [currency, setCurrency] = useState(eth_symbol);
-  const [isAddressValid, setIsAddressValid] = useState(true);
   const [isAmountValid, setIsAmountValid] = useState(true);
   const {
     transferToAddress,
@@ -60,13 +57,8 @@ function TransferScreen() {
   const [isGasFeeCardExpanded, setIsGasFeeCardExpanded] = useState(false);
 
   useEffect(() => {
-    setIsSponsored(null);
-  }, [toAddress]);
-
-  useEffect(() => {
     if (txHash) {
       setError(false);
-      setAddress("");
       setAmount("");
       setCurrency(eth_symbol);
       router.push({
@@ -79,19 +71,10 @@ function TransferScreen() {
       setCurrency(currencyScanned);
     }
 
-    if (addressScanned) {
-      handleAddressChange(addressScanned.slice(2));
-    }
     if (amountScanned) {
       handleAmountChange(amountScanned);
     }
   }, [txHash, currencyScanned, addressScanned, amountScanned]);
-
-  const handleAddressChange = (address: string) => {
-    const fullAddress = `0x${address}`;
-    setAddress(address);
-    setIsAddressValid(ethers.isAddress(fullAddress));
-  };
 
   const handleAmountChange = (amount: string) => {
     const validAmount = amount.match(/^\d*\.?\d{0,18}$/);
@@ -131,38 +114,11 @@ function TransferScreen() {
                 <EstimateGasFees
                   client={client}
                   account={account}
-                  target={`0x${toAddress}`}
+                  target={toAddress}
                   data={"0x"}
                 />
               </Card>
             )}
-
-            {/* Address Input */}
-            <View style={{ flexDirection: "row", alignItems: "center" }}>
-              <Text variant="titleMedium" style={{ margin: 8 }}>
-                To Address:{" "}
-              </Text>
-              <Link href="/(auth)/contacts" push>
-                <Text variant="bodyMedium" style={{ margin: 8 }}>
-                  Select Contact
-                </Text>
-              </Link>
-            </View>
-            
-            <ContactInput
-              toAddress={ toAddress }
-              handleAddressChange={ handleAddressChange }
-              isAddressValid={ isAddressValid }
-            />
-
-            {/* Scan QR */}
-            <Button
-              mode="outlined"
-              style={styles.button}
-              onPress={() => router.push({ pathname: "scanner" })}
-            >
-              Scan QR
-            </Button>
 
             {/* Paymaster check */}
             {currency === eth_symbol && (
@@ -178,8 +134,8 @@ function TransferScreen() {
                     : "red",
                 }}
                 loading={loadingSponsorship}
-                disabled={sponsorshipCheckDisabled || !isAddressValid || !isAmountValid}
-                onPress={() => checkTransferSponsorship(`0x${toAddress}`, amount)}
+                disabled={sponsorshipCheckDisabled || !isAmountValid}
+                onPress={() => checkTransferSponsorship(toAddress, amount)}
                 textColor="white"
               >
                 {isSponsored
@@ -197,24 +153,22 @@ function TransferScreen() {
                 ...styles.button,
                 backgroundColor:
                   loading ||
-                  !toAddress ||
                   !amount ||
-                  !isAddressValid ||
                   !isAmountValid
                     ? "#CCCCCC"
                     : "black",
               }}
               onPress={
                 currency === eth_symbol
-                  ? () => transferToAddress(`0x${toAddress}`, amount)
+                  ? () => transferToAddress(toAddress, amount)
                   : () =>
                       transferTokenToAddress(
                         tokenAddresses[currency],
-                        `0x${toAddress}`,
+                        toAddress,
                         amount
                       )
               }
-              disabled={loading || !isAddressValid || !isAmountValid}
+              disabled={loading || !isAmountValid}
             >
               {currency === eth_symbol ? `Transfer ETH! ${loading ? "Sending..." : ""}` : "Transfer!"}
             </Button>

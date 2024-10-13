@@ -27,6 +27,7 @@ const globalStyles = StyleSheet.create({
     fontFamily: 'Roboto',
     marginVertical: 4,
     textAlign: 'center',
+    fontWeight: 'bold',
   },
   image: {
     width: 100,

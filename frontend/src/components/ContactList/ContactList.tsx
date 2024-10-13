@@ -8,9 +8,10 @@ interface ContactListProps {
   contacts: { id: string; name: string; address: string }[];
   resolveName: (address: string) => Promise<string>;
   isPending: boolean;
+  enableDelete?: boolean; // Optional prop
 }
 
-const ContactList: React.FC<ContactListProps> = ({ contacts, resolveName }) => {
+const ContactList: React.FC<ContactListProps> = ({ contacts, resolveName, enableDelete = true }) => {
   const { deleteContactMutate } = useDeleteContact();
 
   const onDelete = useCallback((id: string) => {
@@ -51,9 +52,11 @@ const ContactList: React.FC<ContactListProps> = ({ contacts, resolveName }) => {
                 {contact.address}
               </Text>
             </View>
-            <Pressable onPress={() => onDelete(contact.id)} className="p-2">
-              <MaterialIcons name="delete" size={24} color="red" />
-            </Pressable>
+            {enableDelete && (
+              <Pressable onPress={() => onDelete(contact.id)} className="p-2">
+                <MaterialIcons name="delete" size={24} color="red" />
+              </Pressable>
+            )}
           </Pressable>
         ))}
       </View>

@@ -15,7 +15,7 @@ function TransferScreen() {
   const router = useRouter();
 
   const handleNewPress = () => {
-    router.push("/transfer/transfer_old");
+    router.push("/transfer/input-address");
   };
 
   return (
@@ -44,7 +44,11 @@ function TransferScreen() {
 
       <Text style={ styles.infoText }>Send to your contacts</Text>
 
-      <ContactList contacts={contacts ?? []} resolveName={resolveName} isPending={false} />
+      <ContactList
+        contacts={contacts ?? []}
+        resolveName={resolveName}
+        isPending={false}
+        enableDelete={ false }/>
     </ScrollView>
   );
 }

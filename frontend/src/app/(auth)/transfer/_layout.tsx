@@ -1,7 +1,5 @@
 import { SafeAreaView, View, TouchableOpacity } from "react-native";
 import { Slot, Stack } from "expo-router";
-import { Text } from "react-native-paper";
-// import Ionicons from "@expo/vector-icons/Ionicons";
 import { router } from "expo-router";
 
 function TransferScreenLayout() {

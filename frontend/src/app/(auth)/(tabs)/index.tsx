@@ -1,4 +1,4 @@
-import { Link } from "expo-router";
+import { Link, router } from "expo-router";
 import React, { useState } from "react";
 import { ScrollView, View, RefreshControl } from "react-native";
 import { ActivityIndicator, Card, FAB, Text } from "react-native-paper";
@@ -70,8 +70,10 @@ const HomeScreen: React.FC = () => {
         </Card>
 
         <View style={styles.horizontalContainer}>
-          <FAB size="small" icon="bank-transfer" variant="secondary" />
-          <FAB size="small" icon="cash-plus" variant="secondary" />
+          <FAB
+            size="small" icon="contacts" variant="secondary" 
+            onPress={() => router.push({ pathname: "contacts" })} />
+          <FAB size="small" icon="qrcode" variant="secondary" />
           <FAB size="small" icon="cash-minus" variant="secondary" />
           <FAB size="small" icon="account-cash-outline" variant="secondary" />
         </View>
