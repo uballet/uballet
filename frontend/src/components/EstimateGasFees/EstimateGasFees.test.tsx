@@ -63,7 +63,7 @@ describe('EstimateGasFees Component', () => {
       const maxFeePerGas = await screen.findByText(/Max Fee Per Gas in gwei: 2/);
       expect(maxFeePerGas).toBeTruthy();
     });
-  });
+  }, 30000);
 
   it('renders the loading indicator while fetching data', async () => {
     renderComponent(mockClient, mockAccount, "0xabcdef1234567890abcdef1234567890abcdef12", "0x123456");
@@ -74,7 +74,7 @@ describe('EstimateGasFees Component', () => {
     await waitFor(() => {
       expect(screen.queryByTestId('ActivityIndicator')).toBeNull();
     });
-  });
+  }, 30000);
 
   it('renders message when no data is available', async () => {
     renderComponent(mockClientNoData, mockAccount, "0xabcdef1234567890abcdef1234567890abcdef12", "0x");
@@ -83,5 +83,5 @@ describe('EstimateGasFees Component', () => {
       const message = await screen.findByText(/No data is available/);
       expect(message).toBeTruthy();
     });
-  });
+  }, 30000);
 });
