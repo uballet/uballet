@@ -1,6 +1,6 @@
 import React from 'react';
 import type { Meta, StoryObj } from "@storybook/react";
-import MovementsList from "./movementsList";
+import MovementsList from "./MovementsList";
 import { View } from "react-native";
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'; // Import necessary modules
 import { AssetTransfersCategory, AssetTransfersWithMetadataResult } from 'alchemy-sdk';

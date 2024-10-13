@@ -6,7 +6,6 @@ import { ethers } from "ethers";
 
 export function useTransfer() {
   const account = useSafeLightAccount();
-  console.log(account.address + " is the account address");
   const { client } = useAccountContext();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);

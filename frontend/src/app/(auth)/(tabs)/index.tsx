@@ -1,14 +1,16 @@
-import { Link } from "expo-router";
+import { Link, router } from "expo-router";
 import React, { useState } from "react";
 import { ScrollView, View, RefreshControl } from "react-native";
-import { ActivityIndicator, Avatar, Card, FAB, Text } from "react-native-paper";
+import { ActivityIndicator, Card, FAB, Text } from "react-native-paper";
 import { useBalance } from "../../../hooks/useBalance";
 import { useRecentTransactions } from "../../../hooks/useRecentTransactions";
 import styles from "../../../styles/styles";
 import { useAuthContext } from "../../../providers/AuthProvider";
-import MovementsList from "../../../components/movementsList/movementsList";
+import MovementsList from "../../../components/MovementsList/MovementsList";
 import { useFocusEffect } from "@react-navigation/native";
 import { useAccountContext } from "../../../hooks/useAccountContext";
+import UserInfo from "../../../components/UserInfo/UserInfo";
+import { useSafeLightAccount } from "../../../hooks/useLightAccount";
 
 const formatBalance = (balance: number | null, significantFigures: number) => {
   if (balance == null) return "N/A";
@@ -22,6 +24,7 @@ const HomeScreen: React.FC = () => {
   const { user } = useAuthContext();
   const [refreshing, setRefreshing] = useState(false);
   const { contractDeployed } = useAccountContext(); // Get contractDeployed from AccountContext
+  const account = useSafeLightAccount();
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -42,20 +45,12 @@ const HomeScreen: React.FC = () => {
       }
     >
       <View style={styles.container}>
-        <View style={styles.horizontalContainer}>
-          <Avatar.Icon
-            style={[
-              styles.userSettings,
-              {
-                backgroundColor: contractDeployed ? "green" : "gray",
-              },
-            ]}
-            size={30}
-            icon="account"
-            color="white"
-          />
-          <Text style={{ flex: 1, left: 50 }} variant="titleLarge">{`${user?.email}`}</Text>
-        </View>
+        
+        <UserInfo
+          email={`${user?.email}`}
+          contractDeployed={contractDeployed}
+          publicAddress={ account.address }
+        />
 
         <Card style={styles.movementsCard} mode="contained">
           <Card.Content>
@@ -75,8 +70,11 @@ const HomeScreen: React.FC = () => {
         </Card>
 
         <View style={styles.horizontalContainer}>
-          <FAB size="small" icon="bank-transfer" variant="secondary" />
-          <FAB size="small" icon="cash-plus" variant="secondary" />
+          <FAB
+            size="small" icon="contacts" variant="secondary" 
+            onPress={() => router.push({ pathname: "contacts" })} />
+          <FAB size="small" icon="qrcode" variant="secondary"
+            onPress={() => router.push({ pathname: "scanner" })} />
           <FAB size="small" icon="cash-minus" variant="secondary" />
           <FAB size="small" icon="account-cash-outline" variant="secondary" />
         </View>
@@ -89,7 +87,7 @@ const HomeScreen: React.FC = () => {
               fromTransfers={fromTransfers}
               maxRows={4}
             />
-            <Link href="/(auth)/transaction_history" push>
+            <Link href="/(auth)/transaction-history" push>
               <Text variant="bodyMedium" style={{ margin: 8 }}>
                 See all history
               </Text>

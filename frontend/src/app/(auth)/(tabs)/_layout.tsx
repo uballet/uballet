@@ -14,7 +14,9 @@ const statusBarHeight = Platform.OS === 'android' ? StatusBar.currentHeight : 0;
 const { Navigator } = createMaterialBottomTabNavigator();
 export const MaterialBottomTabs = withLayoutContext<
   MaterialBottomTabNavigationOptions,
-  typeof Navigator
+  typeof Navigator,
+  any,
+  any
 >(Navigator);
 
 function TabsLayout() {
@@ -67,6 +69,15 @@ function TabsLayout() {
             }}
           />
           <MaterialBottomTabs.Screen
+            name="balance"
+            options={{
+              title: "Balance",
+              tabBarIcon: ({ color }) => (
+                <MaterialIcons name="balance" size={24} color={color} />
+              ),
+            }}
+          />
+          <MaterialBottomTabs.Screen
             name="transfer"
             options={{
               title: "Transfer",
@@ -84,14 +95,7 @@ function TabsLayout() {
               ),
             }}
           />
-          <MaterialBottomTabs.Screen
-            name="balance"
-            options={{
-              tabBarIcon: ({ color }) => (
-                <MaterialIcons name="balance" size={24} color={color} />
-              ),
-            }}
-          />
+          
           <MaterialBottomTabs.Screen
             name="notifications"
             options={{
