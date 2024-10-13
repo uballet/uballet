@@ -20,15 +20,12 @@ const TransactionHistory = () => {
 
 const styles = StyleSheet.create({
   container: {
-    paddingVertical: 16,  // Add some vertical padding around the scroll area
-    paddingHorizontal: 12,  // Add horizontal padding
+    paddingVertical: 16,
+    paddingHorizontal: 12,
   },
   innerContainer: {
-    borderWidth: 1,  // Optional: add a subtle border if needed for spacing
-    borderColor: '#ddd',  // Light border color to simulate the card feel
-    borderRadius: 8,  // Round the edges slightly
-    padding: 12,  // Add padding inside to simulate the inner padding of the card
-    backgroundColor: '#fff',  // Background color can help with contrast if needed
+    padding: 12, 
+    backgroundColor: '#fff', 
   },
 });
 
