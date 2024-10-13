@@ -23,11 +23,19 @@ const globalStyles = StyleSheet.create({
   },
   infoText: {
     fontSize: 12,
-    color: '#9E9E9E', 
+    color: '#2c3e50', 
     fontFamily: 'Roboto',
     marginVertical: 4,
     textAlign: 'center',
     fontWeight: 'bold',
+  },
+  summaryText: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    fontFamily: 'Roboto',
+    color: '#6e6e6e',
+    marginBottom: 16,
+    textAlign: 'center',
   },
   image: {
     width: 100,

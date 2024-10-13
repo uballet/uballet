@@ -1,13 +1,11 @@
 import { useEffect, useState } from "react";
-import { ScrollView, View, TouchableOpacity } from "react-native";
-import { useSafeLightAccount } from "../../../hooks/useLightAccount";
+import { ScrollView, View } from "react-native";
 import { useTransfer } from "../../../hooks/useTransfer";
 import { useCheckTransferSponsorship } from "../../../hooks/useCheckTransferSponsorship";
 import { useBlockchainContext } from "../../../providers/BlockchainProvider";
-import { Text, Button, TextInput, Card } from "react-native-paper";
+import { Text, Button, Card } from "react-native-paper";
 import styles from "../../../styles/styles";
 import { useLocalSearchParams } from "expo-router";
-import { useAlchemyClient } from "../../../hooks/useAlchemyClient";
 import { router } from "expo-router";
 
 function SubmitTransferScreen() {
@@ -70,35 +68,63 @@ function SubmitTransferScreen() {
   }, [txHash, currencyScanned, addressScanned, amountScanned]);
 
   return (
-    <ScrollView>
-      <View style={styles.containerTransfer}>
-        <Card >
+    <View style={{ flex: 1, justifyContent: 'space-between' }}>
+      {/* Centered Card */}
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 20 }}>
+        <Card style={{ width: '100%' }}>
           <Card.Content>
-            {/* Transfer Button */}
-            <Button
-              mode="contained"
-              style={{
-                ...styles.button,
-                backgroundColor: loading ? "#CCCCCC" : "black",
-              }}
-              onPress={
-                currency === eth_symbol
-                  ? () => transferToAddress(toAddress, amount)
-                  : () =>
-                      transferTokenToAddress(
-                        tokenAddresses[currency],
-                        toAddress,
-                        amount
-                      )
-              }
-              disabled={loading || !isAmountValid}
-            >
-              {currency === eth_symbol ? `Transfer ETH! ${loading ? "Sending..." : ""}` : "Transfer!"}
-            </Button>
+            {/* Summary */}
+            <Text style={[styles.summaryText]}>
+              Summary
+            </Text>
+
+            {/* To Address */}
+            <View style={{ marginVertical: 8 }}>
+              <Text style={styles.infoText}>
+                <Text style={{ fontWeight: "bold" }}>To Address:</Text>
+              </Text>
+              <Text style={styles.infoText}>
+                {toAddress}  {/* Address on a new line */}
+              </Text>
+            </View>
+
+            {/* Amount */}
+            <View style={{ marginVertical: 8 }}>
+              <Text style={styles.infoText}>
+                <Text style={{ fontWeight: "bold" }}>Amount:</Text>
+              </Text>
+              <Text style={styles.infoText}>
+                {amount} {currency} {/* Amount and currency on a new line */}
+              </Text>
+            </View>
+            
           </Card.Content>
         </Card>
+
+
       </View>
-    </ScrollView>
+
+      {/* Transfer Button at the Bottom */}
+      <View style={{ paddingBottom: 20, alignItems: 'center' }}>
+        <Button
+          mode="contained"
+          style={[styles.button, { width: 200 }]}
+          onPress={
+            currency === eth_symbol
+              ? () => transferToAddress(toAddress, amount)
+              : () =>
+                  transferTokenToAddress(
+                    tokenAddresses[currency],
+                    toAddress,
+                    amount
+                  )
+          }
+          disabled={loading || !isAmountValid}
+        >
+          {currency === eth_symbol ? `Transfer ETH! ${loading ? "Sending..." : ""}` : "Transfer!"}
+        </Button>
+      </View>
+    </View>
   );
 }
 
