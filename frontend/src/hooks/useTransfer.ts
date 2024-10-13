@@ -6,7 +6,7 @@ import { ethers } from "ethers";
 
 export function useTransfer() {
   const account = useSafeLightAccount();
-  const { client } = useAccountContext();
+  const { sdkClient, client } = useAccountContext();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
   const [txHash, setTxHash] = useState<null | string>(null);
@@ -35,6 +35,23 @@ export function useTransfer() {
     [account]
   );
 
+  const getTokenDecimals = async (tokenContractAddress: `0x${string}`) => {
+    const DEFAULT_DECIMALS = 18;
+    const abi = ["function decimals() view returns (uint8)"];
+    const provider = await sdkClient.config.getProvider(); 
+    // @ts-ignore
+    const tokenContract = new ethers.Contract(tokenContractAddress, abi, provider);
+
+    try {
+      const decimals = await tokenContract.decimals();
+      console.log(decimals);
+      return decimals;
+    } catch (error) {
+      console.error("Failed to fetch token decimals:", error);
+      return DEFAULT_DECIMALS;
+    }
+  };
+
   const transferTokenToAddress = useCallback(
     async (
       tokenContractAddress: `0x${string}`,
@@ -43,12 +60,14 @@ export function useTransfer() {
     ) => {
       try {
         setLoading(true);
+        
+        const decimals = await getTokenDecimals(tokenContractAddress);
 
         const abi = ["function transfer(address to, uint256 amount)"];
         const iface = new ethers.Interface(abi);
         const data = iface.encodeFunctionData("transfer", [
           address,
-          ethers.parseUnits(amount, 18),
+          ethers.parseUnits(amount, decimals),
         ]);
 
         const uo = await client.sendUserOperation({

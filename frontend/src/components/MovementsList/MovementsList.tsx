@@ -40,17 +40,25 @@ const formatValue = (value: string | number, significantFigures: number) => {
   if (isNaN(numValue)) return value;
 
   let formattedValue: string;
-  // Case 1: Value >= 1, format with up to 4 decimal places
+  
+  // Case 1: Value >= 1, format with up to 4 decimal places, remove trailing zeros
   if (numValue >= 1) {
-    formattedValue = numValue.toFixed(4).replace(/(\.\d*?[1-9])0+$/, '$1').replace(/\.$/, '');
+    formattedValue = numValue
+      .toFixed(4)
+      .replace(/(\.0+|(\.\d*?[1-9])0+)$/, '$2');
   } 
-  // Case 2: Value < 1, format with 4 significant figures
+  // Case 2: Value < 1, format with up to the given number of significant figures
   else {
-    formattedValue = numValue.toPrecision(significantFigures).replace(/(\.\d*?[1-9])0+$/, '$1').replace(/\.$/, '');
+    formattedValue = numValue
+      .toPrecision(significantFigures)
+      .replace(/(\.\d*?[1-9])0+$/, '$1') 
+      .replace(/\.$/, '');
   }
 
   return formattedValue;
 };
+
+
 
 
 const EthereumTransactionItem = (
