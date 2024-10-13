@@ -44,15 +44,15 @@ const formatValue = (value: string | number, significantFigures: number) => {
   // Case 1: Value >= 1, format with up to 4 decimal places, remove trailing zeros
   if (numValue >= 1) {
     formattedValue = numValue
-      .toFixed(4) // Restrict to 4 decimal places
-      .replace(/(\.0+|(\.\d*?[1-9])0+)$/, '$2'); // Remove trailing zeros
+      .toFixed(4)
+      .replace(/(\.0+|(\.\d*?[1-9])0+)$/, '$2');
   } 
   // Case 2: Value < 1, format with up to the given number of significant figures
   else {
     formattedValue = numValue
-      .toPrecision(significantFigures) // Restrict to given significant figures
-      .replace(/(\.\d*?[1-9])0+$/, '$1') // Remove trailing zeros after the decimal point
-      .replace(/\.$/, ''); // Remove decimal point if no decimals are left
+      .toPrecision(significantFigures)
+      .replace(/(\.\d*?[1-9])0+$/, '$1') 
+      .replace(/\.$/, '');
   }
 
   return formattedValue;
