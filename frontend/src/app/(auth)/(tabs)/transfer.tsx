@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { ScrollView, View, TouchableOpacity } from "react-native";
 import { Text } from "react-native-paper";
 import ContactList from "../../../components/ContactList/ContactList";
@@ -33,6 +32,8 @@ function TransferScreen() {
             height: 100,
             justifyContent: "center",
             alignItems: "center",
+            marginTop: 20,
+            marginBottom: 10,
           }}
         >
           <MaterialIcons name="add" size={40} color="#fff" />

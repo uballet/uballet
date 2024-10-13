@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { View, TouchableOpacity } from "react-native";
+import { View } from "react-native";
 import { Button, Card, Text } from "react-native-paper";
 import { useLocalSearchParams, router } from "expo-router";
 import EstimateGasFees from "../../../components/EstimateGasFees/EstimateGasFees";
@@ -7,7 +7,7 @@ import { useSafeLightAccount } from "../../../hooks/useLightAccount";
 import { useCheckTransferSponsorship } from "../../../hooks/useCheckTransferSponsorship";
 import { useAlchemyClient } from "../../../hooks/useAlchemyClient";
 import styles from "../../../styles/styles";
-import { theme } from "../../../styles/color"
+import { theme } from "../../../styles/color";
 
 function GasInfoScreen() {
   const { toAddress, amount, currency } = useLocalSearchParams<{ 
@@ -34,19 +34,27 @@ function GasInfoScreen() {
     });
   };
 
+  const handleEstimateGasClick = () => {
+    setIsGasFeeCardExpanded(!isGasFeeCardExpanded);
+  };
+
   return (
     <View style={{ flex: 1, justifyContent: 'space-between', backgroundColor: theme.colors.background }}>
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', width: '100%', paddingHorizontal: 20 }}>
         
-        {/* Gas Fees Explanation and Estimate Button */}
+        {/* Gas Fees Explanation and Button */}
         <Text style={styles.infoText}> Ethereum transactions require a small fee called 'gas'. Press this button to get an estimate of how much gas you'll need to pay to complete your transaction. </Text>
-        <TouchableOpacity
-          onPress={() => setIsGasFeeCardExpanded(!isGasFeeCardExpanded)}
+        <Button
+          mode="contained"
+          style={{
+            ...styles.button,
+            backgroundColor: "#000",
+          }}
+          onPress={handleEstimateGasClick}
+          textColor="white"
         >
-          <View style={{ margin: 8, backgroundColor: "#f5f5f5", padding: 16 }}>
-            <Text style={{ fontWeight: "bold" }}>Estimate Gas Fees</Text>
-          </View>
-        </TouchableOpacity>
+          Estimate Gas Fees
+        </Button>
 
         {isGasFeeCardExpanded && (
           <Card style={{ margin: 8 }}>
