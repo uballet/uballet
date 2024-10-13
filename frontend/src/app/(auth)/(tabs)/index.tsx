@@ -73,7 +73,8 @@ const HomeScreen: React.FC = () => {
           <FAB
             size="small" icon="contacts" variant="secondary" 
             onPress={() => router.push({ pathname: "contacts" })} />
-          <FAB size="small" icon="qrcode" variant="secondary" />
+          <FAB size="small" icon="qrcode" variant="secondary"
+            onPress={() => router.push({ pathname: "scanner" })} />
           <FAB size="small" icon="cash-minus" variant="secondary" />
           <FAB size="small" icon="account-cash-outline" variant="secondary" />
         </View>

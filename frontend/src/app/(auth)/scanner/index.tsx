@@ -47,9 +47,7 @@ const QrScannerScreen = () => {
         wcuri = data;
       }
 
-      console.log(`Currency: ${currency}`);
-      console.log(`Address: ${address}`);
-      console.log(`Amount: ${amount}`);
+      console.log(`WC: ${wcuri}`);
     } catch (error) {
       console.error("Failed to parse QR code data:", error);
     }
@@ -85,15 +83,28 @@ const QrScannerScreen = () => {
             : ({ data }) => {
                 setScanned(true);
                 if (data === null) {
-                  Alert.alert("Imvalid QR", data, [{ text: "OK" }]);
+                  Alert.alert("Invalid QR", data, [{ text: "OK" }]);
                   return;
                 }
-                
 
-                router.navigate({
-                  pathname: screenBack,
-                  params: parseQRCodeData(data),
-                });
+                const { currency, address, amount, wcuri } = parseQRCodeData(data);
+
+                if (wcuri) {
+                  router.navigate({
+                    pathname: screenBack,
+                    params: { wcuri },
+                  });
+                } else if (address && amount && currency) {
+                  router.push({
+                    pathname: "/transfer/gas-info",
+                    params: { toAddress: address, amount, currency },
+                  });
+                } else if (address) {
+                  router.push({
+                    pathname: "/transfer/amount-and-currency",
+                    params: { toAddress: address },
+                  });
+                }
               }
         }
       />
