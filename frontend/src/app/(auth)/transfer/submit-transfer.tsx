@@ -54,17 +54,9 @@ function SubmitTransferScreen() {
       setError(false);
       router.push({
         pathname: `transaction`,
-        params: { txHash: txHash },
+        params: { txHash: txHash, isNew: true },
       });
     }
-
-    // if (currencyScanned) {
-    //   setCurrency(currencyScanned);
-    // }
-
-    // if (amountScanned) {
-    //   handleAmountChange(amountScanned);
-    // }
   }, [txHash, currencyScanned, addressScanned, amountScanned]);
 
   return (

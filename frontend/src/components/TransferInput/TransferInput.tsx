@@ -24,13 +24,14 @@ const TransferInput: React.FC<TransferInputProps> = ({
     <>
     <View style={styles.inputContainer}>
       <TextInput
-        mode="outlined"
+        mode="flat"
         placeholder="0.0000"
         value={amount}
         onChangeText={handleAmountChange}
         style={styles.textInput}
         keyboardType="numeric"
         error={!isAmountValid}
+        placeholderTextColor="#888"
       />
       <Picker testID='transfer-input-picker'
         selectedValue={currency}
@@ -60,6 +61,8 @@ const styles = StyleSheet.create({
   textInput: {
     margin: 8,
     flex: 1,
+    fontSize: 24,
+    backgroundColor: 'transparent',
   },
   picker: {
     width: 150,
