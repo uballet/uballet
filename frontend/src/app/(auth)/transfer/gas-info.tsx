@@ -68,8 +68,9 @@ function GasInfoScreen() {
         )}
 
         {/* Sponsorship Explanation and Button */}
-        <Text style={styles.infoText}> Sometimes, a sponsor can pay your gas fees for you. This button checks if someone else can cover the gas cost for this transaction. </Text>
-        {currency === eth_symbol && (
+       
+        {currency === eth_symbol && (<>
+          <Text style={styles.infoText}> Sometimes, a sponsor can pay your gas fees for you. This button checks if someone else can cover the gas cost for this transaction. </Text>
           <Button
             style={{
               ...styles.button,
@@ -91,7 +92,7 @@ function GasInfoScreen() {
               ? "We'll pay for gas!"
               : "You'll pay for gas"}
           </Button>
-        )}
+          </>)}
       </View>
 
       {/* Next Button at the Bottom */}
