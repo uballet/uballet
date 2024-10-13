@@ -1,6 +1,5 @@
 import { SafeAreaView, View, TouchableOpacity } from "react-native";
 import { Slot, Stack } from "expo-router";
-import { router } from "expo-router";
 
 function TransferScreenLayout() {
   return (

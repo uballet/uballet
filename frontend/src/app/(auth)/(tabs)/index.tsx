@@ -1,6 +1,6 @@
 import { Link, router } from "expo-router";
 import React, { useState } from "react";
-import { ScrollView, View, RefreshControl } from "react-native";
+import { ScrollView, View, RefreshControl, Pressable } from "react-native";
 import { ActivityIndicator, Card, FAB, Text } from "react-native-paper";
 import { useBalance } from "../../../hooks/useBalance";
 import { useRecentTransactions } from "../../../hooks/useRecentTransactions";
@@ -87,11 +87,17 @@ const HomeScreen: React.FC = () => {
               fromTransfers={fromTransfers}
               maxRows={4}
             />
-            <Link href="/(auth)/transaction-history" push>
+            <Pressable
+              onPress={() => {
+                router.push({
+                  pathname: "/transaction-history",
+                });
+              }}
+            >
               <Text variant="bodyMedium" style={{ margin: 8 }}>
                 See all history
               </Text>
-            </Link>
+            </Pressable>
           </Card.Content>
         </Card>
       </View>

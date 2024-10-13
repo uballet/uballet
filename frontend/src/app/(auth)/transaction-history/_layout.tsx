@@ -1,25 +1,24 @@
-import React from "react";
-import { ScrollView } from "react-native";
-import { Card, List, Text } from "react-native-paper";
-import { useRecentTransactions } from "../../../hooks/useRecentTransactions";
-import MovementsList from "../../../components/MovementsList/MovementsList";
+import { Slot, Stack } from "expo-router";
+import { SafeAreaView } from "react-native";
 
-const TransactionHistory: React.FC = () => {
-  const { fromTransfers, toTransfers } = useRecentTransactions();
-
+function TransactionHistoryLayout() {
   return (
-    <ScrollView>
-      <Card style={{marginTop: 40}} mode="elevated">
-        <Card.Content>
-          <Card.Title title="All Transaction History" />
-          <MovementsList 
-            toTransfers={toTransfers} 
-            fromTransfers={fromTransfers} 
-          />
-        </Card.Content>
-      </Card>
-    </ScrollView>
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }}>
+      <Stack.Screen
+        options={{
+          title: "Transaction History",
+          headerStyle: { backgroundColor: "#277ca5" },
+          headerShown: true,
+          headerTintColor: "#fff",
+          headerBackTitleVisible: false,
+          headerTitleStyle: {
+            fontWeight: "bold",
+          },
+        }}
+      />
+      <Slot />
+    </SafeAreaView>
   );
-};
+}
 
-export default TransactionHistory;
+export default TransactionHistoryLayout;
