@@ -124,7 +124,7 @@ export function AccountProvider({ children }: PropsWithChildren) {
   const [needsRecovery, setNeedsRecovery] = useState(false);
   const [initializing, setInitializing] = useState(false);
   const [mnemonic, setMnemonic] = useState<string | null>(null);
-  const [accountCache, setAccountCache] = useState<Record<string, LightAccount>>({}); // Cache for accounts per network
+  const [accountCache, setAccountCache] = useState<Record<string, LightAccount>>({});
   const clearMnemonic = () => setMnemonic(null);
   const { user, setUser } = useAuthContext();
   const { blockchain, selectedNetwork } = useBlockchainContext();

@@ -8,7 +8,7 @@ import styles from "../../styles/styles";
 import { router } from "expo-router";
 
 const TransactionScreen: React.FC = () => {
-  const { txHash, isNew } = useLocalSearchParams<{ txHash?: string, isNew?: string }>(); // Fetch isNew as a string
+  const { txHash, isNew } = useLocalSearchParams<{ txHash?: string, isNew?: string }>();
   const { transaction, loading } = useGetTransactioDetail(txHash ? txHash : "");
 
   const { blockchain } = useBlockchainContext();
