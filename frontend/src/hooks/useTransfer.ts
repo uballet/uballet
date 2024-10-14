@@ -8,37 +8,50 @@ export function useTransfer() {
   const account = useSafeLightAccount();
   const { sdkClient, client } = useAccountContext();
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(false);
+  const [error, setError] = useState<null | string>(null);  // Store error message instead of just a boolean
   const [txHash, setTxHash] = useState<null | string>(null);
   
   const transferToAddress = useCallback(
     async (address: `0x${string}`, etherAmount: string) => {
+      setLoading(true);
+      setError(null);
       try {
-        setLoading(true);
-        const uo = await client.sendUserOperation({
-          account,
-          uo: {
-            target: address,
-            data: "0x",
-            value: parseEther(etherAmount),
-          },
-        });
-        const txHash = await client.waitForUserOperationTransaction(uo);
-        setTxHash(txHash);
+        let uo;
+        try {
+          uo = await client.sendUserOperation({
+            account,
+            uo: {
+              target: address,
+              data: "0x",
+              value: parseEther(etherAmount),
+            },
+          });
+        } catch (e) {
+          console.error("Error during client.sendUserOperation:", e);
+          setError("Error during client.sendUserOperation");
+          return;
+        }
+
+        try {
+          const txHash = await client.waitForUserOperationTransaction(uo);
+          setTxHash(txHash);
+        } catch (e) {
+          setError("waitForUserOperationTransaction");
+        }
       } catch (e) {
         console.error({ error: e });
-        setError(true);
+        setError("Unexpected error during transfer");
       } finally {
         setLoading(false);
       }
     },
-    [account]
+    [account, client]
   );
 
   const getTokenDecimals = async (tokenContractAddress: `0x${string}`) => {
     const DEFAULT_DECIMALS = 18;
     const abi = ["function decimals() view returns (uint8)"];
-    const provider = await sdkClient.config.getProvider(); 
+    const provider = await sdkClient.config.getProvider();
     // @ts-ignore
     const tokenContract = new ethers.Contract(tokenContractAddress, abi, provider);
 
@@ -58,10 +71,17 @@ export function useTransfer() {
       address: `0x${string}`,
       amount: string
     ) => {
+      setLoading(true);
+      setError(null);  // Clear previous error
       try {
-        setLoading(true);
-        
-        const decimals = await getTokenDecimals(tokenContractAddress);
+        let decimals;
+        try {
+          decimals = await getTokenDecimals(tokenContractAddress);
+        } catch (e) {
+          console.error("Error fetching token decimals:", e);
+          setError("Error fetching token decimals");
+          return;
+        }
 
         const abi = ["function transfer(address to, uint256 amount)"];
         const iface = new ethers.Interface(abi);
@@ -70,19 +90,31 @@ export function useTransfer() {
           ethers.parseUnits(amount, decimals),
         ]);
 
-        const uo = await client.sendUserOperation({
-          account,
-          uo: {
-            target: tokenContractAddress,
-            data: data as `0x${string}`,
-            value: BigInt(0),
-          },
-        });
-        const txHash = await client.waitForUserOperationTransaction(uo);
-        setTxHash(txHash);
+        let uo;
+        try {
+          uo = await client.sendUserOperation({
+            account,
+            uo: {
+              target: tokenContractAddress,
+              data: data as `0x${string}`,
+              value: BigInt(0),
+            },
+          });
+        } catch (e) {
+          console.error("Error during client.sendUserOperation:", e);
+          setError("sendUserOperation");
+          return;
+        }
+
+        try {
+          const txHash = await client.waitForUserOperationTransaction(uo);
+          setTxHash(txHash);
+        } catch (e) {
+          setError("waitForUserOperationTransaction");
+        }
       } catch (e) {
         console.error({ error: e });
-        setError(true);
+        setError("Unexpected error during token transfer");
       } finally {
         setLoading(false);
       }
@@ -94,7 +126,7 @@ export function useTransfer() {
     transferToAddress,
     transferTokenToAddress,
     txHash,
-    error,
+    error,  // Return the detailed error message
     setError,
     loading,
   };

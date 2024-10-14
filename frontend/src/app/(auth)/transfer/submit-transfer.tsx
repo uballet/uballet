@@ -41,8 +41,16 @@ function SubmitTransferScreen() {
   );
 
   useEffect(() => {
+    if (error == "waitForUserOperationTransaction") {
+      router.push({
+        pathname: `transfer/pending-transaction`
+      })
+    }
+  }, [error]);
+
+  useEffect(() => {
     if (txHash) {
-      setError(false);
+      setError("");
       router.push({
         pathname: `transaction`,
         params: { txHash: txHash, isNew: "true" },
@@ -52,7 +60,6 @@ function SubmitTransferScreen() {
 
   return (
     <View style={{ flex: 1, justifyContent: 'space-between' }}>
-      {/* Centered Card */}
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 20 }}>
         <Card style={{ width: '100%' }}>
           <Card.Content>
@@ -67,7 +74,7 @@ function SubmitTransferScreen() {
                 <Text style={{ fontWeight: "bold" }}>To Address:</Text>
               </Text>
               <Text style={styles.infoText}>
-                {toAddress}  {/* Address on a new line */}
+                {toAddress}
               </Text>
             </View>
 
@@ -77,7 +84,7 @@ function SubmitTransferScreen() {
                 <Text style={{ fontWeight: "bold" }}>Amount:</Text>
               </Text>
               <Text style={styles.infoText}>
-                {amount} {currency} {/* Amount and currency on a new line */}
+                {amount} {currency}
               </Text>
             </View>
             
