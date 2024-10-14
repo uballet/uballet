@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
-import { ScrollView, View } from "react-native";
+import { View } from "react-native";
 import { useTransfer } from "../../../hooks/useTransfer";
-import { useCheckTransferSponsorship } from "../../../hooks/useCheckTransferSponsorship";
 import { useBlockchainContext } from "../../../providers/BlockchainProvider";
-import { Text, Button, Card } from "react-native-paper";
+import { Text, Card } from "react-native-paper";
 import styles from "../../../styles/styles";
 import { useLocalSearchParams } from "expo-router";
 import { router } from "expo-router";
+import TransferButton from "../../../components/TransferButton/TransferButton";
 
 function SubmitTransferScreen() {
   const { toAddress, amount, currency } = useLocalSearchParams<{ 
@@ -21,7 +21,6 @@ function SubmitTransferScreen() {
   const addressScanned = useLocalSearchParams<{ address: string }>()?.address;
   const amountScanned = useLocalSearchParams<{ amount: string }>()?.amount;
   
-  const [isAmountValid, setIsAmountValid] = useState(true);
   const {
     transferToAddress,
     transferTokenToAddress,
@@ -30,12 +29,6 @@ function SubmitTransferScreen() {
     setError,
     txHash,
   } = useTransfer();
-  const {
-    loading: loadingSponsorship,
-    setIsSponsored,
-    isSponsored,
-  } = useCheckTransferSponsorship();
-  const sponsorshipCheckDisabled = loadingSponsorship || isSponsored !== null;
 
   const { blockchain } = useBlockchainContext();
   const tokens = blockchain.erc20_tokens;
@@ -47,14 +40,12 @@ function SubmitTransferScreen() {
     {}
   );
 
-  const [isGasFeeCardExpanded, setIsGasFeeCardExpanded] = useState(false);
-
   useEffect(() => {
     if (txHash) {
       setError(false);
       router.push({
         pathname: `transaction`,
-        params: { txHash: txHash, isNew: true },
+        params: { txHash: txHash, isNew: "true" },
       });
     }
   }, [txHash, currencyScanned, addressScanned, amountScanned]);
@@ -98,23 +89,19 @@ function SubmitTransferScreen() {
 
       {/* Transfer Button at the Bottom */}
       <View style={{ paddingBottom: 20, alignItems: 'center' }}>
-        <Button
-          mode="contained"
-          style={[styles.button, { width: 200 }]}
-          onPress={
-            currency === eth_symbol
-              ? () => transferToAddress(toAddress, amount)
-              : () =>
-                  transferTokenToAddress(
-                    tokenAddresses[currency],
-                    toAddress,
-                    amount
-                  )
+        <TransferButton
+          currency={currency}
+          ethSymbol={eth_symbol}
+          loading={loading}
+          onTransferETH={() => transferToAddress(toAddress, amount)}
+          onTransferToken={() =>
+            transferTokenToAddress(
+              tokenAddresses[currency],
+              toAddress,
+              amount
+            )
           }
-          disabled={loading || !isAmountValid}
-        >
-          {currency === eth_symbol ? `Transfer ETH! ${loading ? "Sending..." : ""}` : "Transfer!"}
-        </Button>
+        />
       </View>
     </View>
   );
