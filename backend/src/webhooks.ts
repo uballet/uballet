@@ -20,6 +20,9 @@ export async function initWebHooks({ url }: { url: string }) {
         await WebHook.findOne({ where: { externalId: In(webhooks.webhooks.map(webhook => webhook.id)) } })
 
     if (!webhooks.webhooks.length || !existingWebHook) {
+        if (!addresses.length) {
+            return;
+        }
         const webhook = await alchemyClient.notify.createWebhook(
             `${url}/address-activity`,
             WebhookType.ADDRESS_ACTIVITY,
@@ -53,7 +56,6 @@ export async function addAddressToWebhook({ address }: { address: string }) {
     const webHook = await WebHook.findOne({ where: { name: "all-addresses-activity" } })
     if (webHook) {
         try {
-            console.log({ webHook })
             await alchemyClient.notify.updateWebhook(webHook.externalId, { addAddresses: [address] })
         } catch(e) {
             console.error(e)
