@@ -15,7 +15,8 @@
     "build:android:simulator": "eas build -p android --profile simulator",
     "run:ios": "eas build:run -p ios --profile simulator",
     "run:android": "eas build:run -p android",
-    "ts:check": "tsc"
+    "ts:check": "tsc",
+    "postinstall": "patch-package"
   },
   "dependencies": {
     "@aa-sdk/core": "^4.0.0-beta.0",
@@ -55,6 +56,7 @@
     "nativewind": "^2.0.11",
     "node-libs-react-native": "^1.2.1",
     "nvm": "^0.0.4",
+    "patch-package": "^8.0.0",
     "react": "18.2.0",
     "react-native": "0.74.5",
     "react-native-chart-kit": "^6.12.0",
