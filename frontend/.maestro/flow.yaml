@@ -1,7 +1,24 @@
 appId: com.flperez.uballet
 ---
-- launchApp
+- launchApp:
+    clearState: true
+    clearKeychain: true
 
+- runFlow:
+    when:
+      visible:
+        text: "Development servers"
+    commands:
+      - tapOn:
+          text: "http://localhost:8081"
+
+- runFlow:
+    when:
+      visible:
+        text: "Continue"
+    commands:
+      - tapOn:
+          point: 50%, 20%
 - runFlow:
     when:
       visible:
@@ -9,4 +26,39 @@ appId: com.flperez.uballet
     commands:
       - tapOn:
           text: "Email"
-- inputText: "test-email"
+- inputText: "funded-1@test.com"
+- tapOn:
+    text: "return"
+- tapOn:
+    id: "sign-in-button"
+- tapOn: "Input Code"
+- inputText: "123456"
+- tapOn: "Submit Code"
+- tapOn: "Recover with seedphrase" 
+- tapOn: "Enter seed phrase"
+- inputText: "cake still pioneer lunch valid wisdom urge author report box utility utility"
+- tapOn: "done"
+- tapOn: "Recover"
+- assertVisible:
+    text: "Invalid seed phrase"
+- tapOn:
+    point: 50%,50%
+- eraseText: 7
+- inputText: "possible"
+- tapOn: "done"
+- tapOn: "Recover"
+- assertVisible:
+    text: "Balance"
+- tapOn:
+    text: "Settings"
+- tapOn: Logout
+- tapOn: "Email"
+- inputText: "funded-1@test.com"
+- tapOn:
+    text: "return"
+- tapOn: "Sign In"
+- tapOn: "Input Code"
+- inputText: "123456"
+- tapOn: "Submit Code"
+- assertVisible:
+    text: "Balance"

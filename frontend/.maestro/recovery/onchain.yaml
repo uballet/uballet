@@ -1,0 +1,200 @@
+appId: com.flperez.uballet
+---
+- launchApp:
+    clearState: true
+    clearKeychain: true
+
+- runFlow:
+    when:
+      visible:
+        text: "Development servers"
+    commands:
+      - tapOn:
+          text: "http://localhost:8081"
+
+- runFlow:
+    when:
+      visible:
+        text: "Continue"
+    commands:
+      - tapOn:
+          point: 50%, 20%
+- runFlow:
+    when:
+      visible:
+        text: "Sign In"
+    commands:
+      - tapOn:
+          text: "Email"
+- inputText: "funded-1@test.com"
+- tapOn:
+    text: "return"
+- tapOn:
+    id: "sign-in-button"
+- tapOn: "Input Code"
+- inputText: "123456"
+- tapOn: "Submit Code"
+- tapOn: "Recover with seedphrase" 
+- tapOn: "Enter seed phrase"
+- inputText: "cake still pioneer lunch valid wisdom urge author report box utility possible"
+- tapOn: "done"
+- tapOn: "Recover"
+- tapOn:
+    text: "Security"
+- tapOn:
+    text: "Create Recovery Team"
+- tapOn:
+    text: "Recoverer 1 Email"
+- inputText: "funded-2@test.com"
+- tapOn:
+    text: "Recoverer 2 Email"
+- inputText: "funded-3@test.com"
+- tapOn:
+    text: "Add Recovery"
+- tapOn:
+    text: "Settings"
+- tapOn: "Logout"
+
+
+- tapOn: "Email"
+- inputText: "funded-2@test.com"
+- tapOn:
+    text: "return"
+- tapOn:
+    id: "sign-in-button"
+- tapOn: "Input Code"
+- inputText: "123456"
+- tapOn: "Submit Code"
+- tapOn: "Recover with seedphrase" 
+- tapOn: "Enter seed phrase"
+- inputText: "execute stage caught click catch evidence ribbon jump legend tobacco narrow frame"
+- tapOn: "done"
+- tapOn: "Recover"
+- tapOn:
+    text: "Security"
+- tapOn: "Accept"
+- tapOn:
+    text: "Settings"
+- tapOn: "Logout"
+
+- tapOn: "Email"
+- inputText: "funded-3@test.com"
+- tapOn:
+    text: "return"
+- tapOn:
+    id: "sign-in-button"
+- tapOn: "Input Code"
+- inputText: "123456"
+- tapOn: "Submit Code"
+- tapOn: "Recover with seedphrase" 
+- tapOn: "Enter seed phrase"
+- inputText: "insane vessel film sure quarter early switch water buddy initial pistol express"
+- tapOn: "done"
+- tapOn: "Recover"
+- tapOn:
+    text: "Security"
+- tapOn: "Accept"
+- tapOn:
+    text: "Settings"
+- tapOn: "Logout"
+
+- tapOn: "Email"
+- inputText: "funded-1@test.com"
+- tapOn:
+    text: "return"
+- tapOn:
+    id: "sign-in-button"
+- tapOn: "Input Code"
+- inputText: "123456"
+- tapOn: "Submit Code"
+- tapOn:
+    text: "Security"
+- tapOn: "Confirm"
+- tapOn:
+    text: "Confirm Team"
+- assertVisible:
+    text: "Recoverer 1: funded-2@test.com"
+- assertVisible:
+    text: "Recoverer 2: funded-3@test.com"
+- assertNotVisible:
+    text: "Confirm"
+- tapOn:
+    text: "Settings"
+- tapOn: "Logout"
+
+- clearKeychain
+
+- tapOn: "Email"
+- inputText: "funded-1@test.com"
+- tapOn:
+    text: "return"
+- tapOn:
+    id: "sign-in-button"
+- tapOn: "Input Code"
+- inputText: "123456"
+- tapOn: "Submit Code"
+- tapOn: "Contact Recovery Team" 
+- tapOn: "Request Recovery"
+- assertVisible:
+    text: "Your recovery is in progress"
+- assertVisible:
+    text: "Get in touch with your recovery team"
+- tapOn: "Back"
+- tapOn: "Log Out"
+
+- tapOn: "Email"
+- inputText: "funded-2@test.com"
+- tapOn:
+    text: "return"
+- tapOn:
+    id: "sign-in-button"
+- tapOn: "Input Code"
+- inputText: "123456"
+- tapOn: "Submit Code"
+- tapOn: "Recover with seedphrase" 
+- tapOn: "Enter seed phrase"
+- inputText: "execute stage caught click catch evidence ribbon jump legend tobacco narrow frame"
+- tapOn: "done"
+- tapOn: "Recover"
+- tapOn:
+    text: "Security"
+- tapOn: "Sign Recovery"
+- tapOn:
+    text: "Settings"
+- tapOn: "Logout"
+
+- tapOn: "Email"
+- inputText: "funded-3@test.com"
+- tapOn:
+    text: "return"
+- tapOn:
+    id: "sign-in-button"
+- tapOn: "Input Code"
+- inputText: "123456"
+- tapOn: "Submit Code"
+- tapOn: "Recover with seedphrase" 
+- tapOn: "Enter seed phrase"
+- inputText: "insane vessel film sure quarter early switch water buddy initial pistol express"
+- tapOn: "done"
+- tapOn: "Recover"
+- tapOn:
+    text: "Security"
+- tapOn: "Sign Recovery"
+- tapOn: "Complete Recovery"
+- assertVisible:
+    text: "No Action Required"
+- tapOn:
+    text: "Settings"
+- tapOn: "Logout"
+
+- tapOn: "Email"
+- inputText: "funded-1@test.com"
+- tapOn:
+    text: "return"
+- tapOn:
+    id: "sign-in-button"
+- tapOn: "Input Code"
+- inputText: "123456"
+- tapOn: "Submit Code"
+- assertVisible:
+    text: "Balance"
