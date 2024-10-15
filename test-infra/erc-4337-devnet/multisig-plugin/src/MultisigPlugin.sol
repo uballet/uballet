@@ -176,7 +176,10 @@ contract MultisigPlugin is BasePlugin, IMultisigPlugin, IERC1271 {
 
     /// @inheritdoc IERC1271
     function isValidSignature(bytes32 digest, bytes memory signature) external view override returns (bytes4) {
-        return _1271_MAGIC_VALUE;
+        bytes32 wrappedDigest = getMessageHash(msg.sender, abi.encode(digest));
+        (bool success,) = checkNSignatures(wrappedDigest, wrappedDigest, msg.sender, signature);
+
+        return success ? _1271_MAGIC_VALUE : _1271_MAGIC_VALUE_FAILURE;
     }
 
     // ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
@@ -198,51 +201,7 @@ contract MultisigPlugin is BasePlugin, IMultisigPlugin, IERC1271 {
         override
         returns (uint256)
     {
-        if (functionId == uint8(FunctionId.USER_OP_VALIDATION_OWNER)) {
-            // UserOp.sig format:
-            // 0-32: upperLimitPreVerificationGas
-            // 32-64: upperLimitMaxFeePerGas
-            // 64-96: upperLimitMaxPriorityFeePerGas
-            // 96-96+n: k signatures, each sig is 65 bytes each (so n = 65 * k)
-            // 96+n-: contract signatures if any
-            if (userOp.signature.length < 96) {
-                revert InvalidSigLength();
-            }
-
-            (
-                uint256 upperLimitPreVerificationGas,
-                uint256 upperLimitMaxFeePerGas,
-                uint256 upperLimitMaxPriorityFeePerGas
-            ) = abi.decode(userOp.signature[0:96], (uint256, uint256, uint256));
-
-            bytes32 actualDigest = userOpHash.toEthSignedMessageHash();
-            bytes32 upperLimitDigest = (
-                upperLimitPreVerificationGas == userOp.preVerificationGas
-                    && upperLimitMaxFeePerGas == userOp.maxFeePerGas
-                    && upperLimitMaxPriorityFeePerGas == userOp.maxPriorityFeePerGas
-            )
-                ? actualDigest
-                : _getUserOpHash(
-                    userOp, upperLimitPreVerificationGas, upperLimitMaxFeePerGas, upperLimitMaxPriorityFeePerGas
-                ).toEthSignedMessageHash();
-            (bool success,) = checkNSignatures(actualDigest, upperLimitDigest, msg.sender, userOp.signature[96:]);
-
-            // make sure userOp doesnt use more than the max fees
-            // we revert here as its better DevEx over silently failing in case a bad dummy sig is used
-            if (upperLimitPreVerificationGas < userOp.preVerificationGas) {
-                revert InvalidPreVerificationGas();
-            }
-            if (upperLimitMaxFeePerGas < userOp.maxFeePerGas) {
-                revert InvalidMaxFeePerGas();
-            }
-            if (upperLimitMaxPriorityFeePerGas < userOp.maxPriorityFeePerGas) {
-                revert InvalidMaxPriorityFeePerGas();
-            }
-
-            return success ? SIG_VALIDATION_PASSED : SIG_VALIDATION_FAILED;
-        }
-
-        revert NotImplemented(msg.sig, functionId);
+        return SIG_VALIDATION_PASSED;
     }
 
     /// @inheritdoc BasePlugin
