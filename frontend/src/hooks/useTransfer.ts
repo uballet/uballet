@@ -2,7 +2,6 @@ import { useCallback, useState } from "react";
 import { useAccountContext } from "./useAccountContext";
 import { parseEther, toHex } from "viem";
 import { ethers } from "ethers";
-import { formatUoEstimation } from "./useGasEstimation";
 
 export function useTransfer() {
   const { lightAccount, initiator, submitter } = useAccountContext();
