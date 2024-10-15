@@ -10,7 +10,7 @@ import { gcm } from '@noble/ciphers/aes';
 import { sha256 } from '@noble/hashes/sha256';
 import { createEmailVerificationCode } from "./sign-up";
 import { EmailVerificationCode } from "../entity/EmailVerificationCode";
-import { BUILD_ENV } from "../env";
+import { BUILD_ENV, IS_E2E_TESTING } from "../env";
 
 function encryptStamperValues({ secret, nonce }: { secret: Uint8Array, nonce: Uint8Array }) {
     const nonceHex = Buffer.from(nonce).toString('hex')
@@ -66,10 +66,14 @@ async function signInWithEmailSimpler({ email }: { email: string }) {
 
 async function completeSimplerEmailSignIn({ email, code }: { email: string, code: string }) {
     const user = await User.findOneOrFail({ where: { email } })
+    if (IS_E2E_TESTING) {
+        const token = createAccessToken(user.id)
+        return { user, token }    
+    }
     await EmailVerificationCode.findOneOrFail({ where: { userId: user.id, code, type: 'login' } })
-
+    
     const token = createAccessToken(user.id)
-    return { user, token }
+    return { user, token }    
 }
 
 const completeEmailSignIn = async ({ email, stampedEmail }: { email: string, stampedEmail: string }) => {

@@ -1,14 +1,14 @@
 import express, { Request, Response , Application } from 'express';
 import * as bodyParser from 'body-parser';
 import * as dotenv from "dotenv";
-import { AppDataSource } from "./data-source"
+import { AppDataSource, TestDataSource } from "./data-source"
 import { authenticateToken } from './jwt-authentication';
 import contactsRouter from './routes/contacts';
 import authRouter from './routes/auth'
 import userRouter from './routes/user'
 import webAuthnRouter from './routes/webauthn'
 import wellKnownRouter from './routes/well-known'
-import { PORT } from './env';
+import { PORT, IS_E2E_TESTING } from './env';
 import quotesRouter from "./routes/quotes";
 import portfolioRouter from "./routes/portfolio";
 import recoveryRouter from "./routes/recovery";
@@ -18,6 +18,7 @@ import PushNotificationService from './services/push-notification';
 import { initWebHooks } from './webhooks';
 import ngrok from '@ngrok/ngrok'
 import { NGROK_AUTHTOKEN, NGROK_DOMAIN } from './env';
+import { clearTestDB, initTestDB } from './test-db';
 // For env File
 dotenv.config();
 
@@ -66,12 +67,18 @@ app.post('/test-push-notification', async (req: Request, res: Response) => {
 
 
   async function init() {
-    await AppDataSource.initialize();
+    if (IS_E2E_TESTING) {
+      await TestDataSource!.initialize();
+      await clearTestDB();
+      await initTestDB();
+    } else {
+      await AppDataSource.initialize();
+    }
     app.listen(port, () => {
       console.log(`Server is Fire at http://localhost:${port}`);
     });
 
-    if (NGROK_AUTHTOKEN && NGROK_DOMAIN) {
+    if (NGROK_AUTHTOKEN && NGROK_DOMAIN && !IS_E2E_TESTING) {
       const listener = await ngrok.connect({ addr: port, authtoken: NGROK_AUTHTOKEN, domain: NGROK_DOMAIN });
       initWebHooks({ url: listener.url()! });
     }
