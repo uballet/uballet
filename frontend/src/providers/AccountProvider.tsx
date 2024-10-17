@@ -6,21 +6,26 @@ import {
   useMemo,
   useState,
 } from "react";
-import { Address, LocalAccountSigner } from "@aa-sdk/core"
+import { Address, deepHexlify, LocalAccountSigner, resolveProperties, split } from "@aa-sdk/core"
 import { arbitrum, arbitrumSepolia, base, baseSepolia, mainnet, optimism, optimismSepolia, sepolia } from "@account-kit/infra"
-import { createLightAccountAlchemyClient, createMultisigAccountAlchemyClient } from "@account-kit/smart-contracts";
+import { createMultisigAccountAlchemyClient, createMultisigModularAccountClient, createLightAccountClient as createCustomLightAccountClient, createLightAccountAlchemyClient } from "@account-kit/smart-contracts";
 
 import { Alchemy } from "alchemy-sdk";
 import { useAuthContext } from "./AuthProvider";
-import { ALCHEMY_API_KEY, ARB_SEPOLIA_ALCHEMY_POLICY_ID, BASE_SEPOLIA_ALCHEMY_POLICY_ID, OPT_SEPOLIA_ALCHEMY_POLICY_ID, SEPOLIA_ALCHEMY_POLICY_ID } from "../env";
+import { ALCHEMY_API_KEY, IS_E2E_TESTING, ARB_SEPOLIA_ALCHEMY_POLICY_ID, BASE_SEPOLIA_ALCHEMY_POLICY_ID, OPT_SEPOLIA_ALCHEMY_POLICY_ID, SEPOLIA_ALCHEMY_POLICY_ID } from "../env";
 import { generateMnemonic } from "bip39";
 import uballet from "../api/uballet";
 import { User } from "../api/uballet/types";
 import { useSignerStore } from "../hooks/useSignerStore";
 import { DEFAULT_CONFIG, useBlockchainContext } from "./BlockchainProvider";
 import { BlockchainConfig } from "../../netconfig/blockchain-config";
+import { createClient, http } from "viem";
 
 global.Buffer = global.Buffer || require('buffer').Buffer;
+
+const stackupClient = createClient({
+  transport: http("http://localhost:43371"),
+})
 
 const getAlchemyChain = (name: string) => {
   switch (name) {
@@ -58,13 +63,72 @@ interface MultisigClientArgs {
   chainConfig: BlockchainConfig;
 }
 
-function createMultisigClient({
+const erc7677Methods = ["pm_getPaymasterStubData", "pm_getPaymasterData"];
+const transport = split({
+  overrides: [
+    // NOTE: if you're splitting Node and Bundler traffic too, you can add the bundler config to this array
+    {
+      methods: erc7677Methods,
+      transport: http("http://localhost:43371"),
+    },
+  ],
+  fallback: http("http://localhost:8545"),
+});
+
+
+async function createMultisigClient({
   signer,
   owners,
   accountAddress,
   withoutPaymaster = false,
   chainConfig,
 }: MultisigClientArgs): Promise<AlchemyMultisigClient> {
+  if (IS_E2E_TESTING) {
+    // @ts-ignore
+    return createMultisigModularAccountClient({
+      signer,
+      owners,
+      accountAddress,
+      threshold: 2n,
+      chain: {
+        ...getAlchemyChain(chainConfig.sdk_name),
+        rpcUrls: {
+          default: { http: [`http://localhost:8545`] },
+        }
+      },
+      gasEstimator: async (userOp) => ({
+        ...userOp,
+        preVerificationGas:"0xa27C0",
+        callGasLimit:"0xa27c",
+        verificationGasLimit:"0x5927c0"
+      }),
+      paymasterAndData: async (userop, opts) => {
+        const pmResponse: any = await stackupClient.request({
+          // @ts-ignore
+          method: "pm_sponsorUserOperation",
+          params: [
+            deepHexlify(await resolveProperties(userop)),
+            opts.account.getEntryPoint().address,
+            {
+              // @ts-ignore
+              type: "payg", // Replace with ERC20 context based on stackups documentation
+            },
+          ],
+        })
+      
+        return {
+          ...userop,
+          ...pmResponse,
+          paymasterAndData: '0x',
+        };
+      },
+      transport,
+      factoryAddress: '0x42FfC8c171D7F62b231633E9d06f11a83aA6E09e',
+      // policyId: withoutPaymaster ? undefined : getAlchemyPolicyId(chainConfig.sdk_name)
+    })
+  }
+
+  // @ts-ignore
   return createMultisigAccountAlchemyClient({
     signer,
     owners,
@@ -82,7 +146,50 @@ interface LightAccountArgs {
   chainConfig: BlockchainConfig;
 }
 
+
 async function createLightAccountClient({ signer, address, chainConfig }: LightAccountArgs): Promise<AlchemyLightAccountClient> {
+  if (IS_E2E_TESTING) {
+    // @ts-ignore
+    return createCustomLightAccountClient({
+      signer,
+      accountAddress: address,
+      transport,
+      gasEstimator: async (userOp) => ({
+        ...userOp,
+        preVerificationGas:"0xa27C0",
+        callGasLimit:"0xa27c",
+        verificationGasLimit:"0x5927c0"
+      }),
+      paymasterAndData: async (userop, opts) => {
+        const pmResponse: any = await stackupClient.request({
+          // @ts-ignore
+          method: "pm_sponsorUserOperation",
+          params: [
+            deepHexlify(await resolveProperties(userop)),
+            opts.account.getEntryPoint().address,
+            {
+              // @ts-ignore
+              type: "payg", // Replace with ERC20 context based on stackups documentation
+            },
+          ],
+        })
+      
+        return {
+          ...userop,
+          ...pmResponse,
+          paymasterAndData: '0x',
+        };
+      },
+      chain: {
+        ...getAlchemyChain(chainConfig.sdk_name),
+        rpcUrls: {
+          default: { http: [`http://localhost:8545`] },
+        }
+      },
+      factoryAddress: '0x42FfC8c171D7F62b231633E9d06f11a83aA6E09e',
+    })
+  }
+
   const client = await createLightAccountAlchemyClient({
     signer,
     accountAddress: address,
@@ -90,7 +197,21 @@ async function createLightAccountClient({ signer, address, chainConfig }: LightA
     rpcUrl: `${chainConfig.api_key_endpoint}${ALCHEMY_API_KEY}`,
     policyId: getAlchemyPolicyId(chainConfig.sdk_name)!!
   })
+
   return client
+}
+
+function getAlchemySdkClient(blockchain: BlockchainConfig) {
+  if (IS_E2E_TESTING) {
+    return new Alchemy({
+      url: 'http://localhost:8545',
+      network: blockchain.sdk_name,
+    })
+  }
+  return new Alchemy({
+    url: `${blockchain.api_key_endpoint}${ALCHEMY_API_KEY}`,
+    network: blockchain.sdk_name,
+  })
 }
 
 interface MultiSigClientPairArgs {
@@ -120,8 +241,6 @@ type AccountClientWithMultisig = {
   initiator: AlchemyMultisigClient;
   submitter: AlchemyMultisigClient;
 }
-
-
 
 type AccountClient = AccountClientWithLight | AccountClientWithMultisig | {
   accountType: null
@@ -202,10 +321,7 @@ export function AccountProvider({ children }: PropsWithChildren) {
     const { loadSigners, storeSeedphrase, promoteRecoverySeedphrase, loadRecoverySigners } = useSignerStore();
     const { blockchain } = useBlockchainContext();
 
-    const sdkClient = useMemo(() => new Alchemy({
-      url: `${blockchain.api_key_endpoint}${ALCHEMY_API_KEY}`,
-      network: blockchain.sdk_name,
-    }), [blockchain])
+    const sdkClient = useMemo(() => getAlchemySdkClient(blockchain), [blockchain])
 
     const initWallet = async ({ type: accountType }: { type: "light" | "multisig" }) => {
       setInitializing(true)
@@ -230,7 +346,7 @@ export function AccountProvider({ children }: PropsWithChildren) {
     
     useEffect(() => {
       if (needsRecovery) {
-        const intervalId = setInterval(async () => {
+        async function checkRecovery() {
           const recoverySigners = await loadRecoverySigners();
           if (!recoverySigners) {
             return
@@ -241,6 +357,10 @@ export function AccountProvider({ children }: PropsWithChildren) {
             await promoteRecoverySeedphrase();
             loadAccountFromStorage({ address: user!.walletAddress!, type: user?.walletType ?? 'light' });
           }
+        }
+        checkRecovery();
+        const intervalId = setInterval(async () => {
+          await checkRecovery();
         }, 10000)
         return () => clearInterval(intervalId)
       }
@@ -253,6 +373,7 @@ export function AccountProvider({ children }: PropsWithChildren) {
       const { walletAddress, walletType } = user
       const [signer1, signer2] = getSignersFromSeedphrase(seedPhrase)
 
+      const isDeployed = await sdkClient.core.isContractAddress(user.walletAddress!)
       if (walletType === "light") {
         const lightClient = await createLightAccountClient({ signer: signer1, chainConfig: blockchain });
         if (!isSameAddress(lightClient.getAddress(), walletAddress!)) {
@@ -262,16 +383,13 @@ export function AccountProvider({ children }: PropsWithChildren) {
       } else {
         const signerAddress1 = await signer1.getAddress();
         const signerAddress2 = await signer2.getAddress();
-        const [initiator, submitter] = await createMultisigClientPair({ signers:[signer1, signer2], address: user.walletAddress!, chainConfig: blockchain });
-        const isDeployed = await initiator.account.isAccountDeployed();
-  
+        const [initiator, submitter] = await createMultisigClientPair({ signers:[signer1, signer2], address: isDeployed ? user.walletAddress! : undefined, chainConfig: blockchain });
         if (!isDeployed) {
           if (!isSameAddress(initiator.getAddress(), user!.walletAddress!)) {
             throw new Error('Wrong seed phrase')
           }
         } else {
           const owners = await initiator.readOwners();
-  
           if (!owners.includes(signerAddress1) || !owners.includes(signerAddress2)) {
             throw new Error('Wrong seed phrase')
           }
@@ -281,12 +399,21 @@ export function AccountProvider({ children }: PropsWithChildren) {
       }
       await storeSeedphrase(seedPhrase);
       setNeedsRecovery(false);
-    }, [user, blockchain])
+    }, [user, blockchain, accountType])
 
     const loadAccountFromStorage = async ({ address, type: accountType }: { address: Address, type: "light" | "multisig" }) => {
       const signers = await loadSigners();
       if (!signers) {
-        setNeedsRecovery(true)
+        const recoverySigners = await loadRecoverySigners();
+        if (!recoverySigners) {
+          setNeedsRecovery(true)
+          return
+        }
+        const isRecoveryFinished = await checkIfSignersAreOwners(recoverySigners, user!, blockchain);
+        if (isRecoveryFinished) {
+          await promoteRecoverySeedphrase();
+          loadAccountFromStorage({ address: user!.walletAddress!, type: user?.walletType ?? 'light' });
+        }
         return
       }
 
@@ -317,8 +444,16 @@ export function AccountProvider({ children }: PropsWithChildren) {
           throw e
         }
       }
-
     }
+
+    useEffect(() => {
+      if (!user) {
+        setAccountType(null)
+      }
+      if (user?.walletAddress) {
+        setAccountType(user?.walletType ?? 'light')
+      }
+    })
 
     useEffect(() => {
       if (!user) {
@@ -330,6 +465,9 @@ export function AccountProvider({ children }: PropsWithChildren) {
         return
       }
       if (user.verified) {
+        if (!accountType) {
+          return;
+        }
         if (!user.walletAddress && accountType) {
           initWallet({ type: accountType })
           return;
