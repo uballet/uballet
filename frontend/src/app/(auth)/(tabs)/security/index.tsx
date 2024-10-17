@@ -187,7 +187,7 @@ function WhoIProtectSection() {
         {noProtect && <Text className="text-lg self-center">No one to protect</Text>}
         {recoveryTeams.data?.notJoined.map((team) => (
             <View key={team.id} className="items-center rounded-lg p-4 w-full border">
-                <View className="flex-row items-center">
+                <View className="flex-row items-center flex-wrap">
                     <Text className="text-lg">{team.email}</Text>
                     <Text className="text-sm p-2">wants to add you as recoverer</Text>
                 </View>
@@ -197,12 +197,13 @@ function WhoIProtectSection() {
             </View>
         ))}
         {recoveryTeams.data?.joined.map((team) => (
-            <View key={team.id} className="flex-row justify-between items-center rounded-lg p-4 w-full border mt-2">
+            <View key={team.id} className="justify-between items-center rounded-lg p-4 w-full border mt-2">
                 <Text className="text-lg" key={team.id}>{team.email}</Text>
                 {team.request?.needToSign ? (
                     <Button
                         disabled={signRecoveryMutation.isPending}
                         loading={signRecoveryMutation.isPending}
+                        className="mt-2"
                         onPress={() => {
                             if (team.request?.aggregatedSignature) {
                                 router.navigate({ pathname: `/(auth)/(tabs)/security/complete-recovery`, params: { id: team.id } })
@@ -214,7 +215,7 @@ function WhoIProtectSection() {
                             Sign Recovery
                     </Button>
                 ) : (
-                <Text className="text-sm ml-2">No Action Required</Text>
+                <Text className="text-sm mt-2">No Action Required</Text>
                 )}
             </View>
         ))}
