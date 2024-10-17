@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { View } from "react-native";
 import { Button, Card, Text } from "react-native-paper";
 import { useLocalSearchParams, router } from "expo-router";
@@ -8,6 +8,7 @@ import { useCheckTransferSponsorship } from "../../../hooks/useCheckTransferSpon
 import { useAlchemyClient } from "../../../hooks/useAlchemyClient";
 import styles from "../../../styles/styles";
 import { theme } from "../../../styles/color";
+import SponsorshipCard from '../../../components/SponsorshipCard/SponsorshipCard';
 
 function GasInfoScreen() {
   const { toAddress, amount, currency } = useLocalSearchParams<{ 
@@ -26,6 +27,12 @@ function GasInfoScreen() {
     isSponsored,
   } = useCheckTransferSponsorship();
   const [isGasFeeCardExpanded, setIsGasFeeCardExpanded] = useState(false);
+
+  useEffect(() => {
+    if (currency === eth_symbol) {
+      checkTransferSponsorship(toAddress, amount);
+    }
+  }, [currency, toAddress, amount]);
 
   const handleNext = () => {
     router.push({
@@ -67,32 +74,16 @@ function GasInfoScreen() {
           </Card>
         )}
 
-        {/* Sponsorship Explanation and Button */}
-       
-        {currency === eth_symbol && (<>
-          <Text style={styles.infoText}> Sometimes, a sponsor can pay your gas fees for you. This button checks if someone else can cover the gas cost for this transaction. </Text>
-          <Button
-            style={{
-              ...styles.button,
-              backgroundColor: loadingSponsorship
-                ? "#CCCCCC"
-                : isSponsored === null
-                ? "black"
-                : isSponsored
-                ? "green"
-                : "red",
-            }}
-            loading={loadingSponsorship}
-            onPress={() => checkTransferSponsorship(toAddress, amount)}
-            textColor="white"
-          >
-            {isSponsored === null
-              ? "Check sponsorship"
-              : isSponsored
-              ? "We'll pay for gas!"
-              : "You'll pay for gas"}
-          </Button>
-          </>)}
+        {/* Sponsorship Card */}
+        {currency === eth_symbol && (
+          <>
+            <Text style={styles.infoText}>Sometimes, someone else can cover the fee. Here, we're checking if someone else can cover the fee for this transaction.</Text>
+            <SponsorshipCard
+              loadingSponsorship={loadingSponsorship}
+              isSponsored={isSponsored ?? false}
+            />
+          </>
+        )}
       </View>
 
       {/* Next Button at the Bottom */}
