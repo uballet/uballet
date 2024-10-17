@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { View, ActivityIndicator } from "react-native";
 import { Text } from "react-native-paper";
-import { parseEther } from "viem";
+import { parseEther, formatEther } from "viem";
 import { LightAccount } from "@alchemy/aa-accounts";
 import { AlchemySmartAccountClient } from "@alchemy/aa-alchemy";
 
@@ -35,7 +35,7 @@ const EstimateGasFees: React.FC<EstimateGasFeesProps> = ({
   target,
   data,
 }) => {
-  const [uoBuilt, setuoBuilt] = useState<any>(null);
+  const [totalMaxFees, setTotalMaxFees] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
 
@@ -43,10 +43,18 @@ const EstimateGasFees: React.FC<EstimateGasFeesProps> = ({
     try {
       setIsLoading(true);
       const uo = await buildUserOperation(client, account, target, data);
-      setuoBuilt(uo);
+      const preVerificationGas = BigInt(uo.preVerificationGas ?? 0);
+      const callGasLimit = BigInt(uo.callGasLimit ?? 0);
+      const verificationGasLimit = BigInt(uo.verificationGasLimit ?? 0);
+      const maxFeePerGas = BigInt(uo.maxFeePerGas ?? 0);
+
+      const totalGas = preVerificationGas + callGasLimit + verificationGasLimit;
+      const maxFees = totalGas * maxFeePerGas;
+
+      setTotalMaxFees(formatEther(maxFees));
     } catch (error) {
       setHasError(true);
-      console.error("Error building User Operation:", error);
+      console.error("Error estimating gas fees:", error);
     } finally {
       setIsLoading(false);
     }
@@ -64,27 +72,17 @@ const EstimateGasFees: React.FC<EstimateGasFeesProps> = ({
     );
   }
 
-  if (hasError || !uoBuilt || !uoBuilt.preVerificationGas) {
+  if (hasError || !totalMaxFees || data === '0x') {
     return (
       <View style={{ margin: 8 }}>
-        <Text variant="labelLarge">No data is available</Text>
+        <Text variant="labelLarge">Unable to estimate gas fees</Text>
       </View>
     );
   }
 
-  const preVerificationGas = parseInt(uoBuilt.preVerificationGas);
-  const callGasLimit = parseInt(uoBuilt.callGasLimit);
-  const verificationGasLimit = parseInt(uoBuilt.verificationGasLimit);
-  const maxPriorityFeePerGas = parseInt(uoBuilt.maxPriorityFeePerGas) / 1000000000;
-  const maxFeePerGas = parseInt(uoBuilt.maxFeePerGas) / 1000000000;
-
   return (
     <View style={{ margin: 8 }}>
-      <Text variant="labelLarge">Pre Verification Gas Estimated: {preVerificationGas}</Text>
-      <Text variant="labelLarge">Call Gas Limit Estimated: {callGasLimit}</Text>
-      <Text variant="labelLarge">Verification Gas Limit Estimated: {verificationGasLimit}</Text>
-      <Text variant="labelLarge">Max Priority Fee Per Gas in gwei: {maxPriorityFeePerGas}</Text>
-      <Text variant="labelLarge">Max Fee Per Gas in gwei: {maxFeePerGas}</Text>
+      <Text variant="labelLarge">Estimated Max Fees: {totalMaxFees} ETH</Text>
     </View>
   );
 };
