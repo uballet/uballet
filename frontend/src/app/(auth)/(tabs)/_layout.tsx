@@ -81,9 +81,10 @@ function TabsLayout() {
           <MaterialBottomTabs.Screen
             name="settings"
             options={{
+              tabBarAccessibilityLabel: "Settings",
               title: "Settings",
               tabBarIcon: ({ color }) => (
-                <MaterialIcons name="settings" size={24} color={color} />
+                <MaterialIcons testID="settings-icon" name="settings" size={24} color={color} />
               ),
             }}
           />
@@ -111,6 +112,7 @@ function TabsLayout() {
           <MaterialBottomTabs.Screen
             name="security"
             options={{
+              tabBarAccessibilityLabel: "Security",
               title: "Security",
               tabBarIcon: ({ color }) => (
                 <MaterialIcons name="security" size={24} color={color} />
