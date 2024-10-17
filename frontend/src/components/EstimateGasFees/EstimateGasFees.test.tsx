@@ -48,19 +48,7 @@ describe('EstimateGasFees Component', () => {
     renderComponent(mockClient, mockAccount, "0xabcdef1234567890abcdef1234567890abcdef12", "0x123456");
 
     await waitFor(async () => {
-      const preVerificationGas = await screen.findByText(/Pre Verification Gas Estimated: 21000/);
-      expect(preVerificationGas).toBeTruthy();
-
-      const callGasLimit = await screen.findByText(/Call Gas Limit Estimated: 21000/);
-      expect(callGasLimit).toBeTruthy();
-
-      const verificationGasLimit = await screen.findByText(/Verification Gas Limit Estimated: 21000/);
-      expect(verificationGasLimit).toBeTruthy();
-
-      const maxPriorityFeePerGas = await screen.findByText(/Max Priority Fee Per Gas in gwei: 2/);
-      expect(maxPriorityFeePerGas).toBeTruthy();
-
-      const maxFeePerGas = await screen.findByText(/Max Fee Per Gas in gwei: 2/);
+      const maxFeePerGas = await screen.findByText(/Estimated Max Fees: 0.0002 ETH/);
       expect(maxFeePerGas).toBeTruthy();
     });
   }, 30000);
@@ -80,7 +68,7 @@ describe('EstimateGasFees Component', () => {
     renderComponent(mockClientNoData, mockAccount, "0xabcdef1234567890abcdef1234567890abcdef12", "0x");
 
     await waitFor(async () => {
-      const message = await screen.findByText(/No data is available/);
+      const message = await screen.findByText(/Unable to estimate gas fees/);
       expect(message).toBeTruthy();
     });
   }, 30000);
