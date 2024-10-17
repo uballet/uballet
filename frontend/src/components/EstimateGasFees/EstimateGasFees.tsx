@@ -49,7 +49,7 @@ const EstimateGasFees: React.FC<EstimateGasFeesProps> = ({
       const maxFeePerGas = BigInt(uo.maxFeePerGas ?? 0);
 
       const totalGas = preVerificationGas + callGasLimit + verificationGasLimit;
-      const maxFees = totalGas * maxFeePerGas;
+      const maxFees = BigInt(Math.ceil(Number(totalGas * maxFeePerGas) / 1e14) * 1e14);
 
       setTotalMaxFees(formatEther(maxFees));
     } catch (error) {
@@ -72,7 +72,7 @@ const EstimateGasFees: React.FC<EstimateGasFeesProps> = ({
     );
   }
 
-  if (hasError || !totalMaxFees || data === '0x') {
+  if (hasError || !totalMaxFees || totalMaxFees === "0") {
     return (
       <View style={{ margin: 8 }}>
         <Text variant="labelLarge">Unable to estimate gas fees</Text>

@@ -48,7 +48,7 @@ describe('EstimateGasFees Component', () => {
     renderComponent(mockClient, mockAccount, "0xabcdef1234567890abcdef1234567890abcdef12", "0x123456");
 
     await waitFor(async () => {
-      const maxFeePerGas = await screen.findByText(/Estimated Max Fees: 0.000126 ETH/);
+      const maxFeePerGas = await screen.findByText(/Estimated Max Fees: 0.0002 ETH/);
       expect(maxFeePerGas).toBeTruthy();
     });
   }, 30000);

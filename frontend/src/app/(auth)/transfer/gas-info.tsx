@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { View } from "react-native";
-import { Button, Card, Text } from "react-native-paper";
+import { ActivityIndicator, Button, Card, Text } from "react-native-paper";
 import { useLocalSearchParams, router } from "expo-router";
 import EstimateGasFees from "../../../components/EstimateGasFees/EstimateGasFees";
 import { useSafeLightAccount } from "../../../hooks/useLightAccount";
@@ -41,38 +41,24 @@ function GasInfoScreen() {
     });
   };
 
-  const handleEstimateGasClick = () => {
-    setIsGasFeeCardExpanded(!isGasFeeCardExpanded);
-  };
-
   return (
     <View style={{ flex: 1, justifyContent: 'space-between', backgroundColor: theme.colors.background }}>
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', width: '100%', paddingHorizontal: 20 }}>
         
         {/* Gas Fees Explanation and Button */}
-        <Text style={styles.infoText}> Ethereum transactions require a small fee called 'gas'. Press this button to get an estimate of how much gas you'll need to pay to complete your transaction. </Text>
-        <Button
-          mode="contained"
-          style={{
-            ...styles.button,
-            backgroundColor: "#000",
-          }}
-          onPress={handleEstimateGasClick}
-          textColor="white"
-        >
-          Estimate Gas Fees
-        </Button>
-
-        {isGasFeeCardExpanded && (
-          <Card style={{ margin: 8 }}>
+        <Text style={styles.infoText}>Ethereum transactions require a small fee called 'gas'. Here's an estimate of how much gas you'll need to pay to complete your transaction:</Text>
+        <Card style={{ margin: 8 }}>
+          {loadingSponsorship ? (
+            <ActivityIndicator style={{ margin: 16 }} />
+          ) : (
             <EstimateGasFees
               client={client}
               account={account}
               target={toAddress}
               data={"0x"}
             />
-          </Card>
-        )}
+          )}
+        </Card>
 
         {/* Sponsorship Card */}
         {currency === eth_symbol && (
