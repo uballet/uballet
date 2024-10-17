@@ -5,12 +5,14 @@ import { useRequestRecovery } from "../../../hooks/recovery/useRequestRecovery";
 import { useMyRecoveryRequest } from "../../../hooks/recovery/useMyRecoveryRequest";
 import { useRequestRecoveryEstimation } from "../../../hooks/recovery/useRequestRecoveryEstimation";
 import { MaterialIcons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 
 export default function RecoverWithTeamScreen() {
     const myRecoveryTeamQuery = useMyRecoveryTeam();
     const requestRecoveryMutation = useRequestRecovery()
     const myRecoveryRequestQuery = useMyRecoveryRequest()
     const estimationQuery = useRequestRecoveryEstimation();
+    const router = useRouter();
     const loading = myRecoveryTeamQuery.isLoading || myRecoveryRequestQuery.isLoading || estimationQuery.isLoading
     
     if (loading) {
@@ -53,7 +55,23 @@ export default function RecoverWithTeamScreen() {
                     Request Recovery
                 </Button>
             )}
-            {pendingRequest && <Text className="text-blue-500">Your Recovery is in process - Contact your team</Text>}
+            {pendingRequest && (
+                <View className="items-center justify-center mt-2">
+                    <Text className="text-blue-500">Your recovery is in progress</Text>
+                    <Text className="text-blue-500">Get in touch with your recovery team</Text>
+                </View>
+            )}
+            <Button mode="outlined" className="w-3/4 mt-8" onPress={() => {
+                if (router.canGoBack()) {
+                    router.back()
+                }
+                else {
+                    router.navigate('/(auth)/')
+                }
+            }}>
+                <Text className="text-red-700">Back</Text>
+            </Button>
+            
         </SafeAreaView>
     )
 }
