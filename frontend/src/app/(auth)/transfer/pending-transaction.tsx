@@ -1,5 +1,4 @@
 import React from 'react';
-import { Stack } from "expo-router";
 import { View } from "react-native";
 import { Text, Card, FAB } from "react-native-paper";
 import { router } from "expo-router";
@@ -18,7 +17,7 @@ const PendingTransactionScreen: React.FC = () => {
               Transaction Delayed
             </Text>
             <Text variant="bodyMedium" style={styles.item}>
-              The transaction is taking longer than expected to be mined. You can return to the home screen and check the status later in your transaction history.
+              The transaction is taking longer than expected to be mined. We will send you a notification when the transaction is confirmed. Otherwise, you can return to the home screen and check the status later in your transaction history.
             </Text>
           </Card.Content>
         </Card>
