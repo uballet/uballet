@@ -45,7 +45,7 @@ export default function LoginScreen() {
           <Text className="text-blue-500">Don't have an account? Sign Up!</Text>
         </Link>
       </View>
-      <Button loading={isEmailPending} disabled={isLoading} mode="contained" style={styles.button} onPress={() => signIn({ email })}>
+      <Button testID="sign-in-button" loading={isEmailPending} disabled={isLoading} mode="contained" style={styles.button} onPress={() => signIn({ email })}>
         Sign In
       </Button>
     </KeyboardAvoidingView>
