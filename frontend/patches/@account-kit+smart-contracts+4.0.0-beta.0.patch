@@ -1,5 +1,5 @@
 diff --git a/node_modules/@account-kit/smart-contracts/dist/esm/src/msca/plugins/multisig/plugin.js b/node_modules/@account-kit/smart-contracts/dist/esm/src/msca/plugins/multisig/plugin.js
-index 075b7ef..bb50919 100644
+index 075b7ef..61f553b 100644
 --- a/node_modules/@account-kit/smart-contracts/dist/esm/src/msca/plugins/multisig/plugin.js
 +++ b/node_modules/@account-kit/smart-contracts/dist/esm/src/msca/plugins/multisig/plugin.js
 @@ -1,7 +1,8 @@
@@ -34,7 +34,7 @@ index 075b7ef..bb50919 100644
 +    999999999: "0xD1D8C2c0fd66DfA792Fa2A70296690dBf77cc8f4",
 +};
 +
-+const addresses = process.env.IS_E2E_TESTING === "1" ? testAddresses : addresses
++const addresses = process.env.IS_E2E_TESTING === "1" ? testAddresses : prodAddresses
 +
  export const MultisigPlugin = {
      meta: {
