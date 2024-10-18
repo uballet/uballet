@@ -1,14 +1,23 @@
 import { StyleSheet, View } from "react-native";
-import { ActivityIndicator, Button, Text, Menu, Divider } from "react-native-paper";
-import { useState } from "react";
+import {
+  ActivityIndicator,
+  Button,
+  Text,
+  Menu,
+  Divider,
+  Card,
+} from "react-native-paper";
+import { useState, useEffect } from "react";
 import { useLogout } from "../../../hooks/useLogout";
 import { usePasskeyRegistration } from "../../../hooks/usePasskeyRegistration";
 import { useUserPasskeys } from "../../../hooks/useUserPasskeys";
+import styles from "../../../styles/styles";
 import { theme } from "../../../styles/color";
-import { useAuthContext } from "../../../providers/AuthProvider";
 import { useBlockchainContext } from "../../../providers/BlockchainProvider";
-import { useNavigation, CommonActions } from '@react-navigation/native';
+import { useNavigation, CommonActions } from "@react-navigation/native";
+import { useAuthContext } from "../../../providers/AuthProvider";
 import { useAccountContext } from "../../../hooks/useAccountContext";
+import { router } from "expo-router";
 
 const networkLabels: Record<string, string> = {
   arbitrum: "Arbitrum",
@@ -54,65 +63,79 @@ function SettingsScreen() {
     navigation.dispatch(
       CommonActions.reset({
         index: 0,
-        routes: [{ name: 'index' }],
+        routes: [{ name: "index" }],
       })
     );
   };
 
   return (
-    <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+    <View
+      style={{
+        ...styles.container,
+        justifyContent: "space-between",
+        alignItems: "stretch",
+      }}
+    >
       {/* Network Selection Section */}
-      <View style={settingsStyles.sectionContainer}>
-        <Text style={settingsStyles.sectionHeader}>Network selection</Text>
-        <Menu
-          visible={menuVisible}
-          onDismiss={closeMenu}
-          anchor={
-            <Button
-              mode="outlined"
-              onPress={openMenu}
-              contentStyle={{ justifyContent: "space-between" }}
-              style={settingsStyles.networkDropdown}
-            >
-              {networkLabel}
-            </Button>
-          }
-        >
-          <Menu.Item
-            onPress={() => handleNetworkChange("sepolia")}
-            title={getNetworkName("sepolia")}
-          />
-          <Divider />
-          <Menu.Item
-            onPress={() => handleNetworkChange("optimismSepolia")}
-            title={getNetworkName("optimismSepolia")}
-          />
-          <Divider />
-          <Menu.Item
-            onPress={() => handleNetworkChange("arbitrumSepolia")}
-            title={getNetworkName("arbitrumSepolia")}
-          />
-          <Divider />
-          <Menu.Item
-            onPress={() => handleNetworkChange("baseSepolia")}
-            title={getNetworkName("baseSepolia")}
-          />
-         
-        </Menu>
-      </View>
+      <Card>
+        <Card.Content>
+          <Text variant="titleMedium" style={styles.item}>
+            Network selection
+          </Text>
+
+          <Menu
+            visible={menuVisible}
+            onDismiss={closeMenu}
+            anchor={
+              <Button
+                mode="outlined"
+                onPress={openMenu}
+                contentStyle={{ justifyContent: "space-between" }}
+                style={settingsStyles.networkDropdown}
+              >
+                {networkLabel}
+              </Button>
+            }
+          >
+            <Menu.Item
+              onPress={() => handleNetworkChange("sepolia")}
+              title={"Sepolia"}
+            />
+            <Divider />
+            <Menu.Item
+              onPress={() =>
+                handleNetworkChange("optimismSepolia")
+              }
+              title={"Optimism Sepolia"}
+            />
+            <Divider />
+            <Menu.Item
+              onPress={() =>
+                handleNetworkChange("arbitrumSepolia")
+              }
+              title={"Arbitrum Sepolia"}
+            />
+            <Divider />
+            <Menu.Item
+              onPress={() => handleNetworkChange("baseSepolia")}
+              title={"Base Sepolia"}
+            />
+          </Menu>
+        </Card.Content>
+      </Card>
 
       <Separator />
 
       {/* Passkeys Section */}
-      <View style={settingsStyles.sectionContainer}>
-      <Text className="text-xl mb-8 self-center">Passkeys</Text>
-        {hasNoPasskeys && <Text className="self-center">You don't have any passkeys</Text>}
-        {hasPasskeys && passkeys?.map((passkey) => (
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-            <Text>{passkey.name.slice(0, 16) + '...'}</Text>
-            <Text>{'Registered At: ' + passkey.registeredAt.toLocaleDateString()}</Text>
-          </View>
-        ))}
+      <View>
+        <Text className="text-xl mb-8 self-center">Passkeys</Text>
+          {hasNoPasskeys && <Text className="self-center">You don't have any passkeys</Text>}
+          {hasPasskeys && passkeys?.map((passkey) => (
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+              <Text>{passkey.name.slice(0, 16) + '...'}</Text>
+              <Text>{'Registered At: ' + passkey.registeredAt.toLocaleDateString()}</Text>
+            </View>
+          ))}
         {isLoading && <ActivityIndicator />}
         <Button mode="contained" className="m-4" onPress={() => register()} disabled={isLoading}>
           Register New Passkey
@@ -128,12 +151,26 @@ function SettingsScreen() {
       <Button mode="outlined" className="m-8" onPress={logout}>
         <Text className="text-red-500">Logout</Text>
       </Button>
+      <Button
+        mode="outlined"
+        style={styles.button}
+        onPress={() => router.push({ pathname: "wallet-connect" })}
+      >
+        Connections
+      </Button>
     </View>
   );
 }
 
 const Separator = () => (
-  <View style={{ height: 1, backgroundColor: theme.colors.primary, width: "90%" }} />
+  <View
+    style={{
+      height: 1,
+      backgroundColor: theme.colors.primary,
+      width: "100%",
+      marginVertical: 16,
+    }}
+  />
 );
 
 const settingsStyles = StyleSheet.create({

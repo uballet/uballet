@@ -2,10 +2,17 @@ import { useEffect, useState } from "react";
 import { useAccountContext } from "./useAccountContext";
 import { ethers } from "ethers";
 import { useBlockchainContext } from "../providers/BlockchainProvider";
+import tokenInfo from "../../netconfig/erc20-token-info.json";
 
 interface TokenBalances {
-  [key: string]: string; // Adjust the type as needed
+  [key: string]: string;
 }
+
+const getTokenDecimals = (symbol: string) => {
+  const tokens_info = tokenInfo.erc20_tokens;
+  const token = tokens_info.find((t) => t.symbol === symbol);
+  return token ? token.decimals : 18; // Default to 18 if not found
+};
 
 export function useTokenBalance() {
   const { sdkClient, lightAccount, initiator } = useAccountContext();
@@ -13,7 +20,7 @@ export function useTokenBalance() {
   const [tokenBalances, setTokenBalances] = useState<TokenBalances>({});
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [refreshKey, setRefreshKey] = useState(0); // Key to trigger refresh
+  const [refreshKey, setRefreshKey] = useState(0);
 
   const { blockchain } = useBlockchainContext();
   const tokens = blockchain.erc20_tokens;
@@ -30,15 +37,15 @@ export function useTokenBalance() {
       const balances: TokenBalances = {};
 
       for (const token of tokens) {
-        const balance = await sdkClient.core.getTokenBalances(account.getAddress(), [
+        const balance = await sdkClient!.core.getTokenBalances(account.getAddress(), [
           token.address,
         ]);
         const tokenBalance = balance.tokenBalances[0]?.tokenBalance;
 
         if (tokenBalance && tokenBalance !== "0") {
-          const decimals = token.decimals;
+          const decimals = getTokenDecimals(token.symbol);
           const redeableFormat = ethers.formatUnits(tokenBalance, decimals);
-          balances[token.symbol] = redeableFormat; // Format the balance to a readable format
+          balances[token.symbol] = redeableFormat;
         }
       }
       setTokenBalances(balances);
@@ -61,7 +68,6 @@ export function useTokenBalance() {
     console.log("useTokenBalance useEffect finished");
   }, [refreshKey]);
 
-  // Function to trigger data refresh
   const refreshData = () => {
     setRefreshKey((prevKey) => prevKey + 1);
   };

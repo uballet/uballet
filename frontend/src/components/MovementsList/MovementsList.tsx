@@ -2,7 +2,7 @@ import { AssetTransfersWithMetadataResult } from "alchemy-sdk";
 import React, { Key } from "react";
 import { ColorValue, View, StyleSheet, TextStyle } from "react-native";
 import { ActivityIndicator, List, Text } from "react-native-paper";
-import { useContacts } from "../hooks/contacts/useContacts";
+import { useContacts } from "../../hooks/contacts/useContacts";
 import { router } from "expo-router";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
@@ -20,7 +20,7 @@ const formatTxAddress = (
   const contact = contacts.find(
     (contact) => contact.address.toLowerCase() === address.toLowerCase()
   );
-  return contact ? contact.name : `${address.slice(0, 10)}...${address.slice(30)}`;
+  return contact ? contact.name : `${address.slice(0, 7)}...${address.slice(37, 42)}`;
 };
 
 const formatTimestamp = (isoString: string) => {
@@ -36,11 +36,30 @@ const formatTimestamp = (isoString: string) => {
 
 const formatValue = (value: string | number, significantFigures: number) => {
   const numValue = typeof value === 'string' ? parseFloat(value) : value;
+
   if (isNaN(numValue)) return value;
-  const formattedValue = numValue.toPrecision(significantFigures)
-    .replace(/(\.\d*?[1-9])0+$/, '$1').replace(/\.$/, '');;
+
+  let formattedValue: string;
+  
+  // Case 1: Value >= 1, format with up to 4 decimal places, remove trailing zeros
+  if (numValue >= 1) {
+    formattedValue = numValue
+      .toFixed(4)
+      .replace(/(\.0+|(\.\d*?[1-9])0+)$/, '$2');
+  } 
+  // Case 2: Value < 1, format with up to the given number of significant figures
+  else {
+    formattedValue = numValue
+      .toPrecision(significantFigures)
+      .replace(/(\.\d*?[1-9])0+$/, '$1') 
+      .replace(/\.$/, '');
+  }
+
   return formattedValue;
 };
+
+
+
 
 const EthereumTransactionItem = (
   transfer: AssetTransfersWithMetadataResult,
@@ -56,7 +75,6 @@ const EthereumTransactionItem = (
   const tokenName = transfer.asset || "Unknown";
   const timestamp = transfer.metadata?.blockTimestamp;
 
-  // Conditional styling
   const backgroundColor = isOutgoing ? 'transparent' : '#d0f0c0';
   const valueStyle: TextStyle = {
     fontSize: 18,
@@ -65,7 +83,7 @@ const EthereumTransactionItem = (
   };
 
   return (
-    <List.Item
+    <List.Item testID="transaction-item"
       title={`${formatTxAddress(address, contacts)}`}
       titleStyle={{ fontSize: 15 }}
       description={`${formatTimestamp(timestamp)}`}
@@ -117,7 +135,7 @@ const MovementsList: React.FC<MovementsListProps> = ({ toTransfers, fromTransfer
   return (
     <List.Section>
       {isLoading ? (
-        <ActivityIndicator />
+        <ActivityIndicator testID="activity-indicator" />
       ) : !sortedTransfers.length ? (
         <View style={{ padding: 16 }}>
           <Text style={{ fontSize: 12, color: 'gray' }}>No transactions found</Text>

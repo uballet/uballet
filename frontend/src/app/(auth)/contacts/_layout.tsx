@@ -9,14 +9,10 @@ import { useAddContact } from "../../../hooks/contacts/useAddContact";
 function ContactsLayout() {
   const [modalVisible, setModalVisible] = useState(false);
   const [name, setName] = useState("");
-  //const [address, setAddress] = useState<`0x${string}`>("0x");
   const [address, setAddress] = useState("");
   const { addNewContact, isSuccess } = useAddContact();
 
   const updateAddress = useCallback((address: string) => {
-    // if (address.startsWith("0x") || address.startsWith("0X")) {
-    //   setAddress(`0x${address.slice(2)}`);
-    // }
     setAddress(address);
   }, []);
 

@@ -1,13 +1,14 @@
-import { Link } from "expo-router";
+import { Link, router } from "expo-router";
 import React, { useEffect, useState } from "react";
-import { ScrollView, View, RefreshControl } from "react-native";
-import { ActivityIndicator, Avatar, Card, FAB, Text } from "react-native-paper";
+import { ScrollView, View, RefreshControl, Pressable } from "react-native";
+import { ActivityIndicator, Card, FAB, Text } from "react-native-paper";
 import { useBalance } from "../../../hooks/useBalance";
 import { useRecentTransactions } from "../../../hooks/useRecentTransactions";
 import styles from "../../../styles/styles";
 import { useAuthContext } from "../../../providers/AuthProvider";
-import MovementsList from "../../../components/movementsList";
+import MovementsList from "../../../components/MovementsList/MovementsList";
 import { useAccountContext } from "../../../hooks/useAccountContext";
+import UserInfo from "../../../components/UserInfo/UserInfo";
 
 const formatBalance = (balance: number | null, significantFigures: number) => {
   if (balance == null) return "N/A";
@@ -19,8 +20,8 @@ const HomeScreen: React.FC = () => {
   const { data: balance, isLoading, refetch, isRefetching } = useBalance();
   const { data: transactionsData, isLoading: isLoadingTransactions, refetch: refreshTransactions, isRefetching: isRefetchingTransactions } = useRecentTransactions();
   const { user } = useAuthContext();
-  const { lightAccount, initiator } = useAccountContext(); // Get contractDeployed from AccountContext
   const [isDeployed, setIsDeployed] = useState(false);
+  const { lightAccount, initiator } = useAccountContext(); // Get contractDeployed from AccountContext
 
   const account = lightAccount || initiator;
 
@@ -43,20 +44,12 @@ const HomeScreen: React.FC = () => {
       }
     >
       <View style={styles.container}>
-        <View style={styles.horizontalContainer}>
-          <Avatar.Icon
-            style={[
-              styles.userSettings,
-              {
-                backgroundColor: isDeployed ? "green" : "gray",
-              },
-            ]}
-            size={30}
-            icon="account"
-            color="white"
-          />
-          <Text style={{ flex: 1, left: 50 }} variant="titleLarge">{`${user?.email}`}</Text>
-        </View>
+        
+        <UserInfo
+          email={`${user?.email}`}
+          contractDeployed={isDeployed}
+          publicAddress={ account!.getAddress() }
+        />
 
         <Card style={styles.movementsCard} mode="contained">
           <Card.Content>
@@ -76,8 +69,11 @@ const HomeScreen: React.FC = () => {
         </Card>
 
         <View style={styles.horizontalContainer}>
-          <FAB size="small" icon="bank-transfer" variant="secondary" />
-          <FAB size="small" icon="cash-plus" variant="secondary" />
+          <FAB
+            size="small" icon="contacts" variant="secondary" 
+            onPress={() => router.push({ pathname: "contacts" })} />
+          <FAB size="small" icon="qrcode" variant="secondary"
+            onPress={() => router.push({ pathname: "scanner" })} />
           <FAB size="small" icon="cash-minus" variant="secondary" />
           <FAB size="small" icon="account-cash-outline" variant="secondary" />
         </View>
@@ -85,19 +81,22 @@ const HomeScreen: React.FC = () => {
         <Card style={styles.movementsCard} mode="elevated">
           <Card.Content>
             <Card.Title title="Transaction History" />
-            {isLoadingTransactions && <ActivityIndicator />}
-            {!isLoadingTransactions && transactionsData && (
-              <MovementsList
-                toTransfers={transactionsData.toTransfers}
-                fromTransfers={transactionsData.fromTransfers}
-                maxRows={4}
-              />
-            )}
-            <Link href="/(auth)/transaction_history" push>
+            <MovementsList
+              toTransfers={transactionsData?.toTransfers ?? []}
+              fromTransfers={transactionsData?.fromTransfers ?? []}
+              maxRows={4}
+            />
+            <Pressable
+              onPress={() => {
+                router.push({
+                  pathname: "/transaction-history",
+                });
+              }}
+            >
               <Text variant="bodyMedium" style={{ margin: 8 }}>
                 See all history
               </Text>
-            </Link>
+            </Pressable>
           </Card.Content>
         </Card>
       </View>

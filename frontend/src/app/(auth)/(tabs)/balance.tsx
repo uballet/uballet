@@ -28,16 +28,16 @@ const BalanceScreen = () => {
     tokensNames[token.symbol] = token.name;
   }
 
+  const defaultLogoUrl = "https://cryptologos.cc/logos/ethereum-eth-logo.png";
   let tokensLogosUris: { [key: string]: string } = {};
-  tokensLogosUris["ETH"] = "https://cryptologos.cc/logos/ethereum-eth-logo.png";
+  tokensLogosUris["ETH"] = defaultLogoUrl;
   for (const token of tokens) {
-    tokensLogosUris[token.symbol] = token.logo_url;
+    tokensLogosUris[token.symbol] = token.logo_url || defaultLogoUrl;
   }
 
   const [showZeroBalance, setShowZeroBalance] = useState(true);
   const { data, totalSumData, loading, error, refetch } = useBalanceInUSDT();
 
-  // Function to toggle the visibility of zero balance tokens
   const toggleShowZeroBalance = () => {
     setShowZeroBalance((prev) => !prev);
   };
@@ -151,7 +151,7 @@ const BalanceScreen = () => {
                       <View className="flex flex-row text-center items-center">
                         <Image
                           source={{
-                            uri: tokensLogosUris[symbol],
+                            uri: tokensLogosUris[symbol] || defaultLogoUrl,
                           }}
                           className="w-6 h-6"
                         />

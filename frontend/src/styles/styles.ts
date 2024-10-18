@@ -1,10 +1,15 @@
 import { StyleSheet } from 'react-native';
-import {theme} from "./color"
 
 const globalStyles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
+    padding: 16,
+    marginTop: 20,
+  },
+  containerTransfer: {
+    flex: 1,
+    alignItems: 'stretch',
     padding: 16,
     marginTop: 20,
   },
@@ -15,6 +20,20 @@ const globalStyles = StyleSheet.create({
   },
   item: {
     marginVertical: 8,
+  },
+  infoText: {
+    fontSize: 12,
+    color: '#2c3e50', 
+    marginVertical: 4,
+    textAlign: 'center',
+    fontWeight: 'bold',
+  },
+  summaryText: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#6e6e6e',
+    marginBottom: 16,
+    textAlign: 'center',
   },
   image: {
     width: 100,
