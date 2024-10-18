@@ -66,7 +66,7 @@ export function useWalletConnect() {
     : { initiator, submitter } as { initiator: AlchemyMultisigClient; submitter: AlchemyMultisigClient };
 
   function handleSendTransaction(
-    connector: Clien
+    connector: Client,
     requestEvent: Web3WalletTypes.SessionRequest
   ) {
     const { topic } = requestEvent;
