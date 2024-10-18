@@ -1,4 +1,4 @@
-import { StyleSheet, View } from "react-native";
+import { ScrollView, StyleSheet, View } from "react-native";
 import {
   ActivityIndicator,
   Button,
@@ -7,7 +7,7 @@ import {
   Divider,
   Card,
 } from "react-native-paper";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useLogout } from "../../../hooks/useLogout";
 import { usePasskeyRegistration } from "../../../hooks/usePasskeyRegistration";
 import { useUserPasskeys } from "../../../hooks/useUserPasskeys";
@@ -69,96 +69,98 @@ function SettingsScreen() {
   };
 
   return (
-    <View
-      style={{
-        ...styles.container,
-        justifyContent: "space-between",
-        alignItems: "stretch",
-      }}
-    >
-      {/* Network Selection Section */}
-      <Card>
-        <Card.Content>
-          <Text variant="titleMedium" style={styles.item}>
-            Network selection
-          </Text>
+    <ScrollView>
+      <View
+        style={{
+          ...styles.container,
+          justifyContent: "space-between",
+          alignItems: "stretch",
+        }}
+      >
+        {/* Network Selection Section */}
+        <Card>
+          <Card.Content>
+            <Text variant="titleMedium" style={styles.item}>
+              Network selection
+            </Text>
 
-          <Menu
-            visible={menuVisible}
-            onDismiss={closeMenu}
-            anchor={
-              <Button
-                mode="outlined"
-                onPress={openMenu}
-                contentStyle={{ justifyContent: "space-between" }}
-                style={settingsStyles.networkDropdown}
-              >
-                {networkLabel}
-              </Button>
-            }
-          >
-            <Menu.Item
-              onPress={() => handleNetworkChange("sepolia")}
-              title={"Sepolia"}
-            />
-            <Divider />
-            <Menu.Item
-              onPress={() =>
-                handleNetworkChange("optimismSepolia")
+            <Menu
+              visible={menuVisible}
+              onDismiss={closeMenu}
+              anchor={
+                <Button
+                  mode="outlined"
+                  onPress={openMenu}
+                  contentStyle={{ justifyContent: "space-between" }}
+                  style={settingsStyles.networkDropdown}
+                >
+                  {networkLabel}
+                </Button>
               }
-              title={"Optimism Sepolia"}
-            />
-            <Divider />
-            <Menu.Item
-              onPress={() =>
-                handleNetworkChange("arbitrumSepolia")
-              }
-              title={"Arbitrum Sepolia"}
-            />
-            <Divider />
-            <Menu.Item
-              onPress={() => handleNetworkChange("baseSepolia")}
-              title={"Base Sepolia"}
-            />
-          </Menu>
-        </Card.Content>
-      </Card>
+            >
+              <Menu.Item
+                onPress={() => handleNetworkChange("sepolia")}
+                title={"Sepolia"}
+              />
+              <Divider />
+              <Menu.Item
+                onPress={() =>
+                  handleNetworkChange("optimismSepolia")
+                }
+                title={"Optimism Sepolia"}
+              />
+              <Divider />
+              <Menu.Item
+                onPress={() =>
+                  handleNetworkChange("arbitrumSepolia")
+                }
+                title={"Arbitrum Sepolia"}
+              />
+              <Divider />
+              <Menu.Item
+                onPress={() => handleNetworkChange("baseSepolia")}
+                title={"Base Sepolia"}
+              />
+            </Menu>
+          </Card.Content>
+        </Card>
 
-      <Separator />
+        <Separator />
 
-      {/* Passkeys Section */}
-      <View>
-        <Text className="text-xl mb-8 self-center">Passkeys</Text>
-          {hasNoPasskeys && <Text className="self-center">You don't have any passkeys</Text>}
-          {hasPasskeys && passkeys?.map((passkey) => (
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-              <Text>{passkey.name.slice(0, 16) + '...'}</Text>
-              <Text>{'Registered At: ' + passkey.registeredAt.toLocaleDateString()}</Text>
-            </View>
-          ))}
-        {isLoading && <ActivityIndicator />}
-        <Button mode="contained" className="m-4" onPress={() => register()} disabled={isLoading}>
-          Register New Passkey
+        {/* Passkeys Section */}
+        <View>
+          <Text className="text-xl mb-8 self-center">Passkeys</Text>
+            {hasNoPasskeys && <Text className="self-center">You don't have any passkeys</Text>}
+            {hasPasskeys && passkeys?.map((passkey) => (
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                <Text>{passkey.name.slice(0, 16) + '...'}</Text>
+                <Text>{'Registered At: ' + passkey.registeredAt.toLocaleDateString()}</Text>
+              </View>
+            ))}
+          {isLoading && <ActivityIndicator />}
+          <Button mode="contained" className="m-4" onPress={() => register()} disabled={isLoading}>
+            Register New Passkey
+          </Button>
+        </View>
+
+        <Separator />
+        <View className="p-4">
+          <Text className="text-xl mb-8 self-center">{`Account Type: ${user?.walletType === 'light' ? 'Light' : 'Pro'}`} </Text>
+          {user?.walletType === 'light' && <Button mode="contained" className="mb-4" onPress={() =>{}}>Upgrade to Pro</Button>}
+        </View>
+        <Separator />
+        <Button mode="outlined" className="m-8" onPress={logout}>
+          <Text className="text-red-500">Logout</Text>
+        </Button>
+        <Button
+          mode="outlined"
+          style={styles.button}
+          onPress={() => router.push({ pathname: "wallet-connect" })}
+        >
+          Connections
         </Button>
       </View>
-
-      <Separator />
-      <View className="p-4">
-        <Text className="text-xl mb-8 self-center">{`Account Type: ${user?.walletType === 'light' ? 'Light' : 'Pro'}`} </Text>
-        {user?.walletType === 'light' && <Button mode="contained" className="mb-4" onPress={() =>{}}>Upgrade to Pro</Button>}
-      </View>
-      <Separator />
-      <Button mode="outlined" className="m-8" onPress={logout}>
-        <Text className="text-red-500">Logout</Text>
-      </Button>
-      <Button
-        mode="outlined"
-        style={styles.button}
-        onPress={() => router.push({ pathname: "wallet-connect" })}
-      >
-        Connections
-      </Button>
-    </View>
+    </ScrollView>
   );
 }
 
