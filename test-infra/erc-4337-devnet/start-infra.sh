@@ -64,5 +64,3 @@ make fund-address ADDRESS=0x8723f05783bbf444d0c27c235b98de112eda25d7 ETH=100
 # Deploy multisig account contracts
 cd ./multisig-plugin/lib/modular-account && forge script script/Deploy.s.sol --rpc-url http://localhost:8545 --broadcast
 cd ../../ && forge script script/Deploy.s.sol --rpc-url http://localhost:8545 --broadcast
-
-eth.sendTransaction({ from: eth.accounts[0], to: "0x62eba71153674f0291d9e7f5ac2f45f66ef69c70", value: 1000000000000000000 })

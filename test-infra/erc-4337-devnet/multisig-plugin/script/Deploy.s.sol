@@ -98,6 +98,8 @@ contract Deploy is Script {
         // since all factory share the same addStake method, it does not matter which contract we use to cast the
         // address
         MultisigModularAccountFactory(payable(factoryAddr)).addStake{value: stakeAmount}(unstakeDelaySec, stakeAmount);
+        MultisigModularAccountFactory(payable(factoryAddr)).addStake{value: stakeAmount}(unstakeDelaySec, stakeAmount);
+
         console.log("******** Add Stake Verify *********");
         console.log("Staked factory: ", factoryAddr);
         console.log("Stake amount: ", I4337EntryPoint(address(anEntryPoint)).getDepositInfo(factoryAddr).stake);
