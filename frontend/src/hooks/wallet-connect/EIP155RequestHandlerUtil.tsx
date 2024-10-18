@@ -4,11 +4,9 @@ import { SignClientTypes } from "@walletconnect/types";
 import { getSdkError } from "@walletconnect/utils";
 
 import { getSignParamsMessage, getSignTypedDataParamsData } from "./HelperUtil";
-import { LightAccount } from "@alchemy/aa-accounts";
-import { AlchemySmartAccountClient } from "@alchemy/aa-alchemy";
 import { EIP155_SIGNING_METHODS } from "./PresetsUtil";
 import { AlchemyLightAccountClient, AlchemyMultisigClient } from "../../providers/AccountProvider";
-import { combineSignatures } from "@account-kit/smart-contracts";
+import { toHex } from "viem";
 type RequestEventArgs = Omit<
   SignClientTypes.EventArguments["session_request"],
   "verifyContext"
@@ -35,7 +33,7 @@ export async function approveEIP155Request(
           throw new Error("Message is empty");
         }
         if (lightAccount) {
-          const signedMessage = await lightAccount.signMessageWith6492({
+          const signedMessage = await lightAccount.signMessage({
             message: message,
           });
 
@@ -64,7 +62,7 @@ export async function approveEIP155Request(
           typedData: { domain, types, message: data, primaryType: "Mail" }
         };
         if (lightAccount) {
-          const signedMessage = await lightAccount.signTypedDataWith6492(args);
+          const signedMessage = await lightAccount.signTypedData(args);
           return formatJsonRpcResult(id, signedMessage);
         } else {
           const signedMessage = await submitter.signTypedDataWith6492(args);
@@ -99,15 +97,27 @@ export async function approveEIP155Request(
             uo: {
               target: toAddress,
               data: "0x",
-              value: parseEther("0.0000001"),
+              value: parseEther('0.0001'),
             },
-          });
+            overrides: {
+              preVerificationGas: toHex(50400n),
+            }
+          })
           const tx = await submitter.sendUserOperation({
             uo: uoRequest.callData,
             context: {
               signatures: [signature],
               aggregatedSignature,
-              userOpSignatureType: "ACTUAL",
+              userOpSignatureType: "UPPERLIMIT",
+            },
+            overrides: {
+              preVerificationGas: uoRequest.preVerificationGas,
+              callGasLimit: uoRequest.callGasLimit,
+              verificationGasLimit: uoRequest.verificationGasLimit,
+              maxFeePerGas: uoRequest.maxFeePerGas,
+              maxPriorityFeePerGas: uoRequest.maxPriorityFeePerGas,
+              // @ts-ignore
+              paymasterAndData: uoRequest.paymasterAndData ?? uoRequest.paymasterData,
             }
           })
           const txHash = await submitter.waitForUserOperationTransaction(tx);
