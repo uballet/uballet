@@ -13,11 +13,9 @@ import {
 import { router, useLocalSearchParams } from "expo-router";
 import "@walletconnect/react-native-compat";
 import styles from "../../../styles/styles";
-import { getSdkError } from "@walletconnect/utils";
 import { SessionTypes } from "@walletconnect/types";
 import { Separator } from "../../../components/Separator/Separator";
 import { useWalletConnect } from "../../../hooks/wallet-connect/useWalletConnect";
-import Client from "@walletconnect/web3wallet";
 
 const SessionCard = (
   session: SessionTypes.Struct,
@@ -87,10 +85,11 @@ const WalletConnectScreen = () => {
     approvedCallback,
     rejectedCallback,
     deleteSession,
-    pairWcuri
+    pairWcuri,
   } = useWalletConnect();
   const [modalVisible, setModalVisible] = useState(false);
   const [snackbarVisible, setSnackbarVisible] = useState(false);
+  const [modalAmount, setModalAmount] = useState("");
 
   useEffect(() => {
     setModalVisible(modalData.visible);
@@ -113,6 +112,10 @@ const WalletConnectScreen = () => {
 
   const handleWcuriChange = (wcuri: string) => {
     setWcuri(wcuri);
+  };
+
+  const handleModalAmountChange = (amount: string) => {
+    setModalAmount(amount);
   };
 
   return (
@@ -168,6 +171,18 @@ const WalletConnectScreen = () => {
                   title={modalData.title}
                   subtitle={modalData.subtitle}
                 />
+                {modalData.askAmount && (
+                  <Card.Content>
+                    <TextInput
+                      mode="outlined"
+                      placeholder="Amount"
+                      value={modalAmount}
+                      onChangeText={handleModalAmountChange}
+                      keyboardType="numeric"
+                      style={{ marginBottom: 16 }}
+                    />
+                  </Card.Content>
+                )}
 
                 <Card.Actions
                   style={{
@@ -182,8 +197,9 @@ const WalletConnectScreen = () => {
                     textColor="white"
                     onPress={() => {
                       setModalVisible(false);
-                      approvedCallback();
+                      approvedCallback(modalAmount);
                     }}
+                    disabled={modalData.askAmount && !modalAmount}
                   >
                     Approve
                   </Button>

@@ -14,7 +14,8 @@ type RequestEventArgs = Omit<
 export async function approveEIP155Request(
   requestEvent: RequestEventArgs,
   account: LightAccount,
-  client: AlchemySmartAccountClient
+  client: AlchemySmartAccountClient,
+  input: string | undefined
 ) {
   const { params, id } = requestEvent;
   const { chainId, request } = params;
@@ -66,12 +67,15 @@ export async function approveEIP155Request(
         const toAddress = request.params[0].to;
         const amount = parseInt(request.params[0].value).toString();
         console.log(`sendTransaction with amount: ${amount} to ${toAddress}`);
+        if (!input) {
+          throw new Error("No amount specified");
+        }
         const uo = await client.sendUserOperation({
           account,
           uo: {
             target: toAddress,
             data: "0x",
-            value: parseEther("0.0000001"),
+            value: parseEther(input),
           },
         });
         const txHash = await client.waitForUserOperationTransaction(uo);
