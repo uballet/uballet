@@ -192,6 +192,7 @@ async function createLightAccountClient({ signer, address, chainConfig }: LightA
 
   const client = await createLightAccountAlchemyClient({
     signer,
+    version: 'v1.1.0',
     accountAddress: address,
     chain: getAlchemyChain(chainConfig.sdk_name),
     rpcUrl: `${chainConfig.api_key_endpoint}${ALCHEMY_API_KEY}`,
@@ -374,7 +375,7 @@ export function AccountProvider({ children }: PropsWithChildren) {
       const [signer1, signer2] = getSignersFromSeedphrase(seedPhrase)
 
       const isDeployed = await sdkClient.core.isContractAddress(user.walletAddress!)
-      if (walletType === "light") {
+      if (walletType === "light" || !walletType) {
         const lightClient = await createLightAccountClient({ signer: signer1, chainConfig: blockchain });
         if (!isSameAddress(lightClient.getAddress(), walletAddress!)) {
           throw new Error('Wrong seed phrase')
