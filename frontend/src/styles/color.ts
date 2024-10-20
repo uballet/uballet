@@ -25,6 +25,7 @@ export const theme = {
       onError: "#FFFFFF", // Text color on error color
       errorContainer: "#FDECEA", // Error container color
       onErrorContainer: "#B00020", // Text color on error container
+
+      success: "green", // Success color
     },
   };
-  

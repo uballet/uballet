@@ -1,6 +1,7 @@
 import { useCallback } from "react";
 import { Alchemy, Network } from "alchemy-sdk";
 import { ALCHEMY_API_KEY } from "../env";
+import { ethers } from "ethers";
 
 export const useENS = () => {
   const resolveName = useCallback(async (address: string) => {
@@ -11,10 +12,14 @@ export const useENS = () => {
     });
     try {
       const ensResolve = await sdkMainnet.core.resolveName(address);
-      return ensResolve || address;
+      if (ensResolve && ethers.isAddress(ensResolve)) {
+        return ensResolve;
+      } else {
+        return null;
+      }
     } catch (e) {
       console.warn("Error resolving name:", e);
-      return address;
+      return null;
     }
   }, []);
 
