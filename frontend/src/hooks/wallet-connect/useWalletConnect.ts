@@ -243,6 +243,7 @@ export function useWalletConnect() {
       "session_proposal",
       async (proposal: Web3WalletTypes.SessionProposal) => {
         try {
+          const accountAddress = account.getAddress()
           console.log("Session proposal: ", proposal);
           // TODO - refactor `approvedNamespaces` generation
           const approvedNamespaces = buildApprovedNamespaces({
@@ -265,12 +266,12 @@ export function useWalletConnect() {
                 ],
                 events: ["accountsChanged", "chainChanged", "message"],
                 accounts: [
-                  `eip155:11155111:${account.address}`, // Sepolia
-                  `eip155:10:${account.address}`, // Optimism
-                  `eip155:42161:${account.address}`, // Arbitrum
-                  `eip155:420:${account.address}`, // Optimism Goerli
-                  `eip155:421613:${account.address}`, // Arbitrum Goerli
-                  `eip155:84531:${account.address}`, // Base
+                  `eip155:11155111:${accountAddress}`, // Sepolia
+                  `eip155:10:${accountAddress}`, // Optimism
+                  `eip155:42161:${accountAddress}`, // Arbitrum
+                  `eip155:420:${accountAddress}`, // Optimism Goerli
+                  `eip155:421613:${accountAddress}`, // Arbitrum Goerli
+                  `eip155:84531:${accountAddress}`, // Base
                 ],
               },
             },
