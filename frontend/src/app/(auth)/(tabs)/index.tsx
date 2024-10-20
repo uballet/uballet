@@ -1,5 +1,5 @@
 import { Link, router } from "expo-router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ScrollView, View, RefreshControl, Pressable } from "react-native";
 import { ActivityIndicator, Card, FAB, Text } from "react-native-paper";
 import { useBalance } from "../../../hooks/useBalance";
@@ -7,10 +7,8 @@ import { useRecentTransactions } from "../../../hooks/useRecentTransactions";
 import styles from "../../../styles/styles";
 import { useAuthContext } from "../../../providers/AuthProvider";
 import MovementsList from "../../../components/MovementsList/MovementsList";
-import { useFocusEffect } from "@react-navigation/native";
 import { useAccountContext } from "../../../hooks/useAccountContext";
 import UserInfo from "../../../components/UserInfo/UserInfo";
-import { useSafeLightAccount } from "../../../hooks/useLightAccount";
 
 const formatBalance = (balance: number | null, significantFigures: number) => {
   if (balance == null) return "N/A";
@@ -19,24 +17,25 @@ const formatBalance = (balance: number | null, significantFigures: number) => {
 };
 
 const HomeScreen: React.FC = () => {
-  const { balance, refreshData } = useBalance();
-  const { fromTransfers, toTransfers, refreshTransactions } = useRecentTransactions();
+  const { data: balance, isLoading, refetch, isRefetching } = useBalance();
+  const { data: transactionsData, isLoading: isLoadingTransactions, refetch: refreshTransactions, isRefetching: isRefetchingTransactions } = useRecentTransactions();
   const { user } = useAuthContext();
-  const [refreshing, setRefreshing] = useState(false);
-  const { contractDeployed } = useAccountContext(); // Get contractDeployed from AccountContext
-  const account = useSafeLightAccount();
+  const [isDeployed, setIsDeployed] = useState(false);
+  const { lightAccount, initiator } = useAccountContext(); // Get contractDeployed from AccountContext
 
-  const onRefresh = async () => {
-    setRefreshing(true);
-    await Promise.all([refreshData(), refreshTransactions()]);
-    setRefreshing(false);
-  };
+  const account = lightAccount || initiator;
 
-  useFocusEffect(
-    React.useCallback(() => {
-      onRefresh();
-    }, [])
-  );
+  useEffect(() => {
+    if (account) {
+      account.account.isAccountDeployed().then((isDeployed) => setIsDeployed(isDeployed));
+    }
+  }, [account]);
+  
+  const onRefresh = () => {
+    refetch();
+    refreshTransactions();
+  }
+  const refreshing = isRefetching || isRefetchingTransactions;
 
   return (
     <ScrollView
@@ -48,14 +47,13 @@ const HomeScreen: React.FC = () => {
         
         <UserInfo
           email={`${user?.email}`}
-          contractDeployed={contractDeployed}
-          publicAddress={ account.address }
+          contractDeployed={isDeployed}
+          publicAddress={ account!.getAddress() }
         />
-
         <Card style={styles.movementsCard} mode="contained">
           <Card.Content>
             <Text variant="titleLarge">Balance</Text>
-            {balance !== null ? (
+            {!isLoading && balance ? (
               <Text style={styles.balance}>
                 {formatBalance(parseFloat(balance), 4)} ETH
               </Text>
@@ -83,8 +81,8 @@ const HomeScreen: React.FC = () => {
           <Card.Content>
             <Card.Title title="Transaction History" />
             <MovementsList
-              toTransfers={toTransfers}
-              fromTransfers={fromTransfers}
+              toTransfers={transactionsData?.toTransfers ?? []}
+              fromTransfers={transactionsData?.fromTransfers ?? []}
               maxRows={4}
             />
             <Pressable

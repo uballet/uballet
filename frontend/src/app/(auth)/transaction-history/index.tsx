@@ -4,14 +4,14 @@ import { useRecentTransactions } from "../../../hooks/useRecentTransactions";
 import MovementsList from "../../../components/MovementsList/MovementsList";
 
 const TransactionHistory = () => {
-  const { fromTransfers, toTransfers } = useRecentTransactions();
+  const { data } = useRecentTransactions();
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.innerContainer}>
         <MovementsList 
-          toTransfers={toTransfers} 
-          fromTransfers={fromTransfers} 
+          toTransfers={data?.toTransfers ?? []} 
+          fromTransfers={data?.fromTransfers ?? []} 
         />
       </View>
     </ScrollView>

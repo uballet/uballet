@@ -6,13 +6,14 @@ import {
   TouchableOpacity,
 } from "react-native";
 import styles from "../../../styles/styles";
-import { useSafeLightAccount } from "../../../hooks/useLightAccount";
 import QRCode from "react-native-qrcode-svg";
 import * as Clipboard from "expo-clipboard";
+import { useAccountContext } from "../../../hooks/useAccountContext";
 
 const DepositScreen = () => {
-  const account = useSafeLightAccount();
-  const address = account?.address;
+  const { lightAccount, initiator } = useAccountContext();
+  const account = initiator || lightAccount;
+  const address = account!.getAddress();
 
   // Function to copy the account address
   const copyToClipboard = async () => {

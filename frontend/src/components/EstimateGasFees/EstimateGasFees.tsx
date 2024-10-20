@@ -1,68 +1,21 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { View, ActivityIndicator } from "react-native";
 import { Text } from "react-native-paper";
-import { parseEther, formatEther } from "viem";
-import { LightAccount } from "@alchemy/aa-accounts";
-import { AlchemySmartAccountClient } from "@alchemy/aa-alchemy";
+import { useGasEstimation } from "../../hooks/useGasEstimation";
 
 interface EstimateGasFeesProps {
-  client: AlchemySmartAccountClient;
-  account: LightAccount;
   target: `0x${string}`;
   data: `0x${string}`;
 }
 
-const buildUserOperation = async (
-  client: AlchemySmartAccountClient,
-  account: LightAccount,
-  target: `0x${string}`,
-  data: `0x${string}`
-) => {
-  const uo = await client.buildUserOperation({
-    account,
-    uo: {
-      target,
-      data,
-      value: parseEther("0.00001"),
-    },
-  });
-  return uo;
-};
-
 const EstimateGasFees: React.FC<EstimateGasFeesProps> = ({
-  client,
-  account,
   target,
   data,
 }) => {
-  const [totalMaxFees, setTotalMaxFees] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [hasError, setHasError] = useState(false);
-
-  const fetchData = async () => {
-    try {
-      setIsLoading(true);
-      const uo = await buildUserOperation(client, account, target, data);
-      const preVerificationGas = BigInt(uo.preVerificationGas ?? 0);
-      const callGasLimit = BigInt(uo.callGasLimit ?? 0);
-      const verificationGasLimit = BigInt(uo.verificationGasLimit ?? 0);
-      const maxFeePerGas = BigInt(uo.maxFeePerGas ?? 0);
-
-      const totalGas = preVerificationGas + callGasLimit + verificationGasLimit;
-      const maxFees = BigInt(Math.ceil(Number(totalGas * maxFeePerGas) / 1e14) * 1e14);
-
-      setTotalMaxFees(formatEther(maxFees));
-    } catch (error) {
-      setHasError(true);
-      console.error("Error estimating gas fees:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchData();
-  }, []);
+  const { data: gasEstimation, isLoading, isError } = useGasEstimation({
+    target,
+    data,
+  })
 
   if (isLoading) {
     return (
@@ -72,7 +25,7 @@ const EstimateGasFees: React.FC<EstimateGasFeesProps> = ({
     );
   }
 
-  if (hasError || !totalMaxFees || totalMaxFees === "0") {
+  if (isError || !gasEstimation || gasEstimation === "0") {
     return (
       <View style={{ margin: 8 }}>
         <Text variant="labelLarge">Unable to estimate gas fees</Text>
@@ -82,7 +35,7 @@ const EstimateGasFees: React.FC<EstimateGasFeesProps> = ({
 
   return (
     <View style={{ margin: 8 }}>
-      <Text variant="labelLarge">Estimated Max Fees: {totalMaxFees} ETH</Text>
+      <Text variant="labelLarge">Estimated Max Fees: {gasEstimation} ETH</Text>
     </View>
   );
 };

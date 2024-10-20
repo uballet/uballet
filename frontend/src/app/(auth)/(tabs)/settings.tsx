@@ -1,4 +1,4 @@
-import { StyleSheet, View } from "react-native";
+import { ScrollView, StyleSheet, View } from "react-native";
 import {
   ActivityIndicator,
   Button,
@@ -7,7 +7,7 @@ import {
   Divider,
   Card,
 } from "react-native-paper";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useLogout } from "../../../hooks/useLogout";
 import { usePasskeyRegistration } from "../../../hooks/usePasskeyRegistration";
 import { useUserPasskeys } from "../../../hooks/useUserPasskeys";
@@ -30,16 +30,23 @@ const networkLabels: Record<string, string> = {
   sepolia: "Sepolia",
 };
 
+function getNetworkName(networkKey: string) {
+  if (networkLabels[networkKey]) {
+    return networkLabels[networkKey]
+  } else {
+    return networkKey;
+  }
+}
+
 function SettingsScreen() {
   const logout = useLogout();
   const { register } = usePasskeyRegistration();
   const { passkeys, isLoading } = useUserPasskeys();
   const { setNetwork, blockchain } = useBlockchainContext();
-  const [networkLabel, setNetworkLabel] = useState(blockchain.name);
   const [menuVisible, setMenuVisible] = useState(false);
   const { user } = useAuthContext();
-  const { initWalletForNetwork } = useAccountContext();
 
+  const networkLabel = getNetworkName(blockchain?.name);
   const hasNoPasskeys = !passkeys?.length && !isLoading;
   const hasPasskeys = !!passkeys?.length;
 
@@ -48,20 +55,9 @@ function SettingsScreen() {
 
   const navigation = useNavigation();
 
-  const handleNetworkChange = async (
-    networkKey: string,
-    networkName: string
-  ) => {
+  const handleNetworkChange = async (networkKey: string) => {
     // @ts-ignore
     setNetwork(networkKey);
-    setNetworkLabel(networkName);
-    if (user) {
-      await initWalletForNetwork(user, networkKey);
-    } else {
-      console.error(
-        "User is null or undefined. Cannot initialize wallet for network."
-      );
-    }
     closeMenu();
 
     navigation.dispatch(
@@ -72,116 +68,90 @@ function SettingsScreen() {
     );
   };
 
-  useEffect(() => {
-    const currentNetworkKey = blockchain?.name;
-    if (currentNetworkKey && networkLabels[currentNetworkKey]) {
-      setNetworkLabel(networkLabels[currentNetworkKey]);
-    }
-  }, [blockchain]);
-
   return (
-    <View
-      style={{
-        ...styles.container,
-        justifyContent: "space-between",
-        alignItems: "stretch",
-      }}
-    >
-      {/* Network Selection Section */}
-      <Card>
-        <Card.Content>
-          <Text variant="titleMedium" style={styles.item}>
-            Network selection
-          </Text>
+    <ScrollView>
+      <View
+        style={{
+          ...styles.container,
+          justifyContent: "space-between",
+          alignItems: "stretch",
+        }}
+      >
+        {/* Network Selection Section */}
+        <Card>
+          <Card.Content>
+            <Text variant="titleMedium" style={styles.item}>
+              Network selection
+            </Text>
 
-          <Menu
-            visible={menuVisible}
-            onDismiss={closeMenu}
-            anchor={
-              <Button
-                mode="outlined"
-                onPress={openMenu}
-                contentStyle={{ justifyContent: "space-between" }}
-                style={settingsStyles.networkDropdown}
-              >
-                {networkLabel}
-              </Button>
-            }
-          >
-            <Menu.Item
-              onPress={() => handleNetworkChange("sepolia", "Sepolia")}
-              title={"Sepolia"}
-            />
-            <Divider />
-            <Menu.Item
-              onPress={() =>
-                handleNetworkChange("optimismSepolia", "Optimism Sepolia")
+            <Menu
+              visible={menuVisible}
+              onDismiss={closeMenu}
+              anchor={
+                <Button
+                  mode="outlined"
+                  onPress={openMenu}
+                  contentStyle={{ justifyContent: "space-between" }}
+                  style={settingsStyles.networkDropdown}
+                >
+                  {networkLabel}
+                </Button>
               }
-              title={"Optimism Sepolia"}
-            />
-            <Divider />
-            <Menu.Item
-              onPress={() =>
-                handleNetworkChange("arbitrumSepolia", "Arbitrum Sepolia")
-              }
-              title={"Arbitrum Sepolia"}
-            />
-            <Divider />
-            <Menu.Item
-              onPress={() => handleNetworkChange("baseSepolia", "Base Sepolia")}
-              title={"Base Sepolia"}
-            />
-          </Menu>
-        </Card.Content>
-      </Card>
+            >
+              <Menu.Item
+                onPress={() => handleNetworkChange("sepolia")}
+                title={"Sepolia"}
+              />
+              <Divider />
+              <Menu.Item
+                onPress={() =>
+                  handleNetworkChange("optimismSepolia")
+                }
+                title={"Optimism Sepolia"}
+              />
+              <Divider />
+              <Menu.Item
+                onPress={() =>
+                  handleNetworkChange("arbitrumSepolia")
+                }
+                title={"Arbitrum Sepolia"}
+              />
+              <Divider />
+              <Menu.Item
+                onPress={() => handleNetworkChange("baseSepolia")}
+                title={"Base Sepolia"}
+              />
+            </Menu>
+          </Card.Content>
+        </Card>
 
-      <Separator />
+        <Separator />
 
-      {/* Passkeys Section */}
-      <>
-        <View style={{ flex: 1 }}>
-          <Card>
-            <Card.Content>
-              <Text variant="titleMedium" style={styles.item}>
-                Passkeys
-              </Text>
-              {hasNoPasskeys && (
-                <Text style={settingsStyles.emptyText}>
-                  You don't have any passkeys
-                </Text>
-              )}
-              {hasPasskeys &&
-                passkeys?.map((passkey) => (
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      justifyContent: "space-between",
-                    }}
-                  >
-                    <Text>{passkey.name.slice(0, 16) + "..."}</Text>
-                    <Text>
-                      {"Registered At: " +
-                        passkey.registeredAt.toLocaleDateString()}
-                    </Text>
-                  </View>
-                ))}
-              {isLoading && <ActivityIndicator />}
-              <Button
-                style={styles.button}
-                mode="contained"
-                onPress={() => register()}
-                disabled={isLoading}
-              >
-                Register New Passkey
-              </Button>
-            </Card.Content>
-          </Card>
+        {/* Passkeys Section */}
+        <View>
+          <Text className="text-xl mb-8 self-center">Passkeys</Text>
+            {hasNoPasskeys && <Text className="self-center">You don't have any passkeys</Text>}
+            {hasPasskeys && passkeys?.map((passkey) => (
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                <Text>{passkey.name.slice(0, 16) + '...'}</Text>
+                <Text>{'Registered At: ' + passkey.registeredAt.toLocaleDateString()}</Text>
+              </View>
+            ))}
+          {isLoading && <ActivityIndicator />}
+          <Button mode="contained" className="m-4" onPress={() => register()} disabled={isLoading}>
+            Register New Passkey
+          </Button>
+        </View>
+
+        <Separator />
+        <View className="p-4">
+          <Text className="text-xl mb-8 self-center">{`Account Type: ${user?.walletType === 'light' ? 'Light' : 'Pro'}`} </Text>
+          {user?.walletType === 'light' && <Button mode="contained" className="mb-4" onPress={() =>{}}>Upgrade to Pro</Button>}
         </View>
         <Separator />
-        <Button style={styles.button} mode="outlined" onPress={logout}>
-          Log Out
+        <Button mode="outlined" className="m-8" onPress={logout}>
+          <Text className="text-red-500">Logout</Text>
         </Button>
-
         <Button
           mode="outlined"
           style={styles.button}
@@ -189,8 +159,8 @@ function SettingsScreen() {
         >
           Connections
         </Button>
-      </>
-    </View>
+      </View>
+    </ScrollView>
   );
 }
 

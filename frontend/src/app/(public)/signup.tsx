@@ -5,7 +5,7 @@ import { Link } from "expo-router";
 import { Button, Text, TextInput } from "react-native-paper";
 
 export default function SignUpScreen() {
-    const { signup, isPending } = useSignUp()
+    const { signup, isPending, isError } = useSignUp()
     const [email, setEmail] = useState<string>('');
 
 
@@ -21,6 +21,7 @@ export default function SignUpScreen() {
                 onChangeText={setEmail}
                 autoFocus={true}
             />
+            {isError && <Text className="text-red-500 mb-4">Invalid email / Already signed up</Text>}
             <Button
                 mode="contained"
                 className="w-4/5 mb-2"
@@ -29,8 +30,8 @@ export default function SignUpScreen() {
             >
                 <Text className="text-white">Sign up</Text>
             </Button>
-            <Link style={{ alignSelf: 'center' }} href={'/(public)/login'}>
-                Already have an account? Sign In!
+            <Link href={'/(public)/login'}>
+                <Text className="text-blue-500">Already have an account? Sign In!</Text>
             </Link>
             </View>
     )

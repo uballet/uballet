@@ -15,7 +15,8 @@ const getTokenDecimals = (symbol: string) => {
 };
 
 export function useTokenBalance() {
-  const { sdkClient, account } = useAccountContext();
+  const { sdkClient, lightAccount, initiator } = useAccountContext();
+  const account = initiator || lightAccount;
   const [tokenBalances, setTokenBalances] = useState<TokenBalances>({});
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -36,7 +37,7 @@ export function useTokenBalance() {
       const balances: TokenBalances = {};
 
       for (const token of tokens) {
-        const balance = await sdkClient.core.getTokenBalances(account.address, [
+        const balance = await sdkClient!.core.getTokenBalances(account.getAddress(), [
           token.address,
         ]);
         const tokenBalance = balance.tokenBalances[0]?.tokenBalance;
@@ -61,7 +62,7 @@ export function useTokenBalance() {
 
   useEffect(() => {
     console.log("Running useTokenBalance useEffect...");
-    if (account.address) {
+    if (account!.getAddress()) {
       getTokenBalances();
     }
     console.log("useTokenBalance useEffect finished");

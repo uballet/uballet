@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { View, ScrollView } from "react-native";
-import { Button, Card, Text } from "react-native-paper";
+import { Button, Text } from "react-native-paper";
 import { useLocalSearchParams, router } from "expo-router";
 import styles from "../../../styles/styles";
 import TransferInput from "../../../components/TransferInput/TransferInput";
@@ -20,10 +20,11 @@ function AmountAndCurrencyScreen() {
   const [isAmountValid, setIsAmountValid] = useState(true);
 
   const handleAmountChange = (amount: string) => {
-    const validAmount = amount.match(/^\d*\.?\d{0,18}$/);
+    const amountWithoutComma = amount.replace(",", ".");
+    const validAmount = amountWithoutComma.match(/^\d*\.?\d{0,18}$/);
     if (validAmount) {
-      setAmount(amount);
-      setIsAmountValid(parseFloat(amount) > 0);
+      setAmount(amountWithoutComma);
+      setIsAmountValid(parseFloat(amountWithoutComma) > 0);
     }
   };
 
@@ -35,7 +36,7 @@ function AmountAndCurrencyScreen() {
   };
 
   return (
-    <View style={{ flex: 1, justifyContent: 'space-between', backgroundColor: theme.colors.background }}>
+    <ScrollView contentContainerStyle={{ flex: 1, justifyContent: 'space-between', backgroundColor: theme.colors.background }}>
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
         <View style={{ width: '100%', paddingHorizontal: 20 }}>
             <Text style={styles.infoText}>Enter the amount and currency</Text>
@@ -63,7 +64,7 @@ function AmountAndCurrencyScreen() {
           Next
         </Button>
       </View>
-    </View>
+    </ScrollView>
   );
 }
 

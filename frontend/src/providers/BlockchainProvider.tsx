@@ -3,6 +3,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import config from '../../netconfig/blockchain.default.json';
 import { BlockchainConfig, Config, ERC20Token } from '../../netconfig/blockchain-config';
 import deepmerge from 'deepmerge';
+import uballet from '../api/uballet';
+import uballetAxios, { setChainHeader } from '../api/uballet/fetcher';
+import { useQueryClient } from '@tanstack/react-query';
 
 interface BlockchainContextType {
   blockchain: BlockchainConfig;
@@ -45,13 +48,15 @@ const saveUserTokens = async (tokens: ERC20Token[], networkName: keyof Config) =
   }
 };
 
+export const DEFAULT_CONFIG = config['sepolia']
+
 const BlockchainContext = createContext<BlockchainContextType | undefined>(undefined);
 
 export const BlockchainProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [selectedNetwork, setSelectedNetwork] = useState<keyof Config>('sepolia');
   const [userTokens, setUserTokens] = useState<ERC20Token[]>([]);
   const [mergedConfig, setMergedConfig] = useState<BlockchainConfig>(config[selectedNetwork]);
-
+  const client = useQueryClient();
   useEffect(() => {
     const loadTokens = async () => {
       const tokens = await loadUserTokens(selectedNetwork);
@@ -61,6 +66,11 @@ export const BlockchainProvider: React.FC<{ children: ReactNode }> = ({ children
     };
     loadTokens();
   }, [selectedNetwork]);
+
+  useEffect(() => {
+    client.clear();
+    setChainHeader(selectedNetwork);
+  }, [selectedNetwork])
 
   useEffect(() => {
     const merged = mergeConfigs(config, userTokens, selectedNetwork);
@@ -87,7 +97,6 @@ export const BlockchainProvider: React.FC<{ children: ReactNode }> = ({ children
     const networkKey = networkName as keyof Config;
     setSelectedNetwork(networkKey);
   };
-  
 
   return (
     <BlockchainContext.Provider

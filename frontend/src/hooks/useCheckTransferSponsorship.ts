@@ -1,26 +1,24 @@
 import { useCallback, useState } from "react";
-import { useSafeLightAccount } from "./useLightAccount";
 import { useAccountContext } from "./useAccountContext";
 import { parseEther } from "viem";
 
 export function useCheckTransferSponsorship() {
     const [isSponsored, setIsSponsored] = useState<boolean | null>(null)
     const [loading, setLoading] = useState(false)
-    const account = useSafeLightAccount()
-    const { client } = useAccountContext()
+    const { lightAccount, initiator } = useAccountContext()
+    const account = initiator || lightAccount
     const checkTransferSponsorship = useCallback(async (address: `0x${string}`, etherAmount: string) => {
         setLoading(true)
         setIsSponsored(null)
         try {
-            const check = await client.checkGasSponsorshipEligibility({
-                account,
+            const check = await account!.checkGasSponsorshipEligibility({
                 uo: {
                     target: address,
                     data: '0x',
                     value: parseEther(etherAmount)
                 }
             })
-            setIsSponsored(check)
+            setIsSponsored(!!check)
         } catch(e) {
             console.error({ error: e })
         } finally {
@@ -28,8 +26,6 @@ export function useCheckTransferSponsorship() {
         }
     }, [account])
 
-
-    console.log({ loading, isSponsored })
     return {
         loading,
         isSponsored,

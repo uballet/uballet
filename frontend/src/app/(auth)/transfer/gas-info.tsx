@@ -3,9 +3,7 @@ import { View } from "react-native";
 import { ActivityIndicator, Button, Card, Text } from "react-native-paper";
 import { useLocalSearchParams, router } from "expo-router";
 import EstimateGasFees from "../../../components/EstimateGasFees/EstimateGasFees";
-import { useSafeLightAccount } from "../../../hooks/useLightAccount";
 import { useCheckTransferSponsorship } from "../../../hooks/useCheckTransferSponsorship";
-import { useAlchemyClient } from "../../../hooks/useAlchemyClient";
 import styles from "../../../styles/styles";
 import { theme } from "../../../styles/color";
 import SponsorshipCard from '../../../components/SponsorshipCard/SponsorshipCard';
@@ -18,8 +16,6 @@ function GasInfoScreen() {
   }>();
 
   const eth_symbol = "ETH";
-  const account = useSafeLightAccount();
-  const client = useAlchemyClient();
   const {
     checkTransferSponsorship,
     loading: loadingSponsorship,
@@ -52,8 +48,6 @@ function GasInfoScreen() {
             <ActivityIndicator style={{ margin: 16 }} />
           ) : (
             <EstimateGasFees
-              client={client}
-              account={account}
               target={toAddress}
               data={"0x"}
             />

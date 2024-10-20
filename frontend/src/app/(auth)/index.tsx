@@ -1,32 +1,43 @@
 import { Redirect } from "expo-router";
-import { ActivityIndicator } from "react-native";
+import { View } from "react-native";
 import { useAuthContext } from "../../providers/AuthProvider";
 import { useUserPasskeys } from "../../hooks/useUserPasskeys";
 import { useAccountContext } from "../../hooks/useAccountContext";
+import { Passkey } from "react-native-passkey";
+import { ActivityIndicator } from "react-native-paper";
 
 export default function AuthIndex() {
-    const { passkeysOnboarded } = useAuthContext()
-    const { needsRecovery, initializing, account }  = useAccountContext()
+    const { passkeysOnboarded, user } = useAuthContext()
+    const { needsRecovery, lightAccount, initiator }  = useAccountContext()
+    const account = lightAccount || initiator
     const { isSuccess, isLoading: loadingPasskeys, passkeys } = useUserPasskeys()
 
     if (needsRecovery) {
         return <Redirect href={'/(auth)/account-recovery'} />
     }
 
-    if (initializing) {
+    if (!user?.walletAddress) {
         return <Redirect href={'/(auth)/initialize-account'} />
     }
 
-    if (account && isSuccess && !passkeys?.length && !passkeysOnboarded) {
+    if (account && isSuccess && !passkeys?.length && !passkeysOnboarded && Passkey.isSupported()) {
         return <Redirect href={'/(auth)/register-passkey'} />
     }
 
     if (loadingPasskeys) {
-        return <ActivityIndicator />
+        return (
+            <View className="flex-1 justify-center items-center">
+                <ActivityIndicator />
+            </View>
+        )
     }
 
     if (!account) {
-        return <ActivityIndicator />
+        return (
+            <View className="flex-1 justify-center items-center">
+                <ActivityIndicator />
+            </View>
+        )
     }
 
     return <Redirect href={'/(auth)/(tabs)'} />

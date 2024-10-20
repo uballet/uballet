@@ -18,8 +18,8 @@ router.get('/', authenticateToken, async (req: Request, res: Response) => {
 router.post('/wallet-address', authenticateToken, async (req: Request, res: Response) => {
     // @ts-ignore
     const reqUser = req.user
-    const { walletAddress } = req.body
-    const user = await UserService.setWalletAddress(reqUser.id, walletAddress)
+    const { walletAddress, walletType } = req.body
+    const user = await UserService.setWalletAddress(reqUser.id, { address: walletAddress, type: walletType })
 
     const userObj = {
         ...user,
@@ -27,6 +27,14 @@ router.post('/wallet-address', authenticateToken, async (req: Request, res: Resp
     }
     
     return res.status(200).json(userObj)
+})
+
+router.post('/device-token', authenticateToken, async (req: Request, res: Response) => {
+    const { user } = res.locals
+
+    const { token } = req.body
+    await UserService.setDeviceToken(user, token)
+    return res.status(200).json({})
 })
 
 export default router

@@ -4,7 +4,6 @@ import {
 } from "react-native-paper";
 import { QueryProvider } from '../providers/QueryProvider';
 import { useNotificationObserver } from "../notifications/observer";
-import { registerForPushNotificationsAsync } from "../notifications/register";
 import { AccountProvider } from "../providers/AccountProvider";
 import { BlockchainProvider } from "../providers/BlockchainProvider";
 import AuthProvider from "../providers/AuthProvider";
@@ -12,6 +11,7 @@ import { theme } from "../styles/color";
 import "node-libs-react-native/globals.js";
 import "react-native-get-random-values";
 import { IS_STORYBOOK } from "../env";
+import { PushNotificationProvider } from "../providers/PushNotificationProvider";
 
 export default function App() {
   if (IS_STORYBOOK) {
@@ -20,19 +20,20 @@ export default function App() {
     return <Storybook />;
   }
 
-  registerForPushNotificationsAsync();
   useNotificationObserver();
   return (
-    <BlockchainProvider>
-      <QueryProvider>
-        <AuthProvider>
-          <AccountProvider >
-              <PaperProvider theme={theme}>
-                <Slot />
-              </PaperProvider>          
-          </AccountProvider>
-        </AuthProvider>
+    <QueryProvider>
+        <BlockchainProvider>
+          <AuthProvider>
+            <PushNotificationProvider>
+              <AccountProvider >
+                  <PaperProvider theme={theme}>
+                    <Slot />
+                  </PaperProvider>          
+              </AccountProvider>
+            </PushNotificationProvider>
+          </AuthProvider>
+        </BlockchainProvider>
       </QueryProvider>
-    </BlockchainProvider>
   );
 }

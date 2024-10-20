@@ -1,12 +1,13 @@
-import React from "react";
+
 import { View, StatusBar, SafeAreaView, Platform } from "react-native";
 import { Text, Avatar } from "react-native-paper";
 import { MaterialIcons } from "@expo/vector-icons";
-import { Stack, withLayoutContext } from "expo-router";
+import { withLayoutContext } from "expo-router";
 import {
   createMaterialBottomTabNavigator,
   MaterialBottomTabNavigationOptions,
 } from "react-native-paper/react-navigation";
+import { useAllNotifications } from "../../../hooks/notifications/useAllNotifications";
 import { useBlockchainContext } from "../../../providers/BlockchainProvider";
 
 const statusBarHeight = Platform.OS === 'android' ? StatusBar.currentHeight : 0;
@@ -21,6 +22,8 @@ export const MaterialBottomTabs = withLayoutContext<
 
 function TabsLayout() {
   const { blockchain } = useBlockchainContext();
+  const notificationsQuery = useAllNotifications();
+  const unseenNotification = notificationsQuery.data?.find(n => !n.seen)
 
   return (
     <>
@@ -89,9 +92,10 @@ function TabsLayout() {
           <MaterialBottomTabs.Screen
             name="settings"
             options={{
+              tabBarAccessibilityLabel: "Settings",
               title: "Settings",
               tabBarIcon: ({ color }) => (
-                <MaterialIcons name="settings" size={24} color={color} />
+                <MaterialIcons testID="settings-icon" name="settings" size={24} color={color} />
               ),
             }}
           />
@@ -101,7 +105,21 @@ function TabsLayout() {
             options={{
               title: "Notifications",
               tabBarIcon: ({ color }) => (
-                <MaterialIcons name="notifications" size={24} color={color} />
+                // <View className={`rounded-full p-2 $`}>
+                  <View>
+                    {unseenNotification && <View className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full z-50"></View>}
+                    <MaterialIcons name="notifications" size={24} color={color} />
+                  </View>
+              ),
+            }}    
+          />
+          <MaterialBottomTabs.Screen
+            name="security"
+            options={{
+              tabBarAccessibilityLabel: "Security",
+              title: "Security",
+              tabBarIcon: ({ color }) => (
+                <MaterialIcons name="security" size={24} color={color} />
               ),
             }}
           />

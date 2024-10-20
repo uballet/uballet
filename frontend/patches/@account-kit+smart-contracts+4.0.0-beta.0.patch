@@ -1,0 +1,50 @@
+diff --git a/node_modules/@account-kit/smart-contracts/dist/esm/src/msca/plugins/multisig/plugin.js b/node_modules/@account-kit/smart-contracts/dist/esm/src/msca/plugins/multisig/plugin.js
+index 075b7ef..61f553b 100644
+--- a/node_modules/@account-kit/smart-contracts/dist/esm/src/msca/plugins/multisig/plugin.js
++++ b/node_modules/@account-kit/smart-contracts/dist/esm/src/msca/plugins/multisig/plugin.js
+@@ -1,7 +1,8 @@
+ import { getContract, encodeAbiParameters, encodeFunctionData, } from "viem";
+ import { ChainNotFoundError, AccountNotFoundError, isSmartAccountClient, IncompatibleClientError, } from "@aa-sdk/core";
+ import { installPlugin as installPlugin_, } from "@account-kit/smart-contracts";
+-const addresses = {
++
++const prodAddresses = {
+     1: "0x000000000000A53f64b7bcf4Cd59624943C43Fc7",
+     10: "0x000000000000A53f64b7bcf4Cd59624943C43Fc7",
+     137: "0x000000000000A53f64b7bcf4Cd59624943C43Fc7",
+@@ -17,6 +18,26 @@ const addresses = {
+     11155420: "0x000000000000A53f64b7bcf4Cd59624943C43Fc7",
+     999999999: "0x000000000000A53f64b7bcf4Cd59624943C43Fc7",
+ };
++
++const testAddresses = {
++    1: "0xD1D8C2c0fd66DfA792Fa2A70296690dBf77cc8f4",
++    10: "0xD1D8C2c0fd66DfA792Fa2A70296690dBf77cc8f4",
++    137: "0xD1D8C2c0fd66DfA792Fa2A70296690dBf77cc8f4",
++    252: "0xD1D8C2c0fd66DfA792Fa2A70296690dBf77cc8f4",
++    2523: "0xD1D8C2c0fd66DfA792Fa2A70296690dBf77cc8f4",
++    8453: "0xD1D8C2c0fd66DfA792Fa2A70296690dBf77cc8f4",
++    42161: "0xD1D8C2c0fd66DfA792Fa2A70296690dBf77cc8f4",
++    80002: "0xD1D8C2c0fd66DfA792Fa2A70296690dBf77cc8f4",
++    84532: "0xD1D8C2c0fd66DfA792Fa2A70296690dBf77cc8f4",
++    421614: "0xD1D8C2c0fd66DfA792Fa2A70296690dBf77cc8f4",
++    7777777: "0xD1D8C2c0fd66DfA792Fa2A70296690dBf77cc8f4",
++    11155111: "0xD1D8C2c0fd66DfA792Fa2A70296690dBf77cc8f4",
++    11155420: "0xD1D8C2c0fd66DfA792Fa2A70296690dBf77cc8f4",
++    999999999: "0xD1D8C2c0fd66DfA792Fa2A70296690dBf77cc8f4",
++};
++
++const addresses = process.env.IS_E2E_TESTING === "1" ? testAddresses : prodAddresses
++
+ export const MultisigPlugin = {
+     meta: {
+         name: "Multisig Plugin",
+@@ -27,7 +48,7 @@ export const MultisigPlugin = {
+         if (!client.chain)
+             throw new ChainNotFoundError();
+         return getContract({
+-            address: address || addresses[client.chain.id],
++            address: process.env.IS_E2E_TESTING === "1" ? "0xD1D8C2c0fd66DfA792Fa2A70296690dBf77cc8f4" : address || addresses[client.chain.id],
+             abi: MultisigPluginAbi,
+             client: client,
+         });

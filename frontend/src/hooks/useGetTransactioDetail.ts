@@ -3,7 +3,8 @@ import { useState, useEffect } from "react";
 import { useAccountContext } from "./useAccountContext";
 
 export function useGetTransactioDetail(txHash: string) {
-  const { sdkClient, account } = useAccountContext();
+  const { sdkClient, lightAccount, initiator } = useAccountContext();
+  const account = initiator || lightAccount;
   const [transaction, setTransaction] = useState<TransactionResponse | null>(
     null
   );

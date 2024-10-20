@@ -9,7 +9,7 @@ import styles from "../../styles/styles";
 export default function LoginScreen() {
     const [email, setEmail] = useState<string>('');
 
-    const { signIn, isPending: isEmailPending, isSuccess } = useEmailSignIn()
+    const { signIn, isPending: isEmailPending, isSuccess, isError } = useEmailSignIn()
     const { signIn: loginWithPasskey, isPending: isPendingPasskey, isSupported } = usePasskeySignIn()
 
     const isLoading = isEmailPending || isPendingPasskey
@@ -40,11 +40,12 @@ export default function LoginScreen() {
           onChangeText={setEmail}
           autoFocus={true}
         />
+        {isError && <Text className="text-red-500 mb-4">Wrong email. Check you're using the right email.</Text>}
         <Link href={'/(public)/signup'}>
-          <Text>Don't have an account? Sign Up!</Text>
+          <Text className="text-blue-500">Don't have an account? Sign Up!</Text>
         </Link>
       </View>
-      <Button loading={isEmailPending} disabled={isLoading} mode="contained" style={styles.button} onPress={() => signIn({ email })}>
+      <Button testID="sign-in-button" loading={isEmailPending} disabled={isLoading} mode="contained" style={styles.button} onPress={() => signIn({ email })}>
         Sign In
       </Button>
     </KeyboardAvoidingView>

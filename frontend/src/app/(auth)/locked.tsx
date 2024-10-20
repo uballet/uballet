@@ -7,7 +7,7 @@ export default function LockedScreen() {
     const { requiresLocalAuthentication } = useAuthContext()
 
     if (!requiresLocalAuthentication) {
-        return <Redirect href={'/(auth)/(tabs)'} />
+        return <Redirect href={'/(auth)/'} />
     }
 
     return (

@@ -1,8 +1,7 @@
-import { useEffect, useState } from "react";
 import { useAccountContext } from "./useAccountContext";
-import { useSafeLightAccount } from "./useLightAccount";
 import { AssetTransfersCategory, AssetTransfersWithMetadataResult } from "alchemy-sdk";
 import { useBlockchainContext } from "../providers/BlockchainProvider";
+import { useQuery } from "@tanstack/react-query";
 
 const getTransferCategory = (supports_internal: boolean) => [
   AssetTransfersCategory.ERC1155,
@@ -13,48 +12,37 @@ const getTransferCategory = (supports_internal: boolean) => [
 ]
 
 export function useRecentTransactions() {
-  const [fromTransfers, setFromTransfers] = useState<AssetTransfersWithMetadataResult[] | null>(null);
-  const [toTransfers, setToTransfers] = useState<AssetTransfersWithMetadataResult[] | null>(null);
-  const account = useSafeLightAccount();
-  const { sdkClient } = useAccountContext();
-  const [refreshKey, setRefreshKey] = useState(0);
+  const { sdkClient, lightAccount, initiator } = useAccountContext();
+  const account = initiator || lightAccount;
   const { blockchain } = useBlockchainContext();
-
-  const fetchTransfers = async () => {
-    try {
-      // Fetch from transfers
-      const fromTransfersResponse = await sdkClient.core.getAssetTransfers({
-        fromBlock: "0x0",
-        fromAddress: account.address,
-        category: getTransferCategory(blockchain.supports_internal_transaction_history),
-        withMetadata: true,
-      });
-      setFromTransfers(fromTransfersResponse.transfers);
-
+  const query = useQuery({
+    queryKey: ['recent-transactions', sdkClient?.config.network],
+    queryFn: async () => {
+      if (!account) {
+        return null;
+      }
+      const [fromTransfersResponse, toTransfersResponse] = await Promise.all([
+        sdkClient!.core.getAssetTransfers({
+          fromBlock: "0x0",
+          fromAddress: account!.getAddress(),
+          category: getTransferCategory(blockchain.supports_internal_transaction_history),
+          withMetadata: true,
+        }),
       // Fetch to transfers
-      const toTransfersResponse = await sdkClient.core.getAssetTransfers({
-        fromBlock: "0x0",
-        toAddress: account.address,
-        category: getTransferCategory(blockchain.supports_internal_transaction_history),
-        withMetadata: true,
-      });
-      setToTransfers(toTransfersResponse.transfers);
-    } catch (error) {
-      console.error("Error fetching transfers:", error);
+        sdkClient!.core.getAssetTransfers({
+          fromBlock: "0x0",
+          toAddress: account!.getAddress(),
+          category: getTransferCategory(blockchain.supports_internal_transaction_history),
+          withMetadata: true,
+        })
+      ])
+
+      return {
+        fromTransfers: fromTransfersResponse.transfers,
+        toTransfers: toTransfersResponse.transfers,
+      }
     }
-  };
+  })
 
-  useEffect(() => {
-    fetchTransfers();
-  }, [account.address, refreshKey]);
-
-  const refreshTransactions = () => {
-    setRefreshKey((prevKey) => prevKey + 1);
-  };
-
-  return {
-    toTransfers,
-    fromTransfers,
-    refreshTransactions,
-  };
+  return query
 }

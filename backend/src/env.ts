@@ -35,3 +35,10 @@ export const WEBAUTHN_RP_NAME = process.env.WEBAUTHN_RP_NAME;
 export const WEBAUTHN_ORIGIN = process.env.WEBAUTHN_ORIGIN;
 
 export const CMC_API_KEY = process.env.CMC_API_KEY as string;
+export const EXPO_ACCESS_TOKEN= process.env.EXPO_ACCESS_TOKEN as string
+export const ALCHEMY_API_KEY = process.env.ALCHEMY_API_KEY as string
+export const ALCHEMY_NOTIFY_AUTH_TOKEN = process.env.ALCHEMY_NOTIFY_AUTH_TOKEN as string
+export const NGROK_AUTHTOKEN = process.env.NGROK_AUTHTOKEN as string
+export const NGROK_DOMAIN = process.env.NGROK_DOMAIN as string
+export const IS_E2E_TESTING = process.env.IS_E2E_TESTING === "1"
+export const TEST_DB_PORT = process.env.TEST_DB_PORT as string
