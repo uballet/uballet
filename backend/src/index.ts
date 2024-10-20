@@ -79,8 +79,12 @@ app.post('/test-push-notification', async (req: Request, res: Response) => {
     });
 
     if (NGROK_AUTHTOKEN && NGROK_DOMAIN && !IS_E2E_TESTING) {
-      const listener = await ngrok.connect({ addr: port, authtoken: NGROK_AUTHTOKEN, domain: NGROK_DOMAIN });
-      initWebHooks({ url: listener.url()! });
+      try {
+        const listener = await ngrok.connect({ addr: port, authtoken: NGROK_AUTHTOKEN, domain: NGROK_DOMAIN });
+        initWebHooks({ url: listener.url()! });
+      } catch (error) {
+        console.error("ERROR SETTING UP NGROK");
+      }
     }
     console.log(
       "Here you can setup and run express / fastify / any other framework."
