@@ -158,7 +158,7 @@ async function deleteContact({ id }: { id: string }) {
 
 async function getQuote({ coin }: { coin: string }) {
   // Make a GET request to /quote with the coin parameter as a query parameter
-  const { data } = await uballetAxios.get("/quotes", { params: { coin } });
+  const { data } = await uballetAxios.get("/token-info", { params: { coin } });
   return data;
 }
 

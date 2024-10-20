@@ -12,31 +12,18 @@ import {
   Switch,
   ActivityIndicator,
 } from "react-native-paper";
-import { useBalanceInUSDT } from "../../../hooks/useBalanceInUSDT";
+import { useTokenInfo } from "../../../hooks/useTokenInfo";
 import styles from "../../../styles/styles";
 import { router } from "expo-router";
 import { useState } from "react";
 import AntDesign from "@expo/vector-icons/AntDesign";
-import tokenInfo from "../../../../netconfig/erc20-token-info.json";
 
 const BalanceScreen = () => {
-  const tokens = tokenInfo.erc20_tokens;
-
-  let tokensNames: { [key: string]: string } = {};
-  tokensNames["ETH"] = "Ethereum";
-  for (const token of tokens) {
-    tokensNames[token.symbol] = token.name;
-  }
-
   const defaultLogoUrl = "https://cryptologos.cc/logos/ethereum-eth-logo.png";
-  let tokensLogosUris: { [key: string]: string } = {};
-  tokensLogosUris["ETH"] = defaultLogoUrl;
-  for (const token of tokens) {
-    tokensLogosUris[token.symbol] = token.logo_url || defaultLogoUrl;
-  }
 
+  // Get the hooks
   const [showZeroBalance, setShowZeroBalance] = useState(true);
-  const { data, totalSumData, loading, error, refetch } = useBalanceInUSDT();
+  const { data, totalSumData, loading, error, refetch } = useTokenInfo();
 
   const toggleShowZeroBalance = () => {
     setShowZeroBalance((prev) => !prev);
@@ -48,9 +35,15 @@ const BalanceScreen = () => {
 
   if (error) {
     return (
-      <View style={{ ...styles.container, alignItems: "stretch" }}>
-        <Text>No data available :(</Text>
-      </View>
+      <ScrollView
+        refreshControl={
+          <RefreshControl refreshing={false} onRefresh={refresh} />
+        }
+      >
+        <View style={{ ...styles.container, alignItems: "stretch" }}>
+          <Text>No data available :(</Text>
+        </View>
+      </ScrollView>
     );
   }
 
@@ -149,12 +142,24 @@ const BalanceScreen = () => {
                       className="flex flex-row w-full justify-between"
                     >
                       <View className="flex flex-row text-center items-center">
-                        <Image
-                          source={{
-                            uri: tokensLogosUris[symbol] || defaultLogoUrl,
-                          }}
-                          className="w-6 h-6"
-                        />
+                        {data?.[symbol] ? (
+                          <Image
+                            source={{
+                              uri: data[symbol]["logoUrl"] ?? defaultLogoUrl,
+                            }}
+                            className="w-6 h-6"
+                          />
+                        ) : (
+                          <View>
+                            <Image
+                              source={{
+                                uri: "https://cryptologos.cc/logos/ethereum-eth-logo.png",
+                              }}
+                              className="w-6 h-6"
+                            />
+                          </View>
+                        )}
+
                         <View className="flex flex-col ml-2 w-20 justify-start">
                           <Pressable
                             onPress={() => {
@@ -162,7 +167,7 @@ const BalanceScreen = () => {
                                 pathname: "/(auth)/market-info",
                                 params: {
                                   symbol: symbol,
-                                  name: tokensNames[symbol],
+                                  name: data?.[symbol]?.["name"],
                                 },
                               });
                             }}
@@ -171,7 +176,7 @@ const BalanceScreen = () => {
                               {symbol}
                             </Text>
                             <Text className="text-gray-500">
-                              {tokensNames[symbol]}
+                              {data?.[symbol]?.name?.toString() ?? ""}
                             </Text>
                           </Pressable>
                         </View>
@@ -186,8 +191,8 @@ const BalanceScreen = () => {
                           {data?.[symbol]?.balance?.toString() ?? "-"}
                         </Text>
                         <Text>
-                          {data?.[symbol] === undefined
-                            ? "-"
+                          {data?.[symbol].balanceInUSDT === undefined
+                            ? "0"
                             : data[symbol].balanceInUSDT.toFixed(2)}{" "}
                           USDT
                         </Text>

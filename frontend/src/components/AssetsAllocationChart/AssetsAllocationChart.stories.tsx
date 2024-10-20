@@ -3,19 +3,18 @@ import type { Meta, StoryObj } from "@storybook/react";
 import AssetsAllocationChart from "./AssetsAllocationChart";
 import { View } from "react-native";
 
-
-const useBalanceInUSDTMock = (
-    // @ts-ignore
+const useTokenInfoMock = (
+  // @ts-ignore
+  data,
+  loading = false,
+  error: string | null = null
+) => {
+  return {
     data,
-    loading = false,
-    error: string | null = null
-  ) => {
-    return {
-      data,
-      loading,
-      error,
-    };
-  };  
+    loading,
+    error,
+  };
+};
 
 const mockData = {
   ETH: {
@@ -51,8 +50,8 @@ type Story = StoryObj<typeof AssetsAllocationChart>;
 // Default story with mock data
 export const Default: Story = {
   render: () => {
-    require("../../hooks/useBalanceInUSDT").useBalanceInUSDT = () =>
-      useBalanceInUSDTMock(mockData);
+    require("../../hooks/useTokenInfo").useTokenInfo = () =>
+      useTokenInfoMock(mockData);
     return <AssetsAllocationChart />;
   },
   name: "Default",
@@ -61,8 +60,8 @@ export const Default: Story = {
 // Story for loading state
 export const Loading: Story = {
   render: () => {
-    require("../../hooks/useBalanceInUSDT").useBalanceInUSDT = () =>
-      useBalanceInUSDTMock(null, true);
+    require("../../hooks/useTokenInfo").useTokenInfo = () =>
+      useTokenInfoMock(null, true);
     return <AssetsAllocationChart />;
   },
   name: "Loading State",
@@ -71,8 +70,8 @@ export const Loading: Story = {
 // Story for error state
 export const ErrorState: Story = {
   render: () => {
-    require("../../hooks/useBalanceInUSDT").useBalanceInUSDT = () =>
-      useBalanceInUSDTMock(null, false, "Error fetching data");
+    require("../../hooks/useTokenInfo").useTokenInfo = () =>
+      useTokenInfoMock(null, false, "Error fetching data");
     return <AssetsAllocationChart />;
   },
   name: "Error State",
@@ -81,8 +80,8 @@ export const ErrorState: Story = {
 // Story with no balances
 export const NoBalances: Story = {
   render: () => {
-    require("../../hooks/useBalanceInUSDT").useBalanceInUSDT = () =>
-      useBalanceInUSDTMock(emptyData);
+    require("../../hooks/useTokenInfo").useTokenInfo = () =>
+      useTokenInfoMock(emptyData);
     return <AssetsAllocationChart />;
   },
   name: "No Balances",

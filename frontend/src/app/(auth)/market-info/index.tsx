@@ -9,8 +9,7 @@ import {
 import { ActivityIndicator, Card, Text } from "react-native-paper";
 import { Entypo, FontAwesome5 } from "@expo/vector-icons";
 import { useLocalSearchParams } from "expo-router";
-import { useBalanceInUSDT } from "../../../hooks/useBalanceInUSDT";
-import { useBlockchainContext } from "../../../providers/BlockchainProvider";
+import { useTokenInfo } from "../../../hooks/useTokenInfo";
 
 function MarketInfoScreen() {
   const { symbol, name } = useLocalSearchParams<{
@@ -18,23 +17,7 @@ function MarketInfoScreen() {
     name: string;
   }>();
 
-  const { blockchain } = useBlockchainContext();
-  const token = blockchain.erc20_tokens.find((t) => t.symbol === symbol);
-
-  let tokenCMCUrl =
-    token?.cmc_url ?? "https://coinmarketcap.com/currencies/ethereum/";
-  let tokenLogoUrl =
-    token?.logo_url ?? "https://cryptologos.cc/logos/ethereum-eth-logo.png";
-
-  // Open browser with the link
-  const openLink = () => {
-    Linking.openURL(tokenCMCUrl).catch((err) =>
-      console.error("An error occurred", err)
-    );
-    console.log("Opening link:", tokenCMCUrl);
-  };
-
-  const { data, loading, refetch } = useBalanceInUSDT();
+  const { data, loading, refetch } = useTokenInfo();
 
   const circulatingSupply = data?.[symbol]?.circulatingSupply;
   const maxSupply = data?.[symbol]?.maxSupply;
@@ -44,6 +27,23 @@ function MarketInfoScreen() {
   const percentChange24h = data?.[symbol]?.percentChange24h;
   const marketCapDominance = data?.[symbol]?.marketCapDominance;
   const isPriceUp = (percentChange24h ?? 0) >= 0;
+  const tokenCMCUrl = data?.[symbol]?.cmcUrl;
+  const tokenLogoUrl = data?.[symbol]?.logoUrl?.replace("64x64", "128x128");
+
+  console.log("CMC URL is:", tokenCMCUrl);
+
+  // Open browser with the link
+  const openLink = () => {
+    if (tokenCMCUrl) {
+      Linking.openURL(tokenCMCUrl).catch((err) =>
+        console.error("An error occurred", err)
+      );
+      console.log("Opening link:", tokenCMCUrl);
+    } else {
+      console.warn("Token CMC URL is undefined");
+    }
+    console.log("Opening link:", tokenCMCUrl);
+  };
 
   const refresh = () => {
     refetch();
@@ -86,16 +86,19 @@ function MarketInfoScreen() {
                 >
                   {symbol} | {name}
                 </Text>
-                <TouchableOpacity
-                  onPress={() => openLink()}
-                  className="mb-4 mt-3"
-                >
-                  <FontAwesome5
-                    name="external-link-alt"
-                    size={30}
-                    color="gray"
-                  />
-                </TouchableOpacity>
+
+                {tokenCMCUrl ? (
+                  <TouchableOpacity
+                    onPress={() => openLink()}
+                    className="mb-4 mt-3"
+                  >
+                    <FontAwesome5
+                      name="external-link-alt"
+                      size={30}
+                      color="gray"
+                    />
+                  </TouchableOpacity>
+                ) : null}
               </View>
 
               <View className="mb-4">
