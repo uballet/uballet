@@ -14,6 +14,7 @@ type RequestEventArgs = Omit<
 export async function approveEIP155Request(
   requestEvent: RequestEventArgs,
   accountClient: { lightAccount: AlchemyLightAccountClient } | { initiator: AlchemyMultisigClient; submitter: AlchemyMultisigClient },
+  input: string | undefined
 ) {
   const { params, id } = requestEvent;
   const { chainId, request } = params;
@@ -83,7 +84,7 @@ export async function approveEIP155Request(
             uo: {
               target: toAddress,
               data: "0x",
-              value: parseEther("0.0000001"),
+              value: parseEther(input),
             },
           });
           const txHash = await lightAccount.waitForUserOperationTransaction(uo);
@@ -97,7 +98,7 @@ export async function approveEIP155Request(
             uo: {
               target: toAddress,
               data: "0x",
-              value: parseEther('0.0001'),
+              value: parseEther(input),
             },
             overrides: {
               preVerificationGas: toHex(50400n),

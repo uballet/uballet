@@ -29,6 +29,7 @@ export type ModalData = {
   visible: boolean;
   title: string;
   subtitle: string;
+  askAmount?: boolean;
 };
 
 export type SnackbarData = {
@@ -52,7 +53,7 @@ export function useWalletConnect() {
     text: "",
   });
   const [approvedCallback, setApprovedCallback] = useState(
-    () => () => console.log("Initial function")
+    () => (input: string) => console.log("Initial function")
   );
   const [rejectedCallback, setRejectedCallback] = useState(
     () => () => console.log("Initial function")
@@ -74,12 +75,14 @@ export function useWalletConnect() {
       visible: true,
       title: "Confirm send Transaction",
       subtitle: "Do you want to send a transaction?",
+      askAmount: true,
     });
-    setApprovedCallback(() => async () => {
+    setApprovedCallback(() => async (input: string) => {
       try {
         const response = await approveEIP155Request(
           requestEvent,
           clientForEIP155,
+          input
         );
         console.log("Response: ", response);
         await connector.respondSessionRequest({
@@ -126,7 +129,8 @@ export function useWalletConnect() {
         setLoading(true);
         const response = await approveEIP155Request(
           requestEvent,
-          clientForEIP155
+          clientForEIP155,
+          undefined
         );
         console.log("Response: ", response);
         await connector.respondSessionRequest({
@@ -220,12 +224,15 @@ export function useWalletConnect() {
       console.log("Active sessions from connector");
       let activeSessions = connector.getActiveSessions();
       console.log("Active sessions: ", activeSessions);
-      for(const [key, value] of Object.entries(activeSessions)) {
-          connector.extendSession({topic : value.topic}).then(() => {
+      for (const [key, value] of Object.entries(activeSessions)) {
+        connector
+          .extendSession({ topic: value.topic })
+          .then(() => {
             console.log("Session updated: ", value.topic);
-          }).catch((error) => {
+          })
+          .catch((error) => {
             console.log("Error updating session: ", getSdkError(error));
-        });
+          });
       }
       setActiveSessions(activeSessions);
     }
@@ -242,7 +249,14 @@ export function useWalletConnect() {
             proposal: proposal.params,
             supportedNamespaces: {
               eip155: {
-                chains: ["eip155:11155111"],
+                chains: [
+                  "eip155:10", // Optimism Mainnet
+                  "eip155:42161", // Arbitrum Mainnet
+                  "eip155:420", // Optimism Goerli (testnet)
+                  "eip155:421613", // Arbitrum Goerli (testnet)
+                  "eip155:84531", // Base Mainnet
+                  "eip155:11155111", // Sepolia
+                ],
                 methods: [
                   "eth_sendTransaction",
                   "personal_sign",
@@ -250,10 +264,19 @@ export function useWalletConnect() {
                   "eth_signTransaction",
                 ],
                 events: ["accountsChanged", "chainChanged", "message"],
-                accounts: [`eip155:11155111:${account.getAddress()}`],
+                accounts: [
+                  `eip155:11155111:${account.address}`, // Sepolia
+                  `eip155:10:${account.address}`, // Optimism
+                  `eip155:42161:${account.address}`, // Arbitrum
+                  `eip155:420:${account.address}`, // Optimism Goerli
+                  `eip155:421613:${account.address}`, // Arbitrum Goerli
+                  `eip155:84531:${account.address}`, // Base
+                ],
               },
             },
           });
+
+          console.log("Approved namespaces: ", approvedNamespaces);
           setModalData({
             visible: true,
             title: "Session Proposal",
@@ -312,7 +335,7 @@ export function useWalletConnect() {
   }
 
   async function deleteSession(topic: string) {
-    if(connector) {
+    if (connector) {
       await connector.disconnectSession({
         topic,
         reason: getSdkError("USER_DISCONNECTED"),
@@ -372,6 +395,6 @@ export function useWalletConnect() {
     approvedCallback,
     rejectedCallback,
     deleteSession,
-    pairWcuri
+    pairWcuri,
   };
 }

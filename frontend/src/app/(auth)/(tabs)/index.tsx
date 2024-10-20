@@ -50,7 +50,6 @@ const HomeScreen: React.FC = () => {
           contractDeployed={isDeployed}
           publicAddress={ account!.getAddress() }
         />
-
         <Card style={styles.movementsCard} mode="contained">
           <Card.Content>
             <Text variant="titleLarge">Balance</Text>

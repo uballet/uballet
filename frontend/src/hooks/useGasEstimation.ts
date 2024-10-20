@@ -29,7 +29,6 @@ export function formatUoEstimation(uo: UserOperationStruct) {
 
 export function useGasEstimation({ target = DEFAULT_TARGET, data = DEFAULT_DATA, value = DEFAULT_VALUE }: { target?: `0x${string}`, data?: `0x${string}`, value?: string }) {
     const { lightAccount, initiator } = useAccountContext();
-    const balance = useBalance();
     const estimateGas = useCallback(async () => {
       let uo: UserOperationStruct
       if (initiator) {
