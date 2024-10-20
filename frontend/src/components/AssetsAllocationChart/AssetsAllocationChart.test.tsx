@@ -1,10 +1,10 @@
-import React from 'react';
-import { render, screen } from '@testing-library/react-native';
-import AssetsAllocationChart from './AssetsAllocationChart';
+import React from "react";
+import { render, screen } from "@testing-library/react-native";
+import AssetsAllocationChart from "./AssetsAllocationChart";
 
 // Mocking the internal implementation of the hook to avoid importing dependencies like Alchemy
-jest.mock('../../hooks/useBalanceInUSDT', () => ({
-  useBalanceInUSDT: jest.fn(),
+jest.mock("../../hooks/useTokenInfo", () => ({
+  useTokenInfo: jest.fn(),
 }));
 
 const mockData = {
@@ -24,15 +24,15 @@ const renderComponent = () => {
   return render(<AssetsAllocationChart />);
 };
 
-describe('AssetsAllocationChart Component', () => {
-  const useBalanceInUSDT = require('../../hooks/useBalanceInUSDT').useBalanceInUSDT;
+describe("AssetsAllocationChart Component", () => {
+  const useTokenInfo = require("../../hooks/useTokenInfo").useTokenInfo;
 
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  it('displays loading state', () => {
-    useBalanceInUSDT.mockReturnValue({
+  it("displays loading state", () => {
+    useTokenInfo.mockReturnValue({
       data: null,
       loading: true,
       error: null,
@@ -40,36 +40,35 @@ describe('AssetsAllocationChart Component', () => {
 
     renderComponent();
 
-    expect(screen.getByTestId('ActivityIndicator')).toBeTruthy();
+    expect(screen.getByTestId("ActivityIndicator")).toBeTruthy();
   });
 
-  it('displays error state', () => {
-    useBalanceInUSDT.mockReturnValue({
+  it("displays error state", () => {
+    useTokenInfo.mockReturnValue({
       data: null,
       loading: false,
-      error: 'Error fetching data',
+      error: "Error fetching data",
     });
 
     renderComponent();
 
-    expect(screen.getByText('Error: no data available')).toBeTruthy();
+    expect(screen.getByText("Error: no data available")).toBeTruthy();
   });
 
-  it('displays chart when data is available', () => {
-    useBalanceInUSDT.mockReturnValue({
+  it("displays chart when data is available", () => {
+    useTokenInfo.mockReturnValue({
       data: mockData,
       loading: false,
       error: null,
     });
-  
+
     renderComponent();
-  
-    expect(screen.getByTestId('assets-allocation-pie-chart')).toBeTruthy();
+
+    expect(screen.getByTestId("assets-allocation-pie-chart")).toBeTruthy();
   });
-  
 
   it('displays "No balances to show" when no data is available', () => {
-    useBalanceInUSDT.mockReturnValue({
+    useTokenInfo.mockReturnValue({
       data: {},
       loading: false,
       error: null,
@@ -77,6 +76,8 @@ describe('AssetsAllocationChart Component', () => {
 
     renderComponent();
 
-    expect(screen.getByText('No balances to show! Try adding tokens to your wallet')).toBeTruthy();
+    expect(
+      screen.getByText("No balances to show! Try adding tokens to your wallet")
+    ).toBeTruthy();
   });
 });
