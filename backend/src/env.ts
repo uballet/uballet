@@ -32,7 +32,8 @@ export const ANDROID_SHA_HEX_VALUE = process.env.ANDROID_SHA_HEX_VALUE;
 // WebAuthn
 export const WEBAUTHN_RP_ID = process.env.WEBAUTHN_RP_ID;
 export const WEBAUTHN_RP_NAME = process.env.WEBAUTHN_RP_NAME;
-export const WEBAUTHN_ORIGIN = process.env.WEBAUTHN_ORIGIN;
+export const WEBAUTHN_ORIGIN_ANDROID = process.env.WEBAUTHN_ORIGIN_ANDROID as string;
+export const WEBAUTHN_ORIGIN_IOS = process.env.WEBAUTHN_ORIGIN_IOS as string;
 
 export const CMC_API_KEY = process.env.CMC_API_KEY as string;
 export const EXPO_ACCESS_TOKEN= process.env.EXPO_ACCESS_TOKEN as string

@@ -5,7 +5,7 @@ import { PasskeyChallenge } from "../entity/PasskeyChallenge";
 import base64url from "base64url";
 import { Passkey } from "../entity/Passkey";
 import { createAccessToken } from "./token";
-import { WEBAUTHN_ORIGIN, WEBAUTHN_RP_ID } from "../env";
+import { WEBAUTHN_ORIGIN_IOS, WEBAUTHN_ORIGIN_ANDROID, WEBAUTHN_RP_ID } from "../env";
 
 async function getRegistrationOptions(userId: string) {
     const user = await User.findOneOrFail({ where: { id: userId } })
@@ -44,7 +44,7 @@ const verifyRegistration = async (userId: string, credential: RegistrationRespon
     const { verified, registrationInfo } = await verifyRegistrationResponse({
         response: { ...credential, type: 'public-key' },
         expectedChallenge: challenge,
-        expectedOrigin: WEBAUTHN_ORIGIN!!,
+        expectedOrigin: [WEBAUTHN_ORIGIN_ANDROID, WEBAUTHN_ORIGIN_IOS],
         requireUserVerification: true
     })
 
@@ -118,7 +118,7 @@ async function verifyAuthentication(
         response: authentication,
         expectedChallenge: challenge,
         expectedRPID: WEBAUTHN_RP_ID!!,
-        expectedOrigin: WEBAUTHN_ORIGIN!!,
+        expectedOrigin: [WEBAUTHN_ORIGIN_ANDROID, WEBAUTHN_ORIGIN_IOS],
         requireUserVerification: true,
         authenticator: {
             credentialPublicKey: new Uint8Array(base64url.toBuffer(userCredential.publicKey)),
