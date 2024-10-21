@@ -57,3 +57,23 @@ After installed dependencies, install project dependencies and run:
 ### MacOS and iOS
 
 1. Complete
+
+
+### E2E TESTING
+
+#### Start back-end
+
+You need to run the backend setting up the env variable `IS_E2E_TESTING = 1`. This will connect the back-end to the testing db.
+
+#### Start metro
+
+You need to start the metro server setting the env variable `IS_E2E_TESTING = 1`. This will run the metro bundler using the
+e2e testing config, with specific addresses for the account factories living in the test infra.
+
+#### Test infra
+
+You need to go to the `/test-infra` directory and run the `./start-infra.sh` script. You need to keep an eye while doing this and make sure the scripts finishes its execution. If the execution seems to stall indefinitely waiting for tx receipts in the factory deploy process, you might need to stop the process, take down the docker-container for `erc-4337-devnet` and run the script again.
+
+#### Running the tests
+
+Once you've completed the steps above. You can go to the `/frontend` directory and run `maestro test <flow>` to run a specific flow.
