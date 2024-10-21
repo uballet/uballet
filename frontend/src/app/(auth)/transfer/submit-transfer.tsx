@@ -95,7 +95,7 @@ function SubmitTransferScreen() {
       </View>
 
       {/* Transfer Button at the Bottom */}
-      <View style={{ paddingBottom: 20, alignItems: 'center' }}>
+      <View style={{ paddingBottom: 20, alignItems: 'center' }} testID="transfer-submit-button">
         <TransferButton
           currency={currency}
           ethSymbol={eth_symbol}

@@ -1,0 +1,21 @@
+appId: com.flperez.uballet
+---
+- launchApp:
+    clearState: true
+    clearKeychain: true
+
+- runFlow:
+    when:
+      visible:
+        text: "Development servers"
+    commands:
+      - tapOn:
+          text: "http://localhost:8081"
+
+- runFlow:
+    when:
+      visible:
+        text: "Continue"
+    commands:
+      - tapOn:
+          point: 50%, 20%

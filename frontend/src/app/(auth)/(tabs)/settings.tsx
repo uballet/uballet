@@ -149,7 +149,7 @@ function SettingsScreen() {
           {user?.walletType === 'light' && <Button mode="contained" className="mb-4" onPress={() =>{}}>Upgrade to Pro</Button>}
         </View>
         <Separator />
-        <Button mode="outlined" className="m-8" onPress={logout}>
+        <Button testID="logout-button" mode="outlined" className="m-8" onPress={logout}>
           <Text className="text-red-500">Logout</Text>
         </Button>
         <Button

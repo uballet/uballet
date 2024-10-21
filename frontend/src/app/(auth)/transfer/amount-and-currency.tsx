@@ -43,6 +43,7 @@ function AmountAndCurrencyScreen() {
 
             {/* Transfer Input (Amount and Currency Selection) */}
             <TransferInput
+              testID="transfer-amount-input"
               amount={amount}
               currency={currency}
               currencies={currencies}
@@ -56,6 +57,7 @@ function AmountAndCurrencyScreen() {
       {/* Next Button */}
       <View style={{ paddingBottom: 20, alignItems: 'center' }}>
         <Button
+          testID="transfer-amount-next-button"
           mode="contained"
           style={[styles.button, { width: 200 }]}
           onPress={handleNext}

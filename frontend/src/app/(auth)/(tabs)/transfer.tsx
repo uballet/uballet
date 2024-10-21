@@ -23,6 +23,7 @@ function TransferScreen() {
       {/* Send to new address button */}
       <View style={{ alignItems: "center", marginVertical: 20 }}>
         <TouchableOpacity
+          testID="new-address-button"
           onPress={handleNewPress}
           style={{
             backgroundColor: "#007bff",

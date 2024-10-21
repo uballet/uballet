@@ -55,19 +55,19 @@ const TransactionScreen: React.FC = () => {
               <Text variant="titleMedium" style={styles.item}>
                 From:{" "}
               </Text>
-              <Text variant="bodySmall" selectable style={styles.item}>
+              <Text testID='transaction-from' variant="bodySmall" selectable style={styles.item}>
                 {transaction.from}
               </Text>
               <Text variant="titleMedium" style={styles.item}>
                 To:{" "}
               </Text>
-              <Text variant="bodySmall" selectable style={styles.item}>
+              <Text testID='transaction-to' variant="bodySmall" selectable style={styles.item}>
                 {transaction.to}
               </Text>
               <Text variant="titleMedium" style={styles.item}>
                 Block Number:{" "}
               </Text>
-              <Text variant="bodyMedium" style={styles.item}>
+              <Text testID='transaction-block-number' variant="bodyMedium" style={styles.item}>
                 {transaction.blockNumber}
               </Text>
               <Text variant="titleMedium" style={styles.item}>
@@ -100,6 +100,7 @@ const TransactionScreen: React.FC = () => {
             />
             {isNewParam && (
               <FAB
+                testID='go-to-home-button'
                 size="medium"
                 icon="home"
                 style={styles.fab}

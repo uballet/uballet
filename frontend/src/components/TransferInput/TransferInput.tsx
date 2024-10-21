@@ -10,6 +10,7 @@ interface TransferInputProps {
   isAmountValid: boolean;
   handleAmountChange: (amount: string) => void;
   setCurrency: (currency: string) => void;
+  testID?: string;
 }
 
 const TransferInput: React.FC<TransferInputProps> = ({
@@ -19,17 +20,20 @@ const TransferInput: React.FC<TransferInputProps> = ({
   isAmountValid,
   handleAmountChange,
   setCurrency,
+  testID
 }) => {
   return (
     <>
     <View style={styles.inputContainer}>
       <TextInput
+        testID={testID}
         mode="flat"
         placeholder="0.0000"
         value={amount}
         onChangeText={handleAmountChange}
         style={styles.textInput}
         keyboardType="numeric"
+        returnKeyType='done'
         error={!isAmountValid}
         placeholderTextColor="#888"
       />

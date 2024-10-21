@@ -1,0 +1,7 @@
+appId: com.flperez.uballet
+---
+- tapOn: "Recover with seedphrase" 
+- tapOn: "Enter seed phrase"
+- inputText: ${SEED_PHRASE}
+- tapOn: "done"
+- tapOn: "Recover"

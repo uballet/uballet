@@ -69,6 +69,7 @@ function GasInfoScreen() {
       {/* Next Button at the Bottom */}
       <View style={{ paddingBottom: 20, alignItems: 'center' }}>
         <Button
+          testID="transfer-gas-next-button"
           mode="contained"
           style={[styles.button, { width: 200 }]}
           onPress={handleNext}

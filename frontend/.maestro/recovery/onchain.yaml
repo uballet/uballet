@@ -1,44 +1,14 @@
 appId: com.flperez.uballet
 ---
-- launchApp:
-    clearState: true
-    clearKeychain: true
-
+- runFlow: ../common/start-app.yaml
 - runFlow:
-    when:
-      visible:
-        text: "Development servers"
-    commands:
-      - tapOn:
-          text: "http://localhost:8081"
-
+    file: ../common/sign-in-with-email.yaml
+    env:
+      EMAIL: "funded-1@test.com"
 - runFlow:
-    when:
-      visible:
-        text: "Continue"
-    commands:
-      - tapOn:
-          point: 50%, 20%
-- runFlow:
-    when:
-      visible:
-        text: "Sign In"
-    commands:
-      - tapOn:
-          text: "Email"
-- inputText: "funded-1@test.com"
-- tapOn:
-    text: "return"
-- tapOn:
-    id: "sign-in-button"
-- tapOn: "Input Code"
-- inputText: "123456"
-- tapOn: "Submit Code"
-- tapOn: "Recover with seedphrase" 
-- tapOn: "Enter seed phrase"
-- inputText: "cake still pioneer lunch valid wisdom urge author report box utility possible"
-- tapOn: "done"
-- tapOn: "Recover"
+    file: ../common/recover-with-seedphrase.yaml
+    env:
+      SEED_PHRASE: "cake still pioneer lunch valid wisdom urge author report box utility possible"
 - tapOn:
     text: "Security"
 - tapOn:
@@ -56,20 +26,14 @@ appId: com.flperez.uballet
 - tapOn: "Logout"
 
 
-- tapOn: "Email"
-- inputText: "funded-2@test.com"
-- tapOn:
-    text: "return"
-- tapOn:
-    id: "sign-in-button"
-- tapOn: "Input Code"
-- inputText: "123456"
-- tapOn: "Submit Code"
-- tapOn: "Recover with seedphrase" 
-- tapOn: "Enter seed phrase"
-- inputText: "execute stage caught click catch evidence ribbon jump legend tobacco narrow frame"
-- tapOn: "done"
-- tapOn: "Recover"
+- runFlow:
+    file: ../common/sign-in-with-email.yaml
+    env:
+      EMAIL: "funded-2@test.com"
+- runFlow:
+    file: ../common/recover-with-seedphrase.yaml
+    env:
+      SEED_PHRASE: "execute stage caught click catch evidence ribbon jump legend tobacco narrow frame"
 - tapOn:
     text: "Security"
 - tapOn: "Accept"
@@ -77,20 +41,14 @@ appId: com.flperez.uballet
     text: "Settings"
 - tapOn: "Logout"
 
-- tapOn: "Email"
-- inputText: "funded-3@test.com"
-- tapOn:
-    text: "return"
-- tapOn:
-    id: "sign-in-button"
-- tapOn: "Input Code"
-- inputText: "123456"
-- tapOn: "Submit Code"
-- tapOn: "Recover with seedphrase" 
-- tapOn: "Enter seed phrase"
-- inputText: "insane vessel film sure quarter early switch water buddy initial pistol express"
-- tapOn: "done"
-- tapOn: "Recover"
+- runFlow:
+    file: ../common/sign-in-with-email.yaml
+    env:
+      EMAIL: "funded-3@test.com"
+- runFlow:
+    file: ../common/recover-with-seedphrase.yaml
+    env:
+      SEED_PHRASE: "insane vessel film sure quarter early switch water buddy initial pistol express"
 - tapOn:
     text: "Security"
 - tapOn: "Accept"
@@ -98,15 +56,10 @@ appId: com.flperez.uballet
     text: "Settings"
 - tapOn: "Logout"
 
-- tapOn: "Email"
-- inputText: "funded-1@test.com"
-- tapOn:
-    text: "return"
-- tapOn:
-    id: "sign-in-button"
-- tapOn: "Input Code"
-- inputText: "123456"
-- tapOn: "Submit Code"
+- runFlow:
+    file: ../common/sign-in-with-email.yaml
+    env:
+      EMAIL: "funded-1@test.com"
 - tapOn:
     text: "Security"
 - tapOn: "Confirm"
@@ -124,15 +77,10 @@ appId: com.flperez.uballet
 
 - clearKeychain
 
-- tapOn: "Email"
-- inputText: "funded-1@test.com"
-- tapOn:
-    text: "return"
-- tapOn:
-    id: "sign-in-button"
-- tapOn: "Input Code"
-- inputText: "123456"
-- tapOn: "Submit Code"
+- runFlow:
+    file: ../common/sign-in-with-email.yaml
+    env:
+      EMAIL: "funded-1@test.com"
 - tapOn: "Contact Recovery Team" 
 - tapOn: "Request Recovery"
 - assertVisible:
@@ -142,20 +90,14 @@ appId: com.flperez.uballet
 - tapOn: "Back"
 - tapOn: "Log Out"
 
-- tapOn: "Email"
-- inputText: "funded-2@test.com"
-- tapOn:
-    text: "return"
-- tapOn:
-    id: "sign-in-button"
-- tapOn: "Input Code"
-- inputText: "123456"
-- tapOn: "Submit Code"
-- tapOn: "Recover with seedphrase" 
-- tapOn: "Enter seed phrase"
-- inputText: "execute stage caught click catch evidence ribbon jump legend tobacco narrow frame"
-- tapOn: "done"
-- tapOn: "Recover"
+- runFlow:
+    file: ../common/sign-in-with-email.yaml
+    env:
+      EMAIL: "funded-2@test.com"
+- runFlow:
+    file: ../common/recover-with-seedphrase.yaml
+    env:
+      SEED_PHRASE: "execute stage caught click catch evidence ribbon jump legend tobacco narrow frame"
 - tapOn:
     text: "Security"
 - tapOn: "Sign Recovery"
@@ -163,20 +105,14 @@ appId: com.flperez.uballet
     text: "Settings"
 - tapOn: "Logout"
 
-- tapOn: "Email"
-- inputText: "funded-3@test.com"
-- tapOn:
-    text: "return"
-- tapOn:
-    id: "sign-in-button"
-- tapOn: "Input Code"
-- inputText: "123456"
-- tapOn: "Submit Code"
-- tapOn: "Recover with seedphrase" 
-- tapOn: "Enter seed phrase"
-- inputText: "insane vessel film sure quarter early switch water buddy initial pistol express"
-- tapOn: "done"
-- tapOn: "Recover"
+- runFlow:
+    file: ../common/sign-in-with-email.yaml
+    env:
+      EMAIL: "funded-3@test.com"
+- runFlow:
+    file: ../common/recover-with-seedphrase.yaml
+    env:
+      SEED_PHRASE: "insane vessel film sure quarter early switch water buddy initial pistol express"
 - tapOn:
     text: "Security"
 - tapOn: "Sign Recovery"
@@ -187,14 +123,9 @@ appId: com.flperez.uballet
     text: "Settings"
 - tapOn: "Logout"
 
-- tapOn: "Email"
-- inputText: "funded-1@test.com"
-- tapOn:
-    text: "return"
-- tapOn:
-    id: "sign-in-button"
-- tapOn: "Input Code"
-- inputText: "123456"
-- tapOn: "Submit Code"
+- runFlow:
+    file: ../common/sign-in-with-email.yaml
+    env:
+      EMAIL: "funded-1@test.com"
 - assertVisible:
     text: "Balance"

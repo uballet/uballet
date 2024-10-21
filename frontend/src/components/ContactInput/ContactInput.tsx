@@ -6,16 +6,19 @@ interface ContactInputProps {
   toAddress: string;
   handleAddressChange: (address: string) => void;
   isAddressValid: boolean;
+  testID?: string;
 }
 
 const ContactInput: React.FC<ContactInputProps> = ({
   toAddress,
   handleAddressChange,
   isAddressValid,
+  testID
 }) => {
   return (
     <>
       <TextInput
+        testID={testID}
         mode="outlined"
         style={styles.margin}
         placeholder="Address without 0x prefix"

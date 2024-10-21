@@ -54,7 +54,7 @@ const HomeScreen: React.FC = () => {
           <Card.Content>
             <Text variant="titleLarge">Balance</Text>
             {!isLoading && balance ? (
-              <Text style={styles.balance}>
+              <Text testID="home-balance" style={styles.balance}>
                 {formatBalance(parseFloat(balance), 4)} ETH
               </Text>
             ) : (

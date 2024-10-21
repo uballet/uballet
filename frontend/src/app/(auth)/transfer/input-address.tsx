@@ -96,6 +96,7 @@ function InputAddress() {
 
           {inputType === 'address' ? (
             <ContactInput
+              testID="transfer-address-input"
               toAddress={input}
               handleAddressChange={handleInputChange}
               isAddressValid={isInputValid}
@@ -135,6 +136,7 @@ function InputAddress() {
 
       <View style={{ paddingBottom: 20, alignItems: 'center' }}>
         <Button
+          testID="input-address-next-button"
           style={[styles.button, { width: 200 }]}
           mode="contained"
           onPress={handleNext}

@@ -74,6 +74,7 @@ function TabsLayout() {
           <MaterialBottomTabs.Screen
             name="balance"
             options={{
+              tabBarAccessibilityLabel: "Balance",
               title: "Balance",
               tabBarIcon: ({ color }) => (
                 <MaterialIcons name="balance" size={24} color={color} />
@@ -84,6 +85,7 @@ function TabsLayout() {
             name="transfer"
             options={{
               title: "Transfer",
+              tabBarAccessibilityLabel: "Transfer",
               tabBarIcon: ({ color }) => (
                 <MaterialIcons name="compare-arrows" size={24} color={color} />
               ),
