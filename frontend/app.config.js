@@ -26,7 +26,7 @@ export default {
       bundleIdentifier: "com.flperez.uballet",
       associatedDomains: [
         "webcredentials:uballet-backend-dot-outstanding-map-428001-f5.uc.r.appspot.com",
-        "webcredentials:uballet-server.onrender.com"
+        "webcredentials:uballet.onrender.com"
       ],
       infoPlist: {
         LSApplicationQueriesSchemes: [
