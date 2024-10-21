@@ -18,7 +18,7 @@ export function useBalance() {
       const balance = await account.getBalance({
         address: account!.getAddress(),
       });
-      console.log("BALANCE: ", { [account.chain.name]: formatEther(balance), accountChain: account.chain?.id });
+      console.log("BALANCE: ", { [account.chain!.name]: formatEther(balance), accountChain: account.chain?.id });
       return formatEther(balance);
     },
   })

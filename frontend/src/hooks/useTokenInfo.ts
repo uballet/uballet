@@ -34,10 +34,10 @@ export function useTokenInfo() {
   const { getUserTokens } = useBlockchainContext();
 
   let {
-    balance: dataUseBalance,
-    loading: loadingUseBalance,
+    data: dataUseBalance,
+    isLoading: loadingUseBalance,
     error: errorUseBalance,
-    refreshData: refreshDataUseBalance,
+    refetch: refreshDataUseBalance,
   } = useBalance();
 
   let {
