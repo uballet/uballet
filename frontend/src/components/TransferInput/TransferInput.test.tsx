@@ -8,6 +8,7 @@ describe('TransferInput Component', () => {
   const mockCurrencies = ['ETH', 'DAI', 'USDC'];
   const mockHandleAmountChange = jest.fn();
   const mockSetCurrency = jest.fn();
+  const mockCurrentBalance = '1.0';
 
   it('renders the amount input and currency picker', () => {
     render(
@@ -18,6 +19,7 @@ describe('TransferInput Component', () => {
         isAmountValid={true}
         handleAmountChange={mockHandleAmountChange}
         setCurrency={mockSetCurrency}
+        currentBalance={mockCurrentBalance}
       />
     );
 
@@ -37,6 +39,7 @@ describe('TransferInput Component', () => {
         isAmountValid={true}
         handleAmountChange={mockHandleAmountChange}
         setCurrency={mockSetCurrency}
+        currentBalance={mockCurrentBalance}
       />
     );
 
@@ -55,6 +58,7 @@ describe('TransferInput Component', () => {
         isAmountValid={true}
         handleAmountChange={mockHandleAmountChange}
         setCurrency={mockSetCurrency}
+        currentBalance={mockCurrentBalance}
       />
     );
 
@@ -67,16 +71,34 @@ describe('TransferInput Component', () => {
   it('displays an error message when the amount is invalid', () => {
     render(
       <TransferInput
-        amount=""
+        amount="0"
         currency="ETH"
         currencies={mockCurrencies}
         isAmountValid={false}
         handleAmountChange={mockHandleAmountChange}
         setCurrency={mockSetCurrency}
+        currentBalance={mockCurrentBalance}
       />
     );
 
     const errorMessage = screen.getByText('Amount must be greater than 0');
+    expect(errorMessage).toBeTruthy();
+  });
+
+  it('displays an error message when the amount exceeds the current balance', () => {
+    render(
+      <TransferInput
+        amount="1.5"
+        currency="ETH"
+        currencies={mockCurrencies}
+        isAmountValid={true}
+        handleAmountChange={mockHandleAmountChange}
+        setCurrency={mockSetCurrency}
+        currentBalance={mockCurrentBalance}
+      />
+    );
+
+    const errorMessage = screen.getByText('Amount exceeds available balance');
     expect(errorMessage).toBeTruthy();
   });
 });

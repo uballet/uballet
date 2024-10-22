@@ -60,29 +60,29 @@ function AmountAndCurrencyScreen() {
         <View style={{ width: '100%', paddingHorizontal: 20 }}>
           <Text style={styles.infoText}>Enter the amount and currency</Text>
 
-          <TransferInput
-            testID="transfer-amount-input"
-            amount={amount}
-            currency={currency}
-            currencies={currencies}
-            isAmountValid={isAmountValid}
-            handleAmountChange={handleAmountChange}
-            setCurrency={setCurrency}
-            currentBalance={currentBalance}
-          />
+          {(ethBalanceLoading || tokenBalancesLoading) ? (
+            <View style={{ justifyContent: 'center', alignItems: 'center', height: 100 }}>
+              <ActivityIndicator size="large" color={theme.colors.primary} />
+            </View>
+          ) : (
+            <>
+              <TransferInput
+                testID="transfer-amount-input"
+                amount={amount}
+                currency={currency}
+                currencies={currencies}
+                isAmountValid={isAmountValid}
+                handleAmountChange={handleAmountChange}
+                setCurrency={setCurrency}
+                currentBalance={currentBalance}
+              />
+              <Text style={styles.infoText}>
+                Balance: {currentBalance ? `${currentBalance} ${currency}` : 'N/A'}
+              </Text>
+            </>
+          )}
         </View>
-
-        {/* Balance Indicator */}
-        {(ethBalanceLoading || tokenBalancesLoading) ? (
-          <ActivityIndicator size="small" color={theme.colors.primary} />
-        ) : (
-          <Text style={styles.infoText}>
-              Balance: {currentBalance ? `${currentBalance} ${currency}` : 'N/A'}
-          </Text>
-        )}
       </View>
-
-      
 
       {/* Next Button */}
       <View style={{ paddingBottom: 20, alignItems: 'center' }}>
@@ -91,7 +91,7 @@ function AmountAndCurrencyScreen() {
           mode="contained"
           style={[styles.button, { width: 200 }]}
           onPress={handleNext}
-          disabled={!isAmountValid || !amount}
+          disabled={!isAmountValid || !amount || ethBalanceLoading || tokenBalancesLoading}
         >
           Next
         </Button>

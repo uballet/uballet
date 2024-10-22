@@ -51,15 +51,15 @@ const TransferInput: React.FC<TransferInputProps> = ({
         ))}
       </Picker>
     </View>
-    {!isAmountValid && (amount !== "" && parseFloat(amount) <= 0) && (
-        <Text style={styles.errorText}>
-            Amount must be greater than 0
-        </Text>
+    {!isAmountValid && amount !== '' && (
+      <Text style={styles.errorText}>
+        Amount must be greater than 0
+      </Text>
     )}
     {isAmountGreaterThanBalance && (
-        <Text style={styles.errorText}>
-            Amount exceeds available balance
-        </Text>
+      <Text style={styles.errorText}>
+        Amount exceeds available balance
+      </Text>
     )}
     </>
   );
