@@ -58,14 +58,13 @@ function AmountAndCurrencyScreen() {
     <ScrollView contentContainerStyle={{ flex: 1, justifyContent: 'space-between', backgroundColor: theme.colors.background }}>
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
         <View style={{ width: '100%', paddingHorizontal: 20 }}>
-          <Text style={styles.infoText}>Enter the amount and currency</Text>
-
           {(ethBalanceLoading || tokenBalancesLoading) ? (
             <View style={{ justifyContent: 'center', alignItems: 'center', height: 100 }}>
               <ActivityIndicator size="large" color={theme.colors.primary} />
             </View>
           ) : (
             <>
+              <Text style={styles.infoText}>Enter the amount and currency</Text>
               <TransferInput
                 testID="transfer-amount-input"
                 amount={amount}
