@@ -108,7 +108,6 @@ function InputAddress() {
                 handleInputChange={handleInputChange}
                 isInputValid={isInputValid}
                 placeholder="Enter ENS name"
-                resolvedAddress={isENSResolved ? resolvedAddress : undefined}
               />
               <Button
                 mode="contained"

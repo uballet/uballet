@@ -6,16 +6,15 @@ interface AddressInputProps {
   input: string;
   handleInputChange: (value: string) => void;
   isInputValid: boolean;
-  inputType: 'address' | 'ens';
   placeholder: string;
+  resolvedAddress?: string;
 }
 
 const AddressInput: React.FC<AddressInputProps> = ({
   input,
   handleInputChange,
   isInputValid,
-  inputType,
-  placeholder,
+  placeholder
 }) => {
   return (
     <View>
@@ -24,14 +23,11 @@ const AddressInput: React.FC<AddressInputProps> = ({
         style={styles.input}
         placeholder={placeholder}
         value={input}
-        left={inputType === 'address' ? <TextInput.Affix text="0x" /> : null}
         onChangeText={handleInputChange}
         error={!isInputValid}
       />
       {!isInputValid && (
-        <Text style={styles.errorText}>
-          {inputType === 'address' ? 'Invalid Ethereum address' : 'Invalid ENS name'}
-        </Text>
+        <Text style={styles.errorText}>Invalid ENS name</Text>
       )}
     </View>
   );
@@ -44,6 +40,10 @@ const styles = StyleSheet.create({
   errorText: {
     color: 'red',
     marginLeft: 8,
+  },
+  resolvedText: {
+    marginLeft: 8,
+    marginTop: 4,
   },
 });
 
