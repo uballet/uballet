@@ -52,7 +52,6 @@ export function useTokenBalance() {
       setTokenBalances(balances);
       setLoading(false);
     } catch {
-      console.error("Error fetching token balances");
       setError("Error fetching token balances");
       setLoading(false);
     } finally {

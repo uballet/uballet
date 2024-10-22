@@ -69,6 +69,7 @@ const HomeScreen: React.FC = () => {
 
         <View style={styles.horizontalContainer}>
           <FAB
+            testID="home-contacts-button"
             size="small" icon="contacts" variant="secondary" 
             onPress={() => router.push({ pathname: "contacts" })} />
           <FAB size="small" icon="qrcode" variant="secondary"

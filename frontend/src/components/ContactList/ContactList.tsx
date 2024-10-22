@@ -33,8 +33,9 @@ const ContactList: React.FC<ContactListProps> = ({ contacts, resolveName, enable
   return (
     <ScrollView>
       <View className="flex-1 w-full p-4">
-        {contacts.map((contact) => (
+        {contacts.map((contact, i) => (
           <Pressable
+            testID={`contacts-list-${i}`}
             key={contact.id}
             onPress={async () => {
               const resolvedAddress = await resolveName(contact.address);

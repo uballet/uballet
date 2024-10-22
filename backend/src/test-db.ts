@@ -1,3 +1,4 @@
+import { ContactAddress } from "./entity/ContactAddress";
 import { EmailVerificationCode } from "./entity/EmailVerificationCode";
 import { Notification } from "./entity/Notification";
 import { RecoveryRequest } from "./entity/RecoveryRequest";
@@ -96,7 +97,7 @@ export async function clearTestDB() {
     if (!IS_E2E_TESTING) {
         return
     }
-
+    await ContactAddress.delete({})
     await EmailVerificationCode.delete({});
     await Notification.delete({})
     await RecoveryRequest.delete({});

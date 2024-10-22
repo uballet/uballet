@@ -23,7 +23,7 @@ function AmountAndCurrencyScreen() {
   const [isAmountValid, setIsAmountValid] = useState(true);
 
   const { data: ethBalance, isLoading: ethBalanceLoading } = useBalance();
-  const { tokenBalances, loading: tokenBalancesLoading } = useTokenBalance();
+  const { tokenBalances, loading: tokenBalancesLoading, error } = useTokenBalance();
 
   const [currentBalance, setCurrentBalance] = useState<string | null>(null);
 
@@ -78,6 +78,7 @@ function AmountAndCurrencyScreen() {
               <Text style={styles.infoText}>
                 Balance: {currentBalance ? `${currentBalance} ${currency}` : 'N/A'}
               </Text>
+              {error && <Text className="text-red-500 mt-2">Error loading token balances </Text>}
             </>
           )}
         </View>

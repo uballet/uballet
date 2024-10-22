@@ -1,4 +1,4 @@
-import { Slot, Stack } from "expo-router";
+import { Slot, Stack, useRouter } from "expo-router";
 import { SafeAreaView, Text, View, Modal } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 
@@ -10,6 +10,7 @@ function ContactsLayout() {
   const [modalVisible, setModalVisible] = useState(false);
   const [name, setName] = useState("");
   const [address, setAddress] = useState("");
+  const router = useRouter();
   const { addNewContact, isSuccess } = useAddContact();
 
   const updateAddress = useCallback((address: string) => {
@@ -36,8 +37,20 @@ function ContactsLayout() {
           headerTitleStyle: {
             fontWeight: "bold",
           },
+          headerLeft: () => (
+            <Ionicons
+              testID="new-contacts-back-button"
+              name="arrow-back-outline"
+              size={24}
+              color="white"
+              onPress={() => {
+                router.canGoBack() ? router.back() : router.navigate('/(auth)/')
+              }}
+            ></Ionicons>
+          ),
           headerRight: () => (
             <Ionicons
+              testID="new-contact-header-button"
               name="add-circle-outline"
               size={36}
               color="white"
@@ -60,12 +73,14 @@ function ContactsLayout() {
             </Text>
 
             <TextInput
+              testID="new-contact-name-input"
               placeholder="Name"
               value={name}
               onChangeText={setName}
               className="border border-gray-300 rounded-lg p-2 mb-2 w-full"
             />
             <TextInput
+              testID="new-contact-address-input"
               placeholder="ETH Address or ENS Name"
               value={address}
               onChangeText={updateAddress}
@@ -74,17 +89,19 @@ function ContactsLayout() {
 
             <View className="flex-row justify-between">
               <Button
+                testID="cancel-new-contact-button"
                 onPress={() => setModalVisible(false)}
                 buttonColor="gray"
-                className="flex-1 mr-2 rounded-lg px-4 py-2"
+                className="mr-2 rounded-lg px-4 py-2"
               >
                 <Text className="text-white">Cancel</Text>
               </Button>
 
               <Button
+                testID="submit-new-contact-button"
                 onPress={onPress}
                 buttonColor="#277ca5"
-                className="flex-1 ml-2 rounded-lg px-4 py-2"
+                className="ml-2 rounded-lg px-4 py-2"
               >
                 <Text className="text-white ">Add Contact</Text>
               </Button>
