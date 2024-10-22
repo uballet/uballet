@@ -139,6 +139,7 @@ const BalanceScreen = () => {
                   .map(([symbol, amount]) => (
                     <View
                       key={symbol}
+                      testID={"token-balance-" + symbol}
                       className="flex flex-row w-full justify-between"
                     >
                       <View className="flex flex-row text-center items-center">
@@ -184,6 +185,7 @@ const BalanceScreen = () => {
 
                       <View className="flex flex-col justify-center items-end text-center flex-1 ml-12">
                         <Text
+                          testID={"token-balance-" + symbol + "-amount"}
                           className="text-center text-2xl font-bold flex-shrink"
                           adjustsFontSizeToFit
                           numberOfLines={1}

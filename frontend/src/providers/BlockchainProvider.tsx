@@ -1,10 +1,9 @@
 import React, { createContext, useContext, ReactNode, useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import config from '../../netconfig/blockchain.default.json';
+import config from '../../netconfig/config'
 import { BlockchainConfig, Config, ERC20Token } from '../../netconfig/blockchain-config';
 import deepmerge from 'deepmerge';
-import uballet from '../api/uballet';
-import uballetAxios, { setChainHeader } from '../api/uballet/fetcher';
+import { setChainHeader } from '../api/uballet/fetcher';
 import { useQueryClient } from '@tanstack/react-query';
 
 interface BlockchainContextType {
@@ -48,7 +47,7 @@ const saveUserTokens = async (tokens: ERC20Token[], networkName: keyof Config) =
   }
 };
 
-export const DEFAULT_CONFIG = config['sepolia']
+export const DEFAULT_CONFIG = config['sepolia'];
 
 const BlockchainContext = createContext<BlockchainContextType | undefined>(undefined);
 

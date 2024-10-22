@@ -60,7 +60,6 @@ export function useTokenInfo() {
       return;
     }
     if (errorUseBalance || errorUseTokenBalance) {
-      console.error("Error fetching balances");
       setError("Error fetching balances");
       setLoading(false);
       return;
@@ -201,7 +200,6 @@ export function useTokenInfo() {
       setError("Failed to fetch data");
       setLoading(false);
     } finally {
-      console.log("Tokens Balances updated successfully:", balances);
       setLoading(false);
     }
   };

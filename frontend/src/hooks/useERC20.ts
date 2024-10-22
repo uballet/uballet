@@ -4,7 +4,7 @@ import { ethers } from "ethers";
 // Custom hook that provides functions to interact with ERC20 contracts
 export function useERC20() {
   const { sdkClient } = useAccountContext();
-  const provider = new ethers.JsonRpcProvider(sdkClient.config.url);
+  const provider = new ethers.JsonRpcProvider(sdkClient!.config.url);
 
   const isERC20Contract = async (address: string): Promise<boolean> => {
     const erc20Abi = [
@@ -21,6 +21,13 @@ export function useERC20() {
     } catch (err) {
       return false;
     }
+  };
+
+  const getTokenBalance = async (address: string, tokenAddress: string) => {
+    const erc20Abi = ["function balanceOf(address account) public view returns (uint256)"];
+    const contract = new ethers.Contract(tokenAddress, erc20Abi, provider);
+    const balance = await contract.balanceOf(address);
+    return balance;
   };
 
   const getERC20Name = async (address: string): Promise<string> => {
@@ -47,5 +54,5 @@ export function useERC20() {
     }
   };
 
-  return { isERC20Contract, getERC20Name, getERC20Symbol };
+  return { isERC20Contract, getERC20Name, getERC20Symbol, getTokenBalance };
 }

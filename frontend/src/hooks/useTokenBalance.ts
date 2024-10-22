@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { useAccountContext } from "./useAccountContext";
-import { ethers } from "ethers";
+import { BigNumberish, ethers } from "ethers";
 import { useBlockchainContext } from "../providers/BlockchainProvider";
 import tokenInfo from "../../netconfig/erc20-token-info.json";
+import { useERC20 } from "./useERC20";
 
 interface TokenBalances {
   [key: string]: string;
@@ -16,12 +17,13 @@ const getTokenDecimals = (symbol: string) => {
 };
 
 export function useTokenBalance() {
-  const { sdkClient, lightAccount, initiator } = useAccountContext();
+  const { lightAccount, initiator } = useAccountContext();
   const account = initiator || lightAccount;
   const [tokenBalances, setTokenBalances] = useState<TokenBalances>({});
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [refreshKey, setRefreshKey] = useState(0);
+  const { getTokenBalance } = useERC20();
 
   const { blockchain } = useBlockchainContext();
   const tokens = blockchain.erc20_tokens;
@@ -38,14 +40,11 @@ export function useTokenBalance() {
       const balances: TokenBalances = {};
 
       for (const token of tokens) {
-        const balance = await sdkClient!.core.getTokenBalances(account.getAddress(), [
-          token.address,
-        ]);
-        const tokenBalance = balance.tokenBalances[0]?.tokenBalance;
+        const balance: BigNumberish = await getTokenBalance(account.getAddress(), token.address);
 
-        if (tokenBalance && tokenBalance !== "0") {
+        if (balance && balance !== 0n) {
           const decimals = getTokenDecimals(token.symbol);
-          const redeableFormat = ethers.formatUnits(tokenBalance, decimals);
+          const redeableFormat = ethers.formatUnits(balance, decimals);
           balances[token.symbol] = redeableFormat;
         }
       }

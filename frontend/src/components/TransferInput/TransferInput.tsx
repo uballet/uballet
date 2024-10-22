@@ -41,7 +41,8 @@ const TransferInput: React.FC<TransferInputProps> = ({
         error={!isAmountValid || isAmountGreaterThanBalance}
         placeholderTextColor="#888"
       />
-      <Picker testID='transfer-input-picker'
+      <Picker
+        testID='transfer-input-picker'
         selectedValue={currency}
         style={styles.picker}
         onValueChange={(itemValue: string) => setCurrency(itemValue)}

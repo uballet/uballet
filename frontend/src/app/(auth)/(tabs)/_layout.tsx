@@ -74,7 +74,7 @@ function TabsLayout() {
           <MaterialBottomTabs.Screen
             name="balance"
             options={{
-              tabBarAccessibilityLabel: "Balance",
+              tabBarAccessibilityLabel: "BalanceBottomTab",
               title: "Balance",
               tabBarIcon: ({ color }) => (
                 <MaterialIcons name="balance" size={24} color={color} />

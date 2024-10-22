@@ -27,7 +27,7 @@
     "src",
     "**/**/*.tsx",
     "nativewind-env.d.ts"
-, "app.d.ts"  ],
+, "app.d.ts", "netconfig/config.ts"  ],
   "exclude": [
     "node_modules"
   ],
