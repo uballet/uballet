@@ -7,5 +7,6 @@ cd erc-4337-devnet
 
 cd "$original_dir"
 cd erc20
+npm install
 npx hardhat compile
 npx hardhat run --network docker scripts/deploy-erc20.js

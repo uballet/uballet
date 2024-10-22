@@ -41,7 +41,7 @@ contract Deploy is Script {
     address public multisigPlugin = vm.envOr("MULTISIG_PLUGIN", address(0));
     bytes32 public multisigPluginSalt = vm.envOr("MULTISIG_PLUGIN_SALT", bytes32(0));
     bytes32 public multisigPluginManifestHash;
-    address public expectedMultisigPlugin = 0xD1D8C2c0fd66DfA792Fa2A70296690dBf77cc8f4;
+    address public expectedMultisigPlugin = vm.envOr("EXPECTED_MULTISIG_PLUGIN", address(0));
 
     function run() public {
         console.log("******** Deploying *********");
