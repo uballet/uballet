@@ -6,7 +6,9 @@ COPY contracts/nginx.conf /etc/nginx/nginx.conf
 
 WORKDIR /account-abstraction
 
-RUN git clone --recurse-submodules https://github.com/stackup-wallet/contracts.git .
+RUN git clone --recurse-submodules https://github.com/uballet/stackup-contracts
+
+WORKDIR /account-abstraction/stackup-contracts
 
 RUN git fetch && git checkout 8339e2526c2aea85ce1aaa4ed174ba7cbac5c7c8
 
