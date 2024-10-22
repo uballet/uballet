@@ -41,10 +41,8 @@ contract Deploy is Script {
     address public maImpl = vm.envAddress("MA_IMPL");
 
     // Multisig plugin
-    address public multisigPlugin = vm.envOr("MULTISIG_PLUGIN", address(0));
-    bytes32 public multisigPluginSalt = vm.envOr("MULTISIG_PLUGIN_SALT", bytes32(0));
+    address public multisigPlugin = vm.envAddress("EXPECTED_MULTISIG_PLUGIN");
     bytes32 public multisigPluginManifestHash;
-    address public expectedMultisigPlugin = vm.envOr("EXPECTED_MULTISIG_PLUGIN", address(0));
 
     // Factory
     address public factory;
@@ -58,21 +56,9 @@ contract Deploy is Script {
         console.log("Factory owner: ", owner);
 
         uint256 deployerPrivateKey = vm.envUint("DEPLOYER_PRIVATE_KEY");
-        vm.startBroadcast(deployerPrivateKey);
-
-        // Deploy multisig plugin, and set plugin hash
-        if (multisigPlugin == address(0)) {
-            multisigPlugin = address(new MultisigPlugin{salt: multisigPluginSalt}(address(entryPoint)));
-
-            if (expectedMultisigPlugin != address(0)) {
-                require(multisigPlugin == expectedMultisigPlugin, "MultisigPlugin address mismatch");
-            }
-            console.log("New MultisigPlugin: ", multisigPlugin);
-        } else {
-            console.log("Exist MultisigPlugin: ", multisigPlugin);
-        }
         multisigPluginManifestHash = keccak256(abi.encode(BasePlugin(multisigPlugin).pluginManifest()));
 
+        vm.startBroadcast(deployerPrivateKey);
         // Deploy factory
         factory = address(
             new MultisigModularAccountFactory{salt: factorySalt}(
@@ -83,28 +69,8 @@ contract Deploy is Script {
         if (expectedFactory != address(0)) {
             require(factory == expectedFactory, "MultisigModularAccountFactory address mismatch");
         }
-        _addStakeForFactory(factory, entryPoint);
         console.log("New MultisigModularAccountFactory: ", factory);
 
-        console.log("******** Deploy Done! *********");
         vm.stopBroadcast();
-    }
-
-    function _addStakeForFactory(address factoryAddr, IEntryPoint anEntryPoint) internal {
-        uint32 unstakeDelaySec = uint32(vm.envOr("UNSTAKE_DELAY_SEC", uint32(86400)));
-        uint256 requiredStakeAmount = vm.envUint("REQUIRED_STAKE_AMOUNT");
-        uint256 currentStakedAmount = I4337EntryPoint(address(anEntryPoint)).getDepositInfo(factoryAddr).stake;
-        uint256 stakeAmount = requiredStakeAmount - currentStakedAmount;
-        // since all factory share the same addStake method, it does not matter which contract we use to cast the
-        // address
-        MultisigModularAccountFactory(payable(factoryAddr)).addStake{value: stakeAmount}(unstakeDelaySec, stakeAmount);
-
-        console.log("******** Add Stake Verify *********");
-        console.log("Staked factory: ", factoryAddr);
-        console.log("Stake amount: ", I4337EntryPoint(address(anEntryPoint)).getDepositInfo(factoryAddr).stake);
-        console.log(
-            "Unstake delay: ", I4337EntryPoint(address(anEntryPoint)).getDepositInfo(factoryAddr).unstakeDelaySec
-        );
-        console.log("******** Stake Verify Done *********");
     }
 }

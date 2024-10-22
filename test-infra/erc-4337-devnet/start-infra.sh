@@ -62,5 +62,15 @@ make fund-address ADDRESS=0xb22269e0089e16a805b0f015e93ad84e3f3292a4 ETH=100
 make fund-address ADDRESS=0x8723f05783bbf444d0c27c235b98de112eda25d7 ETH=100
 
 # Deploy multisig account contracts
-cd ./multisig-plugin/lib/modular-account && forge script script/Deploy.s.sol --rpc-url http://localhost:8545 --broadcast
-cd ../../ && forge script script/Deploy.s.sol --rpc-url http://localhost:8545 --broadcast
+cd ./multisig-plugin/lib/modular-account
+forge script script/deploy-01.s.sol --rpc-url http://localhost:8545 --broadcast
+forge script script/deploy-02.s.sol --rpc-url http://localhost:8545 --broadcast
+forge script script/deploy-03.s.sol --rpc-url http://localhost:8545 --broadcast
+forge script script/deploy-04.s.sol --rpc-url http://localhost:8545 --broadcast
+
+
+cd ../../
+
+forge script script/deploy-01.s.sol --rpc-url http://localhost:8545 --broadcast
+forge script script/deploy-02.s.sol --rpc-url http://localhost:8545 --broadcast
+forge script script/deploy-03.s.sol --rpc-url http://localhost:8545 --broadcast

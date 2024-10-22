@@ -27,7 +27,6 @@ import {IEntryPoint} from "@alchemy/modular-account/src/interfaces/erc4337/IEntr
 import {BasePlugin} from "@alchemy/modular-account/src/plugins/BasePlugin.sol";
 
 import {MultisigModularAccountFactory} from "../src/MultisigModularAccountFactory.sol";
-import {MultisigPlugin} from "../src/MultisigPlugin.sol";
 
 contract Deploy is Script {
     // Load entrypoint from env
@@ -37,19 +36,8 @@ contract Deploy is Script {
     // Load factory owner from env
     address public owner = vm.envAddress("OWNER");
 
-    // Load core contract from env
-    address public maImpl = vm.envAddress("MA_IMPL");
-
-    // Multisig plugin
-    address public multisigPlugin = vm.envOr("MULTISIG_PLUGIN", address(0));
-    bytes32 public multisigPluginSalt = vm.envOr("MULTISIG_PLUGIN_SALT", bytes32(0));
-    bytes32 public multisigPluginManifestHash;
-    address public expectedMultisigPlugin = vm.envOr("EXPECTED_MULTISIG_PLUGIN", address(0));
-
     // Factory
-    address public factory;
-    bytes32 public factorySalt = vm.envOr("FACTORY_SALT", bytes32(0));
-    address public expectedFactory = vm.envOr("EXPECTED_FACTORY", address(0));
+    address public factory = vm.envAddress("EXPECTED_FACTORY");
 
     function run() public {
         console.log("******** Deploying *********");
@@ -59,30 +47,12 @@ contract Deploy is Script {
 
         uint256 deployerPrivateKey = vm.envUint("DEPLOYER_PRIVATE_KEY");
         vm.startBroadcast(deployerPrivateKey);
-
         // Deploy multisig plugin, and set plugin hash
-        if (multisigPlugin == address(0)) {
-            multisigPlugin = address(new MultisigPlugin{salt: multisigPluginSalt}(address(entryPoint)));
-
-            if (expectedMultisigPlugin != address(0)) {
-                require(multisigPlugin == expectedMultisigPlugin, "MultisigPlugin address mismatch");
-            }
-            console.log("New MultisigPlugin: ", multisigPlugin);
-        } else {
-            console.log("Exist MultisigPlugin: ", multisigPlugin);
-        }
-        multisigPluginManifestHash = keccak256(abi.encode(BasePlugin(multisigPlugin).pluginManifest()));
-
         // Deploy factory
-        factory = address(
-            new MultisigModularAccountFactory{salt: factorySalt}(
-                owner, multisigPlugin, maImpl, multisigPluginManifestHash, entryPoint
-            )
-        );
+        vm.stopBroadcast();
+        vm.sleep(2);
 
-        if (expectedFactory != address(0)) {
-            require(factory == expectedFactory, "MultisigModularAccountFactory address mismatch");
-        }
+        vm.startBroadcast(deployerPrivateKey);
         _addStakeForFactory(factory, entryPoint);
         console.log("New MultisigModularAccountFactory: ", factory);
 
