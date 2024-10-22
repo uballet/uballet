@@ -11,7 +11,8 @@ interface TokenBalances {
 const getTokenDecimals = (symbol: string) => {
   const tokens_info = tokenInfo.erc20_tokens;
   const token = tokens_info.find((t) => t.symbol === symbol);
-  return token ? token.decimals : 18; // Default to 18 if not found
+  const DEFAULT_TOKEN_DECIMALS = 18;
+  return token ? token.decimals : DEFAULT_TOKEN_DECIMALS;
 };
 
 export function useTokenBalance() {
@@ -55,17 +56,14 @@ export function useTokenBalance() {
       setError("Error fetching token balances");
       setLoading(false);
     } finally {
-      console.log("Token balances fetched");
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    console.log("Running useTokenBalance useEffect...");
     if (account!.getAddress()) {
       getTokenBalances();
     }
-    console.log("useTokenBalance useEffect finished");
   }, [refreshKey]);
 
   const refreshData = () => {

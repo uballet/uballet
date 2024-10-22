@@ -10,7 +10,8 @@ interface TransferInputProps {
     isAmountValid: boolean;
     handleAmountChange: (amount: string) => void;
     setCurrency: (currency: string) => void;
-  }
+    currentBalance: string;
+}
 
 export default {
   title: 'TransferInput',
@@ -34,6 +35,7 @@ Default.args = {
   isAmountValid: true,
   handleAmountChange: (amount: string) => console.log('Amount changed:', amount),
   setCurrency: (currency: string) => console.log('Currency selected:', currency),
+  currentBalance: '1.5',
 };
 
 export const InvalidAmount = Template.bind({});
@@ -44,4 +46,5 @@ InvalidAmount.args = {
   isAmountValid: false,
   handleAmountChange: (amount: string) => console.log('Amount changed:', amount),
   setCurrency: (currency: string) => console.log('Currency selected:', currency),
+  currentBalance: '1.5',
 };

@@ -11,6 +11,7 @@ interface TransferInputProps {
   handleAmountChange: (amount: string) => void;
   setCurrency: (currency: string) => void;
   testID?: string;
+  currentBalance: string | null;
 }
 
 const TransferInput: React.FC<TransferInputProps> = ({
@@ -20,8 +21,11 @@ const TransferInput: React.FC<TransferInputProps> = ({
   isAmountValid,
   handleAmountChange,
   setCurrency,
-  testID
+  testID,
+  currentBalance
 }) => {
+  const isAmountGreaterThanBalance = currentBalance !== null && parseFloat(amount) > parseFloat(currentBalance);
+
   return (
     <>
     <View style={styles.inputContainer}>
@@ -34,7 +38,7 @@ const TransferInput: React.FC<TransferInputProps> = ({
         style={styles.textInput}
         keyboardType="numeric"
         returnKeyType='done'
-        error={!isAmountValid}
+        error={!isAmountValid || isAmountGreaterThanBalance}
         placeholderTextColor="#888"
       />
       <Picker testID='transfer-input-picker'
@@ -47,11 +51,16 @@ const TransferInput: React.FC<TransferInputProps> = ({
         ))}
       </Picker>
     </View>
-    {!isAmountValid && (
-        <Text style={{ color: "red", marginLeft: 8 }}>
-            Amount must be greater than 0
-        </Text>
-        )}
+    {!isAmountValid && amount !== '' && (parseFloat(amount) <= 0) && (
+      <Text style={styles.errorText}>
+        Amount must be greater than 0
+      </Text>
+    )}
+    {isAmountGreaterThanBalance && (
+      <Text style={styles.errorText}>
+        Amount exceeds available balance
+      </Text>
+    )}
     </>
   );
 };
@@ -70,6 +79,10 @@ const styles = StyleSheet.create({
   },
   picker: {
     width: 150,
+  },
+  errorText: {
+    color: "red",
+    marginLeft: 8,
   },
 });
 
