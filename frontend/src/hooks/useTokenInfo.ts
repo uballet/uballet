@@ -112,7 +112,6 @@ export function useTokenInfo() {
 
       for (const token in balances) {
         if (response[token] === undefined) {
-          console.warn(`Failed to fetch quote for ${token}, skipping...`);
           continue;
         }
         const balance = balances[token].balance;

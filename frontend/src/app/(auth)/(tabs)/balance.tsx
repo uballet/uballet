@@ -99,6 +99,7 @@ const BalanceScreen = () => {
         </Button>
 
         <Button
+          testID="import-tokens-button"
           style={{ ...styles.button, backgroundColor: "black" }}
           textColor="white"
           className="-mt-0.5"

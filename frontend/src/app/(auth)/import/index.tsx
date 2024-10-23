@@ -117,6 +117,7 @@ const ImportTokenScreen = () => {
           </View>
 
           <TextInput
+            testID="token-contract-address-input"
             style={{
               backgroundColor: "white",
               borderColor: "gray",
@@ -131,6 +132,7 @@ const ImportTokenScreen = () => {
           />
 
           <TouchableOpacity
+            testID="add-token-button"
             style={{ ...styles.button, backgroundColor: "black", marginTop: 15 }}
             onPress={handleAddToken}
             className="p-3 rounded-md"
@@ -161,6 +163,7 @@ const ImportTokenScreen = () => {
               </Text>
               {customTokens.map((token, index) => (
                 <View
+                  testID={"custom-token-" + token.symbol}
                   key={index}
                   className="flex-row justify-between items-center bg-gray-100 p-3 mb-2 rounded-md"
                 >
