@@ -12,7 +12,7 @@ appId: com.flperez.uballet
 - tapOn:
     text: "Security"
 - tapOn:
-    text: "Create Recovery Team"
+    id: "create-recovery-team-button"
 - tapOn:
     text: "Recoverer 1 Email"
 - inputText: "funded-2@test.com"
@@ -20,10 +20,10 @@ appId: com.flperez.uballet
     text: "Recoverer 2 Email"
 - inputText: "funded-3@test.com"
 - tapOn:
-    text: "Add Recovery"
-- tapOn:
-    text: "Settings"
-- tapOn: "Logout"
+    id: "add-recovery-button"
+- assertVisible:
+    id: "pending-recoverers-text"
+- runFlow: ../common/log-out.yaml
 
 
 - runFlow:
@@ -36,10 +36,9 @@ appId: com.flperez.uballet
       SEED_PHRASE: "execute stage caught click catch evidence ribbon jump legend tobacco narrow frame"
 - tapOn:
     text: "Security"
-- tapOn: "Accept"
 - tapOn:
-    text: "Settings"
-- tapOn: "Logout"
+    id: "join-recovery-team-button"
+- runFlow: ../common/log-out.yaml
 
 - runFlow:
     file: ../common/sign-in-with-email.yaml
@@ -51,10 +50,9 @@ appId: com.flperez.uballet
       SEED_PHRASE: "insane vessel film sure quarter early switch water buddy initial pistol express"
 - tapOn:
     text: "Security"
-- tapOn: "Accept"
 - tapOn:
-    text: "Settings"
-- tapOn: "Logout"
+    id: "join-recovery-team-button"
+- runFlow: ../common/log-out.yaml
 
 - runFlow:
     file: ../common/sign-in-with-email.yaml
@@ -62,18 +60,15 @@ appId: com.flperez.uballet
       EMAIL: "funded-1@test.com"
 - tapOn:
     text: "Security"
-- tapOn: "Confirm"
 - tapOn:
-    text: "Confirm Team"
-- assertVisible:
-    text: "Recoverer 1: funded-2@test.com"
-- assertVisible:
-    text: "Recoverer 2: funded-3@test.com"
-- assertNotVisible:
-    text: "Confirm"
+    id: "confirm-recovery-team-button"
 - tapOn:
-    text: "Settings"
-- tapOn: "Logout"
+    id: "confirm-team-button"
+- assertVisible:
+    text: "funded-2@test.com"
+- assertVisible:
+    text: "funded-3@test.com"
+- runFlow: ../common/log-out.yaml
 
 - clearKeychain
 
@@ -81,14 +76,15 @@ appId: com.flperez.uballet
     file: ../common/sign-in-with-email.yaml
     env:
       EMAIL: "funded-1@test.com"
-- tapOn: "Contact Recovery Team" 
-- tapOn: "Request Recovery"
+- tapOn:
+    id: "contact-recovery-team-button"
+- tapOn:
+    id: "request-recovery-button"
 - assertVisible:
-    text: "Your recovery is in progress"
-- assertVisible:
-    text: "Get in touch with your recovery team"
+    id: "recovery-in-progress-text"
 - tapOn: "Back"
-- tapOn: "Log Out"
+- tapOn:
+    id: "logout-button"
 
 - runFlow:
     file: ../common/sign-in-with-email.yaml
@@ -100,10 +96,9 @@ appId: com.flperez.uballet
       SEED_PHRASE: "execute stage caught click catch evidence ribbon jump legend tobacco narrow frame"
 - tapOn:
     text: "Security"
-- tapOn: "Sign Recovery"
 - tapOn:
-    text: "Settings"
-- tapOn: "Logout"
+    id: "sign-recovery-button"
+- runFlow: ../common/log-out.yaml
 
 - runFlow:
     file: ../common/sign-in-with-email.yaml
@@ -115,14 +110,13 @@ appId: com.flperez.uballet
       SEED_PHRASE: "insane vessel film sure quarter early switch water buddy initial pistol express"
 - tapOn:
     text: "Security"
-- tapOn: "Sign Recovery"
-- tapOn: "Complete Recovery"
-- assertVisible:
-    text: "No Action Required"
 - tapOn:
-    text: "Settings"
-- tapOn: "Logout"
-
+    id: "sign-recovery-button"
+- tapOn:
+    id: "complete-recovery-button"
+- assertVisible:
+    id: "no-action-required-text"
+- runFlow: ../common/log-out.yaml
 - runFlow:
     file: ../common/sign-in-with-email.yaml
     env:

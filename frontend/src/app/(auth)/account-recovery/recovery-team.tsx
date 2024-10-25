@@ -51,12 +51,12 @@ export default function RecoverWithTeamScreen() {
                 <Text className="text-lg">· Recoverer 2: {myRecoveryTeam?.recoverer2Email}</Text>
             </View>
             {myRecoveryTeam && !pendingRequest && (
-                <Button mode="contained" disabled={requestRecoveryMutation.isPending} loading={requestRecoveryMutation.isPending} className="w-3/4 mt-8" onPress={() => requestRecoveryMutation.mutate()}>
+                <Button testID="request-recovery-button" mode="contained" disabled={requestRecoveryMutation.isPending} loading={requestRecoveryMutation.isPending} className="w-3/4 mt-8" onPress={() => requestRecoveryMutation.mutate()}>
                     Request Recovery
                 </Button>
             )}
             {pendingRequest && (
-                <View className="items-center justify-center mt-2">
+                <View testID="recovery-in-progress-text" className="items-center justify-center mt-2">
                     <Text className="text-blue-500">Your recovery is in progress</Text>
                     <Text className="text-blue-500">Get in touch with your recovery team</Text>
                 </View>

@@ -1,5 +1,5 @@
 import { SafeAreaView, ScrollView, View } from "react-native";
-import { ActivityIndicator, Button, Modal, Portal, Text, TextInput } from "react-native-paper";
+import { ActivityIndicator, Button, Card, Modal, Portal, Text, TextInput } from "react-native-paper";
 import { useEffect, useState } from "react";
 import { useMyRecoveryTeam } from "../../../../hooks/recovery/useMyRecoveryTeam";
 import { useCreateRecoveryTeam } from "../../../../hooks/recovery/useCreateRecoveryTeam";
@@ -9,6 +9,8 @@ import { useRecoverAccount } from "../../../../hooks/recovery/useRecoverAccount"
 import { useSignerStore } from "../../../../hooks/useSignerStore";
 import { useAccountContext } from "../../../../hooks/useAccountContext";
 import { useRouter } from "expo-router";
+import { Ionicons, MaterialIcons } from "@expo/vector-icons";
+import { JoinedRecoveryTeam } from "../../../../api/uballet/types";
 
 interface RecoveryModalProps {
     onConfirm: ({ email1, email2 }: { email1: string; email2: string }) => void
@@ -38,7 +40,7 @@ function AddRecoveryModal({ onConfirm, visible, onDismiss }: RecoveryModalProps)
                         onChangeText={val => setEmail2(val.toLowerCase())}
                         autoCapitalize="none"
                     />
-                    <Button mode="contained" className="w-3/4 mt-4" onPress={() => onConfirm({ email1, email2 })} disabled={!email1 || !email2}>
+                    <Button testID="add-recovery-button" mode="contained" className="w-3/4 mt-4" onPress={() => onConfirm({ email1, email2 })} disabled={!email1 || !email2}>
                         Add Recovery
                     </Button>
                 </View>
@@ -116,6 +118,7 @@ function MyRecoveryTeam() {
             <View className="flex-1 max-h-full">
                 <Text className="text-xl font-semibold self-center">My Recovery Team</Text>
                 <Button
+                    testID="create-recovery-team-button"
                     mode="contained"
                     className="w-3/4 mt-4 self-center"
                     disabled={accountType !== "multisig"}
@@ -143,26 +146,48 @@ function MyRecoveryTeam() {
             <Text className="text-xl font-semibold self-center">
                 My Recovery Team
             </Text>
-            <View className="border p-4 rounded-md mt-2">
-                <View className="flex-row">
-                    <Text className="text-lg">Recoverer 1: {recoverer1Email}</Text>
-                </View>
-                <View className="flex-row">
-                    <Text className="text-lg">Recoverer 2: {recoverer2Email}</Text>
-                </View>
-                {(!recoverer1Address || !recoverer2Address) && (
-                    <View className="flex-row">
-                        <Text className="text-sm text-red-400">Pending confirmation from recoverers</Text>
-                    </View>
-                )}
-                {(recoverer1Address && recoverer2Address && !confirmed) && (
+            <View className="mt-2 w-full">
+                <Card className="mb-4">
+                    <Card.Content>
+                        <View className="flex-row justify-between items-center">
+                            <Text className="text-lg">{recoverer1Email}</Text>
+                            {recoverer1Address && <Ionicons name="checkmark-circle" size={24} color="green" />}
+                            {!recoverer1Address && <Ionicons name="timer-outline" size={24} color="blue" />}
+                        </View>
+                        {!recoverer1Address && (
+                            <Text className="text-sm text-red-400">Pending confirmation</Text>
+                        )}
+                    </Card.Content>
+                </Card>
+                <Card>
+                    <Card.Content>
+                        <View className="flex-row justify-between items-center">
+                            <Text className="text-lg">{recoverer2Email}</Text>
+                            {recoverer2Address && <Ionicons className="text-c" name="checkmark-circle" size={24} color="green" />}
+                            {!recoverer2Address && <Ionicons name="timer-outline" size={24} color="blue" />}
+                        </View>
+                        {!recoverer2Address && (
+                            <Text className="text-sm text-red-400">Pending confirmation</Text>
+                        )}
+                    </Card.Content>
+                </Card>
+                {(!confirmed) && (
+                    <>
                     <Button
+                        testID="confirm-recovery-team-button"
+                        disabled={!recoverer1Address || !recoverer2Address}
                         mode="contained"
-                        className="w-3/4 mt-4"
+                        className="w-3/4 mt-8 self-center"
                         onPress={() => router.navigate(`/(auth)/(tabs)/security/confirm-team`)}
                     >
                         Confirm
                     </Button>
+                    {(!recoverer1Address || !recoverer2Address) && (
+                        <Text testID="pending-recoverers-text" className="text-red-500 text-xs text-center mt-1">
+                            We need confirmation from your recoverers first.
+                        </Text>
+                    )}
+                    </>
                 )}
             </View>
         </View>
@@ -178,50 +203,69 @@ function WhoIProtectSection() {
     if (recoveryTeams.isLoading) {
         return <ActivityIndicator />
     }
+    
+    const onSignRecoveryForTeam = (team: JoinedRecoveryTeam) => () => {
+        if (team.request?.aggregatedSignature) {
+            router.navigate({ pathname: `/(auth)/(tabs)/security/complete-recovery`, params: { id: team.id } })
+        } else {
+            signRecoveryMutation.mutate({ recoveryTeam: team })
+        }
+    }
 
     const noProtect = !recoveryTeams.data?.joined.length && !recoveryTeams.data?.notJoined.length
 
     return (
         <>
-        <Text className="text-xl font-semibold self-center">Who I Protect</Text>
+        <Text className="text-xl font-semibold self-center mb-2">Who I Protect</Text>
         {noProtect && <Text className="text-lg self-center">No one to protect</Text>}
         {recoveryTeams.data?.notJoined.map((team) => (
-            <View key={team.id} className="items-center rounded-lg p-4 w-full border">
-                <View className="flex-row items-center flex-wrap">
-                    <Text className="text-lg">{team.email}</Text>
-                    <Text className="text-sm p-2">wants to add you as recoverer</Text>
-                </View>
-                <View className="flex-row justify-between">
-                    <Button mode="contained" onPress={() => joinTeamMutation.mutate({ teamId: team.id })}>Accept</Button>
-                </View>
-            </View>
+            <Card key={team.id} className="rounded-lg w-full">
+                <Card.Content>
+                    <View className="flex-row justify-between items-center">
+                        <View className="items-start">
+                            <Text className="text-base">{team.email}</Text>
+                            <Text testID="join-team-request-text" className="text-xs">wants to add you as recoverer</Text>
+                        </View>
+                        <Button testID="join-recovery-team-button" mode="contained" onPress={() => joinTeamMutation.mutate({ teamId: team.id })}>Accept</Button>
+                    </View>
+                </Card.Content>
+            </Card>
         ))}
         {recoveryTeams.data?.joined.map((team) => (
-            <View key={team.id} className="justify-between items-center rounded-lg p-4 w-full border mt-2">
-                <Text className="text-lg" key={team.id}>{team.email}</Text>
-                {team.request?.needToSign ? (
-                    <Button
-                        disabled={signRecoveryMutation.isPending}
-                        loading={signRecoveryMutation.isPending}
-                        className="mt-2"
-                        onPress={() => {
-                            if (team.request?.aggregatedSignature) {
-                                router.navigate({ pathname: `/(auth)/(tabs)/security/complete-recovery`, params: { id: team.id } })
-                            } else {
-                                signRecoveryMutation.mutate({ recoveryTeam: team })
-                            }
-                        }} mode="contained"
-                    >
-                            Sign Recovery
-                    </Button>
-                ) : (
-                <Text className="text-sm mt-2">No Action Required</Text>
-                )}
-            </View>
+            <Card key={team.id} className={`rounded-lg mt-2 ${team.request?.needToSign ? "bg-red-300" : ""}`}>
+                <Card.Content>
+                    <View className="flex-row justify-between w-full">
+                        <View className="items-start">
+                            <Text className="text-base" key={team.id}>{team.email}</Text>
+                            {team.request?.needToSign
+                            ? <Text testID="action-required-text" className="text-xs flex-wrap">Recovery has been requested</Text>
+                            : <Text testID="no-action-required-text" className="text-xs">No Action Required</Text>
+                        }
+                        </View>
+                        <View className="items-center justify-center">
+                            {team.request?.needToSign ? (
+                                <Button
+                                    testID="sign-recovery-button"
+                                    mode="contained"
+                                    disabled={signRecoveryMutation.isPending}
+                                    loading={signRecoveryMutation.isPending}
+                                    className="self-center"
+                                    onPress={onSignRecoveryForTeam(team)}
+                                >
+                                        Recover
+                                </Button>
+                            ) : (
+                                <Ionicons name="checkmark-circle" size={24} color="green" />
+                            )}
+                        </View>
+                    </View>
+                </Card.Content>
+            </Card>
         ))}
         </>
     )
 }
+
 export default function SecurityScreen() {
     return (
         <SafeAreaView className="flex-1 p-4 overflow-hidden">

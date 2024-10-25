@@ -1,6 +1,6 @@
 import { SafeAreaView, View } from "react-native";
 import { useMyRecoveryTeam } from "../../../../hooks/recovery/useMyRecoveryTeam";
-import { ActivityIndicator, Button, Text } from "react-native-paper";
+import { ActivityIndicator, Button, Card, Text } from "react-native-paper";
 import useConfirmRecoveryTeam from "../../../../hooks/recovery/useConfirmRecoveryTeam";
 import { Redirect, useRouter } from "expo-router";
 import { useAccountContext } from "../../../../hooks/useAccountContext";
@@ -73,24 +73,25 @@ export default function ConfirmTeamScreen() {
 
     return (
         <SafeAreaView className="items-center px-8">
-            <Text className="text-xl font-semibold">
+            <Text className="text-xl font-semibold mt-8">
                 Confirm Recovery Team
             </Text>
-            <View className="w-4/5 px-2 py-4 border rounded-md mt-4">
+            <Card className="w-4/5 px-2 py-4 rounded-md mt-4">
                 <Text>Gas Fee: {estimationQuery.data.estimation}</Text>
-            </View>
+            </Card>
             <View className={`w-4/5 px-2 py-2 items-center rounded-md mt-2 ${estimationQuery.data.isSponsored ? "bg-green-300" : "bg-red-300"}`}>
                 <Text>{estimationQuery.data.isSponsored ? "Sponsored Fee!" : "Not Sponsored - You'll pay for gas"}</Text>
             </View>
-            <View className="w-4/5 px-2 py-4 border rounded-md mt-4">
+            <Card className="w-4/5 px-2 py-4 rounded-md mt-4">
                 <Text>Current Balance: {estimationQuery.data.balance}</Text>
-            </View>
+            </Card>
 
-            <View className="w-4/5 px-2 py-4 border rounded-md mt-4">
+            <Card className="w-4/5 px-2 py-4 rounded-md mt-4">
                 <Text>Recoverer 1: {myTeamQuery.data.recoverer1Email}</Text>
                 <Text>Recoverer 2: {myTeamQuery.data.recoverer2Email}</Text>
-            </View>
+            </Card>
             <Button
+                testID="confirm-team-button"
                 mode="contained"
                 className="w-3/4 mt-4 self-center"
                 disabled={(!estimationQuery.data.isEnough && !estimationQuery.data.isSponsored) || confirmTeamMutation.isPending}

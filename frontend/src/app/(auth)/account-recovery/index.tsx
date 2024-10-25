@@ -27,11 +27,11 @@ export default function AccountRecoveryScreen() {
                 <Text>Recover with seedphrase</Text>
             </Button>
             {myTeamQuery.data?.confirmed && (
-                <Button mode="contained" disabled={!!disabledRequestButton} className="m-4 w-2/3" onPress={() => router.replace('/(auth)/account-recovery/recovery-team')}>
+                <Button testID="contact-recovery-team-button" mode="contained" disabled={!!disabledRequestButton} className="m-4 w-2/3" onPress={() => router.replace('/(auth)/account-recovery/recovery-team')}>
                     <Text>{requestExists ? "Recovery Request Sent" : "Contact Recovery Team"}</Text>
                 </Button>
             )}
-            <Button mode="outlined" className="m-4 w-2/3" onPress={logout}>
+            <Button testID="logout-button" mode="outlined" className="m-4 w-2/3" onPress={logout}>
                 <Text className="text-red-700">Log Out</Text>
             </Button>
         </View>

@@ -18,9 +18,7 @@ appId: com.flperez.uballet
 - copyTextFrom:
     id: "token-balance-USDT-amount"
 - evalScript: ${output.receiverInitialBalance = parseFloat(maestro.copiedText.replace(" ETH", ""))}
-- tapOn: "Settings"
-- tapOn:
-    id: "logout-button"
+- runFlow: ../common/log-out.yaml
 - runFlow:
     file: ../common/sign-in-with-email.yaml
     env:
@@ -78,9 +76,7 @@ appId: com.flperez.uballet
     id: "token-balance-USDT-amount"
 - evalScript: ${output.newBalance = parseFloat(maestro.copiedText.replace(" ETH", ""))}
 - assertTrue: ${output.newBalance < output.previousBalance}
-- tapOn: "Settings"
-- tapOn:
-    id: "logout-button"
+- runFlow: ../common/log-out.yaml
 - runFlow:
     file: ../common/sign-in-with-email.yaml
     env:

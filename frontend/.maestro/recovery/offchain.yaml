@@ -19,9 +19,7 @@ appId: com.flperez.uballet
 - tapOn: "Recover"
 - assertVisible:
     text: "Balance"
-- tapOn:
-    text: "Settings"
-- tapOn: Logout
+- runFlow: ../common/log-out.yaml
 
 - runFlow:
     file: ../common/sign-in-with-email.yaml

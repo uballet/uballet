@@ -1,5 +1,5 @@
 import { SafeAreaView, View } from "react-native";
-import { ActivityIndicator, Button, Text } from "react-native-paper";
+import { ActivityIndicator, Button, Card, Text } from "react-native-paper";
 import { Redirect, useLocalSearchParams, useRouter } from "expo-router";
 import { useAccountContext } from "../../../../hooks/useAccountContext";
 import { useQuery } from "@tanstack/react-query";
@@ -79,30 +79,39 @@ export default function CompleteRecoveryScreen() {
 
     return (
         <SafeAreaView className="items-center px-8">
-            <Text className="text-xl font-semibold">
-                Complete Account Recovery for {team?.email}
+            <Text className="text-xl mt-8 font-semibold">
+                Complete Account Recovery
             </Text>
-            <View className="w-4/5 px-2 py-4 border rounded-md mt-4">
+            <Text className="text-base mt-4">
+                Recovering {team.email}
+            </Text>
+            <Card className="w-4/5 px-2 py-4 rounded-md mt-4">
                 <Text>Gas Fee: {estimationQuery.data.estimation}</Text>
-            </View>
-            <View className="w-4/5 px-2 py-4 border rounded-md mt-4">
+            </Card>
+            <Card className="w-4/5 px-2 py-4 rounded-md mt-4">
                 <Text>Current Balance: {estimationQuery.data.balance}</Text>
+            </Card>
+            <Text className="text-base mt-4">
+                Gas will be paid by the recovered account
+            </Text>
+            <View className="mt-8 w-full">
+                <Button
+                    testID="complete-recovery-button"
+                    mode="contained"
+                    className="w-3/4 mt-4 self-center"
+                    disabled={!estimationQuery.data.isEnough || recoverAccountMutation.isPending}
+                    loading={recoverAccountMutation.isPending}
+                    onPress={() => recoverAccountMutation.mutate({ recoveryTeam: team })}
+                >
+                    Complete Recovery
+                </Button>
+                {!estimationQuery.data.isEnough && (
+                    <Text className="text-red-500 mt-1">Not enough balance. Transfer more ETH to complete recovery</Text>
+                )}
+                <Button mode="outlined" className="w-3/4 mt-4 self-center" onPress={() => router.back()}>
+                    Go Back
+                </Button>
             </View>
-            <Button
-                mode="contained"
-                className="w-3/4 mt-4 self-center"
-                disabled={!estimationQuery.data.isEnough || recoverAccountMutation.isPending}
-                loading={recoverAccountMutation.isPending}
-                onPress={() => recoverAccountMutation.mutate({ recoveryTeam: team })}
-            >
-                Complete Recovery
-            </Button>
-            {!estimationQuery.data.isEnough && (
-                <Text className="text-red-500 mt-1">Not enough balance. Transfer more ETH to complete recovery</Text>
-            )}
-            <Button mode="outlined" className="w-3/4 mt-4 self-center" onPress={() => router.back()}>
-                Go Back
-            </Button>
         </SafeAreaView>
     )
 }
