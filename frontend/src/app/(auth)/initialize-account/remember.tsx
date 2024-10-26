@@ -44,13 +44,13 @@ export default function RememberScreen() {
                 <ActivityIndicator />
             )}
             {mnemonic && (
-                <View className="m-2 p-2 border h-64 bg-gray-200 rounded-md">
+                <View testID="mnemonic-text" className="m-2 p-2 border h-64 bg-gray-200 rounded-md">
                     <Text className="p-2 text-black">
                         {mnemonic}
                     </Text>
                 </View>
             )}
-            <Button mode="contained" onPress={onOpenModal}>
+            <Button testID="mnemonic-done-button" mode="contained" onPress={onOpenModal}>
                 <Text>Done</Text>
             </Button>
             <Modal
@@ -62,6 +62,7 @@ export default function RememberScreen() {
                     <Text>Confirm you're done saving the code</Text>
                     <Text>Input the word COPIED</Text>
                     <TextInput
+                        testID="mnemonic-done-input"
                         mode="outlined"
                         placeholder="Input the word COPIED"
                         className="m-2 w-[90%]"
@@ -69,7 +70,7 @@ export default function RememberScreen() {
                         onChangeText={setModalText}
                     />
                     <View className="flex-row">
-                        <Button mode="contained" onPress={onModalDone} disabled={modalText !== 'COPIED'}>
+                        <Button testID="mnemonic-confirm-done-button" mode="contained" onPress={onModalDone} disabled={modalText !== 'COPIED'}>
                             <Text>Done</Text>
                         </Button>
                     </View>

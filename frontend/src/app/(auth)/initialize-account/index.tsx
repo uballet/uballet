@@ -19,7 +19,7 @@ export default function InitializeAccountScreen() {
                 style={[styles.image]}
                 source={require("../../../assets/logo.webp")}
             />
-            <Text>Initializing Wallet</Text>
+            <Text testID="initializing-wallet-text">Initializing Wallet</Text>
             <ActivityIndicator />
         </View>
     )

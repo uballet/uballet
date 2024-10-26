@@ -20,6 +20,7 @@ export default function VerifyEmailScreen() {
         <View className="flex-1 items-center justify-center">
             <Text className="m-4">Verify your email: {user.email}</Text>
             <TextInput
+                testID="sign-up-code-input"
                 value={code}
                 className="w-2/3"
                 mode="outlined"
@@ -31,7 +32,7 @@ export default function VerifyEmailScreen() {
                 editable={!isPending}
             />
             {isError && <Text className="text-red-500 mt-2">Invalid code. Check your email.</Text>}
-            <Button mode="contained" className="m-8 w-2/3" disabled={disabled} loading={isLoading} onPress={() => verifyEmail({ code })}>
+            <Button testID="verify-email-button" mode="contained" className="m-8 w-2/3" disabled={disabled} loading={isLoading} onPress={() => verifyEmail({ code })}>
                 <Text>Submit Code</Text>
             </Button>
         </View>

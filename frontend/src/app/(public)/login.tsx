@@ -41,7 +41,7 @@ export default function LoginScreen() {
           autoFocus={true}
         />
         {isError && <Text className="text-red-500 mb-4">Wrong email. Check you're using the right email.</Text>}
-        <Link href={'/(public)/signup'}>
+        <Link testID="sign-up-link" href={'/(public)/signup'}>
           <Text className="text-blue-500">Don't have an account? Sign Up!</Text>
         </Link>
       </View>

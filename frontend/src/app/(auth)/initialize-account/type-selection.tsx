@@ -16,7 +16,7 @@ export default function AccountTypeSelectionScreen() {
                 <Text className="text-sm font-semibold mb-2"> - Lower Gas Fees</Text>
                 <Text className="text-sm font-semibold mb-2"> - Full dApp compatibility</Text>
                 <Text className="text-sm font-semibold mb-2"> - Seed Phrase Recovery </Text>
-                <Button className="mb-4" mode="contained" onPress={() => setAccountType("light")}>
+                <Button testID="light-account-button" className="mb-4" mode="contained" onPress={() => setAccountType("light")}>
                     Light Account
                 </Button>
             </View>
@@ -24,7 +24,7 @@ export default function AccountTypeSelectionScreen() {
                 <Text className="text-sm font-semibold mb-2"> - Limited dApp compatibility</Text>
                 <Text className="text-sm font-semibold mb-2"> - Seed Phrase Recovery</Text>
                 <Text className="text-sm font-semibold mb-2"> - Social Recovery Method</Text>
-                <Button className="mb-4" mode="contained" onPress={() => setAccountType("multisig")}>
+                <Button testID="pro-account-button" className="mb-4" mode="contained" onPress={() => setAccountType("multisig")}>
                     Pro Account
                 </Button>
             </View>
