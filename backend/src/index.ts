@@ -82,16 +82,20 @@ async function init() {
   });
 
   if (NGROK_AUTHTOKEN && NGROK_DOMAIN && !IS_E2E_TESTING) {
-    try {
-      const listener = await ngrok.connect({
-        addr: port,
-        authtoken: NGROK_AUTHTOKEN,
-        domain: NGROK_DOMAIN,
-      });
-      initWebHooks({ url: listener.url()! });
-    } catch (error) {
-      console.error("ERROR SETTING UP NGROK");
-    }
+    // Preventing error due to previous instance still listening
+    // with same ngrok authtoken and domain
+    setTimeout(async () => {
+      try {
+        const listener = await ngrok.connect({
+          addr: port,
+          authtoken: NGROK_AUTHTOKEN,
+          domain: NGROK_DOMAIN,
+        });
+        initWebHooks({ url: listener.url()! });
+      } catch (error) {
+        console.error("ERROR SETTING UP NGROK");
+      }
+    }, 1000 * 60 * 2) // 2 minutes
   }
   console.log(
     "Here you can setup and run express / fastify / any other framework."
