@@ -1,14 +1,14 @@
 import { useEffect } from "react";
 import { FlatList, SafeAreaView, View } from "react-native";
 import { useAllNotifications } from "../../../hooks/notifications/useAllNotifications";
-import { ActivityIndicator, Text } from "react-native-paper";
+import { ActivityIndicator, Card, Text } from "react-native-paper";
 import { Notification } from "../../../api/uballet/types";
 import { useSetNotificationsSeen } from "../../../hooks/notifications/useSetNotificationsSeen";
 
 
 function RenderNotification({ notification }: { notification: Notification }) {
   return (
-    <View className={`w-full flex-col p-2 border-b ${notification.seen && 'bg-gray-200'}`}>
+    <Card className={`w-full flex-col p-2 mb-2 ${notification.seen && 'bg-gray-200'}`}>
       <View className="flex-row justify-between">
         <Text className="my-2 font-semibold">{notification.title}</Text>
         <Text>{notification.createdAt.toLocaleString()}</Text>
@@ -16,7 +16,7 @@ function RenderNotification({ notification }: { notification: Notification }) {
       <View>
         <Text>{notification.body}</Text>
       </View>
-    </View>
+    </Card>
   )
 }
 
@@ -42,7 +42,7 @@ function NotificationScreen() {
   return (
     <SafeAreaView className="flex-1 justify-center items-center">
       <FlatList
-        className="flex-1"
+        className="flex-1 pt-2"
         data={data}
         ListEmptyComponent={<Text className="text-xl">No notifications yet</Text>}
         renderItem={({ item }) => <RenderNotification notification={item}/>}
