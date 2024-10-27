@@ -1,6 +1,6 @@
 import { EmailVerificationCode } from "../entity/EmailVerificationCode"
 import { User } from "../entity/User"
-import { BUILD_ENV } from "../env"
+import { BUILD_ENV, IS_E2E_TESTING } from "../env"
 import EmailService from "./email"
 
 
@@ -55,6 +55,12 @@ async function signup(email: string): Promise<{ user: User }> {
 
 const verifyUserEmail = async (email: string, code: string) => {
     const user = await User.findOneOrFail({ where: { email } })
+
+    if (IS_E2E_TESTING) {
+        user.verified = true
+        await user.save()
+        return user
+    }
     const verificationCode = await EmailVerificationCode.findOneOrFail({ where: { userId: user.id, code, type: 'signup' } })
 
     if (verificationCode.expiresAt < new Date()) {
