@@ -136,7 +136,12 @@ async function createMultisigClient({
     threshold: 2n,
     chain: getAlchemyChain(chainConfig.sdk_name),
     rpcUrl: `${chainConfig.api_key_endpoint}${ALCHEMY_API_KEY}`,
-    policyId: withoutPaymaster ? undefined : getAlchemyPolicyId(chainConfig.sdk_name)
+    policyId: withoutPaymaster ? undefined : getAlchemyPolicyId(chainConfig.sdk_name),
+    opts: {
+      txMaxRetries: 7,
+      txRetryIntervalMs: 2_000,
+      txRetryMultiplier: 1.5
+    }
   })
 }
 
@@ -196,7 +201,12 @@ async function createLightAccountClient({ signer, address, chainConfig }: LightA
     accountAddress: address,
     chain: getAlchemyChain(chainConfig.sdk_name),
     rpcUrl: `${chainConfig.api_key_endpoint}${ALCHEMY_API_KEY}`,
-    policyId: getAlchemyPolicyId(chainConfig.sdk_name)!!
+    policyId: getAlchemyPolicyId(chainConfig.sdk_name)!!,
+    opts: {
+      txMaxRetries: 7,
+      txRetryIntervalMs: 2_000,
+      txRetryMultiplier: 1.5
+    }
   })
 
   return client

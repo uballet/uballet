@@ -25,6 +25,10 @@ export function useTransfer() {
                 data: "0x",
                 value: parseEther(etherAmount),
               },
+              overrides: {
+                maxFeePerGas: { multiplier: 1.5 },
+                maxPriorityFeePerGas: { multiplier: 1.25 }
+              }
             });
           } catch (e) {
             console.error("Error during client.sendUserOperation:", e);
@@ -49,6 +53,8 @@ export function useTransfer() {
               },
               overrides: {
                 preVerificationGas: toHex(50400n),
+                maxFeePerGas: { multiplier: 1.5 },
+                maxPriorityFeePerGas: { multiplier: 1.25 }
               }
             })
 
@@ -141,6 +147,10 @@ export function useTransfer() {
                 data: data as `0x${string}`,
                 value: BigInt(0),
               },
+              overrides: {
+                maxFeePerGas: { multiplier: 1.5 },
+                maxPriorityFeePerGas: { multiplier: 1.25 }
+              }
             });
           } catch (e) {
             console.error("Error during client.sendUserOperation:", e);
@@ -156,13 +166,15 @@ export function useTransfer() {
           }
         } else if (initiator && submitter) {
           const { signatureObj, aggregatedSignature, request } = await initiator.proposeUserOperation({
-            uo: {
+            uo: [{
               target: tokenContractAddress,
               data: data as `0x${string}`,
               value: BigInt(0),
-            },
+            }],
             overrides: {
               preVerificationGas: toHex(50400n),
+              maxFeePerGas: { multiplier: 1.5 },
+              maxPriorityFeePerGas: { multiplier: 1.25 }
             }
           })
 
