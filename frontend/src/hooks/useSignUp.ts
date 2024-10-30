@@ -7,7 +7,14 @@ export function useSignUp() {
     const { setUser } = useAuthContext()
     const { mutate: signup, isPending, isError, error, isSuccess, data: user } = useMutation({
         mutationFn: async ({ email }: { email: string }) => {
-            const { data: user } = await UballetAPI.signUp({ email })
+            const trimmedEmail = email.trim()
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+            
+            if (!emailRegex.test(trimmedEmail)) {
+                throw new Error('Please enter a valid email address')
+            }
+            
+            const { data: user } = await UballetAPI.signUp({ email: trimmedEmail })
             return user
         }
     })
@@ -18,10 +25,5 @@ export function useSignUp() {
         }
     }, [user])
 
-    useEffect(() => {
-        if (error) {
-            console.error(error)
-        }
-    }, [error])
-    return { signup, isPending, isError, isSuccess }
+    return { signup, isPending, isError, error }
 }
