@@ -2,17 +2,28 @@ import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, Alert, Button } from "react-native";
 import { Camera, CameraView, PermissionStatus } from "expo-camera";
 import { router, useLocalSearchParams } from "expo-router";
+import { useAuthContext } from "../../../providers/AuthProvider";
 
 const QrScannerScreen = () => {
   const [hasPermission, setHasPermission] = useState<Boolean | null>(null);
   const [scanned, setScanned] = useState(false);
   const screenBack = useLocalSearchParams<{ screenBack: string }>()?.screenBack;
+  const { requiresLocalAuthentication, temporarilyDisableAuth } = useAuthContext();
 
   useEffect(() => {
-    (async () => {
-      const response = await Camera.requestCameraPermissionsAsync();
-      setHasPermission(response.status === PermissionStatus.GRANTED);
-    })();
+    const init = async () => {
+      try {
+        temporarilyDisableAuth();
+        
+        const response = await Camera.requestCameraPermissionsAsync();
+        setHasPermission(response.status === PermissionStatus.GRANTED);
+      } catch (error) {
+        console.error('Camera permission failed:', error);
+        router.back();
+      }
+    };
+
+    init();
   }, []);
 
   const parseQRCodeData = (data: string) => {
