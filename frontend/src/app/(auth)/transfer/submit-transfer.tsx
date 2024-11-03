@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { View } from "react-native";
 import { useTransfer } from "../../../hooks/useTransfer";
 import { useBlockchainContext } from "../../../providers/BlockchainProvider";
@@ -9,10 +9,11 @@ import { router } from "expo-router";
 import TransferButton from "../../../components/TransferButton/TransferButton";
 
 function SubmitTransferScreen() {
-  const { toAddress, amount, currency } = useLocalSearchParams<{ 
+  const { toAddress, amount, currency, usdcTokenGas } = useLocalSearchParams<{ 
     toAddress: `0x${string}`, 
     amount: string, 
-    currency: string 
+    currency: string,
+    usdcTokenGas?: string
   }>();
 
   const eth_symbol = "ETH";
@@ -100,12 +101,13 @@ function SubmitTransferScreen() {
           currency={currency}
           ethSymbol={eth_symbol}
           loading={loading}
-          onTransferETH={() => transferToAddress(toAddress, amount)}
+          onTransferETH={() => transferToAddress(toAddress, amount, usdcTokenGas)}
           onTransferToken={() =>
             transferTokenToAddress(
               tokenAddresses[currency],
               toAddress,
-              amount
+              amount,
+              usdcTokenGas
             )
           }
         />
