@@ -7,19 +7,21 @@ import {
   useState,
 } from "react";
 import { Address, deepHexlify, LocalAccountSigner, resolveProperties, split } from "@aa-sdk/core"
-import { arbitrum, arbitrumSepolia, base, baseSepolia, mainnet, optimism, optimismSepolia, sepolia } from "@account-kit/infra"
+import { arbitrum, arbitrumSepolia, base, baseSepolia, mainnet, optimism, optimismSepolia, sepolia, createAlchemyPublicRpcClient } from "@account-kit/infra"
 import { createMultisigAccountAlchemyClient, createMultisigModularAccountClient, createLightAccountClient as createCustomLightAccountClient, createLightAccountAlchemyClient } from "@account-kit/smart-contracts";
 
 import { Alchemy } from "alchemy-sdk";
 import { useAuthContext } from "./AuthProvider";
-import { ALCHEMY_API_KEY, IS_E2E_TESTING, ARB_SEPOLIA_ALCHEMY_POLICY_ID, BASE_SEPOLIA_ALCHEMY_POLICY_ID, OPT_SEPOLIA_ALCHEMY_POLICY_ID, SEPOLIA_ALCHEMY_POLICY_ID } from "../env";
+import { ALCHEMY_API_KEY, IS_E2E_TESTING, ARB_SEPOLIA_ALCHEMY_POLICY_ID, BASE_SEPOLIA_ALCHEMY_POLICY_ID, OPT_SEPOLIA_ALCHEMY_POLICY_ID, SEPOLIA_ALCHEMY_POLICY_ID, PIMLICO_API_KEY } from "../env";
 import { generateMnemonic } from "bip39";
 import uballet from "../api/uballet";
 import { User } from "../api/uballet/types";
 import { useSignerStore } from "../hooks/useSignerStore";
 import { DEFAULT_CONFIG, useBlockchainContext } from "./BlockchainProvider";
 import { BlockchainConfig } from "../../netconfig/blockchain-config";
-import { createClient, http } from "viem";
+import { Chain, createClient, http } from "viem";
+import { createPimlicoClient } from "permissionless/clients/pimlico"
+import { entryPoint06Address } from "viem/account-abstraction"
 
 global.Buffer = global.Buffer || require('buffer').Buffer;
 
@@ -61,10 +63,41 @@ interface MultisigClientArgs {
   accountAddress?: Address;
   withoutPaymaster?: boolean;
   chainConfig: BlockchainConfig;
+  withErc20Gas?: boolean;
 }
 
+const getPimlicoUrl = (chainId: string | number) => `https://api.pimlico.io/v2/${chainId}/rpc?apikey=${PIMLICO_API_KEY}`
+
+export const getPimlicoClient = (chain: Chain) => createPimlicoClient({
+  chain: chain,
+  transport: http(getPimlicoUrl(chain.id)),
+  entryPoint: {
+    address: entryPoint06Address,
+    version: '0.6',
+  }
+})
+
+export const pimlicoClients = {
+  // @ts-ignore
+  [sepolia.id]: getPimlicoClient(sepolia),
+  // @ts-ignore
+  [arbitrumSepolia.id]: getPimlicoClient(arbitrumSepolia),
+  // @ts-ignore
+  [baseSepolia.id]: getPimlicoClient(baseSepolia),
+  // @ts-ignore
+  [optimismSepolia.id]: getPimlicoClient(optimismSepolia),
+}
+ 
 const erc7677Methods = ["pm_getPaymasterStubData", "pm_getPaymasterData"];
-const transport = split({
+const bundlerMethods = [
+  "eth_sendUserOperation",
+  "eth_estimateUserOperationGas",
+  "eth_getUserOperationReceipt",
+  "eth_getUserOperationByHash",
+  "eth_supportedEntryPoints",
+];
+ 
+const e2eTransport = split({
   overrides: [
     // NOTE: if you're splitting Node and Bundler traffic too, you can add the bundler config to this array
     {
@@ -75,14 +108,32 @@ const transport = split({
   fallback: http("http://localhost:8545"),
 });
 
+const erc20PaymasterTransport = (alchemyUrl: string, pimlicoUrl: string) => split({
+    overrides: [
+      {
+        methods: erc7677Methods,
+        transport: http(pimlicoUrl),
+      },
+      {
+        methods: bundlerMethods,
+        transport: http(pimlicoUrl),
+      }
+    ],
+    fallback: http(alchemyUrl),
+});
 
 async function createMultisigClient({
   signer,
   owners,
   accountAddress,
   withoutPaymaster = false,
+  withErc20Gas = false,
   chainConfig,
 }: MultisigClientArgs): Promise<AlchemyMultisigClient> {
+  const chain = getAlchemyChain(chainConfig.sdk_name);
+  const pimlicoUrl = getPimlicoUrl(chain.id);
+  const pimlicoClient = pimlicoClients[chain.id];
+
   if (IS_E2E_TESTING) {
     // @ts-ignore
     return createMultisigModularAccountClient({
@@ -122,9 +173,70 @@ async function createMultisigClient({
           paymasterAndData: '0x',
         };
       },
-      transport,
+      // @ts-ignore
+      transport: e2eTransport,
       factoryAddress: '0x42FfC8c171D7F62b231633E9d06f11a83aA6E09e',
       // policyId: withoutPaymaster ? undefined : getAlchemyPolicyId(chainConfig.sdk_name)
+    })
+  }
+
+  if (withErc20Gas) {
+    // @ts-ignore
+    return createMultisigModularAccountClient({
+      signer,
+      owners,
+      accountAddress,
+      threshold: 2n,
+      chain: getAlchemyChain(chainConfig.sdk_name),
+      // @ts-ignore
+      transport: erc20PaymasterTransport(`${chainConfig.api_key_endpoint}${ALCHEMY_API_KEY}`, pimlicoUrl),
+      feeEstimator: async (uo) => {
+        const gasFees = (await pimlicoClient.getUserOperationGasPrice()).fast
+        return {
+          ...uo,
+          maxFeePerGas: gasFees.maxFeePerGas,
+          maxPriorityFeePerGas: gasFees.maxPriorityFeePerGas
+        }
+      },
+      dummyPaymasterAndData: async (userop) => ({
+        ...userop,
+        paymasterAndData: "0x",
+      }),  
+      paymasterAndData: async (userop, opts) => {
+        try {
+          const pmResponse = await pimlicoClient.getPaymasterData({
+            ...deepHexlify(await resolveProperties(userop)),
+            entryPoint: opts.account.getEntryPoint().address,
+            type: "payg",
+            chainId: chain.id,
+            entryPointAddress: opts.account.getEntryPoint().address,
+            context: {
+              token: chainConfig.erc20_tokens.find((token) => token.symbol === "USDC")!.address
+            }
+          })
+
+          return {
+            ...userop,
+            ...pmResponse,
+          }
+        } catch (e) {
+          console.error({ e })
+        }
+
+        return {
+          ...userop,
+          paymasterAndData: '0x',
+        }
+      },
+      opts: {
+        feeOptions: {
+          preVerificationGas: { multiplier: 1.25 },
+          paymasterPostOpGasLimit: { multiplier: 1.25 },
+          paymasterVerificationGasLimit: { multiplier: 1.25 },
+          maxFeePerGas: { multiplier: 1.5 },
+          maxPriorityFeePerGas: { multiplier: 1.25 },
+        }
+      }
     })
   }
 
@@ -144,62 +256,118 @@ interface LightAccountArgs {
   signer: LocalAccountSigner<any>;
   address?: Address;
   chainConfig: BlockchainConfig;
+  withErc20Gas?: boolean;
 }
 
 
-async function createLightAccountClient({ signer, address, chainConfig }: LightAccountArgs): Promise<AlchemyLightAccountClient> {
-  if (IS_E2E_TESTING) {
-    // @ts-ignore
-    return createCustomLightAccountClient({
-      signer,
-      accountAddress: address,
-      transport,
-      gasEstimator: async (userOp) => ({
-        ...userOp,
-        preVerificationGas:"0xa27C0",
-        callGasLimit:"0xa27c",
-        verificationGasLimit:"0x5927c0"
-      }),
-      paymasterAndData: async (userop, opts) => {
-        const pmResponse: any = await stackupClient.request({
-          // @ts-ignore
-          method: "pm_sponsorUserOperation",
-          params: [
-            deepHexlify(await resolveProperties(userop)),
-            opts.account.getEntryPoint().address,
-            {
-              // @ts-ignore
-              type: "payg", // Replace with ERC20 context based on stackups documentation
-            },
-          ],
-        })
-      
-        return {
+async function createLightAccountClient({ signer, address, chainConfig, withErc20Gas }: LightAccountArgs): Promise<AlchemyLightAccountClient> {
+    const chain = getAlchemyChain(chainConfig.sdk_name);
+    const pimlicoUrl = getPimlicoUrl(chain.id)
+    const pimlicoClient = pimlicoClients[chain.id]
+    
+    if (IS_E2E_TESTING) {
+      // @ts-ignore
+      return createCustomLightAccountClient({
+        signer,
+        accountAddress: address,
+        // @ts-ignore
+        transport: e2eTransport,
+        gasEstimator: async (userOp) => ({
+          ...userOp,
+          preVerificationGas:"0xa27C0",
+          callGasLimit:"0xa27c",
+          verificationGasLimit:"0x5927c0"
+        }),
+        paymasterAndData: async (userop, opts) => {
+          const pmResponse: any = await stackupClient.request({
+            // @ts-ignore
+            method: "pm_sponsorUserOperation",
+            params: [
+              deepHexlify(await resolveProperties(userop)),
+              opts.account.getEntryPoint().address,
+              {
+                // @ts-ignore
+                type: "payg", // Replace with ERC20 context based on stackups documentation
+              },
+            ],
+          })
+        
+          return {
+            ...userop,
+            ...pmResponse,
+            paymasterAndData: '0x',
+          };
+        },
+        chain: {
+          ...getAlchemyChain(chainConfig.sdk_name),
+          rpcUrls: {
+            default: { http: [`http://localhost:8545`] },
+          }
+        },
+        factoryAddress: '0x42FfC8c171D7F62b231633E9d06f11a83aA6E09e',
+      })
+    }
+
+    if (withErc20Gas) {
+      const client = await createCustomLightAccountClient({
+        signer,
+        version: 'v1.1.0',
+        accountAddress: address,
+        chain: getAlchemyChain(chainConfig.sdk_name),
+        // @ts-ignore
+        transport: erc20PaymasterTransport(`${chainConfig.api_key_endpoint}${ALCHEMY_API_KEY}`, pimlicoUrl),
+        feeEstimator: async (uo) => {
+          const gasPrice = (await pimlicoClient.getUserOperationGasPrice()).fast
+          return {
+            ...uo,
+            ...gasPrice
+          }
+        },
+        dummyPaymasterAndData: async (userop) => ({
           ...userop,
-          ...pmResponse,
-          paymasterAndData: '0x',
-        };
-      },
-      chain: {
-        ...getAlchemyChain(chainConfig.sdk_name),
-        rpcUrls: {
-          default: { http: [`http://localhost:8545`] },
+          paymasterAndData: "0x",
+        }),  
+        paymasterAndData: async (userop, opts) => {
+          const pmResponse = await pimlicoClient.getPaymasterData({
+            ...deepHexlify(await resolveProperties(userop)),
+            entryPoint: opts.account.getEntryPoint().address,
+            type: "payg",
+            chainId: chain.id,
+            entryPointAddress: opts.account.getEntryPoint().address,
+            context: {
+              token: chainConfig.erc20_tokens.find((token) => token.symbol === "USDC")!.address
+            }
+          })
+          return {
+            ...userop,
+            ...pmResponse,
+          }
+        },
+        opts: {
+          feeOptions: {
+            preVerificationGas: { multiplier: 1.25 },
+            paymasterPostOpGasLimit: { multiplier: 1.25 },
+            paymasterVerificationGasLimit: { multiplier: 1.25 },
+            maxFeePerGas: { multiplier: 1.5 },
+            maxPriorityFeePerGas: { multiplier: 1.25 },
+          }
         }
-      },
-      factoryAddress: '0x42FfC8c171D7F62b231633E9d06f11a83aA6E09e',
+      })
+
+      // @ts-ignore
+      return client
+    }
+
+    const client = await createLightAccountAlchemyClient({
+      signer,
+      version: 'v1.1.0',
+      accountAddress: address,
+      chain: getAlchemyChain(chainConfig.sdk_name),
+      rpcUrl: `${chainConfig.api_key_endpoint}${ALCHEMY_API_KEY}`,
+      policyId: getAlchemyPolicyId(chainConfig.sdk_name)!!
     })
-  }
 
-  const client = await createLightAccountAlchemyClient({
-    signer,
-    version: 'v1.1.0',
-    accountAddress: address,
-    chain: getAlchemyChain(chainConfig.sdk_name),
-    rpcUrl: `${chainConfig.api_key_endpoint}${ALCHEMY_API_KEY}`,
-    policyId: getAlchemyPolicyId(chainConfig.sdk_name)!!
-  })
-
-  return client
+    return client
 }
 
 function getAlchemySdkClient(blockchain: BlockchainConfig) {
@@ -232,6 +400,7 @@ async function createMultisigClientPair({ signers, address, chainConfig }: Multi
 type AccountClientWithLight = {
   accountType: "light"
   lightAccount: AlchemyLightAccountClient;
+  erc20LightAccount: AlchemyLightAccountClient;
   initiator: null;
   submitter: null;
 }
@@ -240,14 +409,19 @@ type AccountClientWithMultisig = {
   accountType: "multisig"
   lightAccount: null;
   initiator: AlchemyMultisigClient;
+  erc20Initiator: AlchemyMultisigClient;
   submitter: AlchemyMultisigClient;
+  erc20Submitter: AlchemyMultisigClient;
 }
 
 type AccountClient = AccountClientWithLight | AccountClientWithMultisig | {
   accountType: null
   lightAccount: null
+  erc20LightAccount: null
   initiator: null
+  erc20Initiator: null
   submitter: null
+  erc20Submitter: null
 }
 const getAlchemyPolicyId = (name: string) => {
   switch (name) {
@@ -284,8 +458,11 @@ export const AccountContext = createContext<{
   setAccountType: () => {},
   accountType: null,
   lightAccount: null,
+  erc20LightAccount: null,
   initiator: null,
+  erc20Initiator: null,
   submitter: null,
+  erc20Submitter: null,
   sdkClient: null,
   needsRecovery: false,
   initializing: false,
@@ -315,15 +492,17 @@ export function AccountProvider({ children }: PropsWithChildren) {
     const [accountType, setAccountType] = useState<"light" | "multisig" | null>(null);
     const [initiator, setInitiator] = useState<AlchemyMultisigClient | null>(null);
     const [submitter, setSubmitter] = useState<AlchemyMultisigClient | null>(null);
+    const [erc20Initiator, setErc20Initiator] = useState<AlchemyMultisigClient | null>(null);
+    const [erc20Submitter, setErc20Submitter] = useState<AlchemyMultisigClient | null>(null);
     const [lightAccount, setLightAccount] = useState<AlchemyLightAccountClient | null>(null);
+    const [erc20LightAccount, setErc20LightAccount] = useState<AlchemyLightAccountClient | null>(null);
     const [needsRecovery, setNeedsRecovery] = useState(false);
     const [initializing, setInitializing] = useState(false);
     const { user, setUser } = useAuthContext();
     const { loadSigners, storeSeedphrase, promoteRecoverySeedphrase, loadRecoverySigners } = useSignerStore();
     const { blockchain } = useBlockchainContext();
 
-    const sdkClient = useMemo(() => getAlchemySdkClient(blockchain), [blockchain])
-
+    const sdkClient = useMemo(() => getAlchemySdkClient(blockchain), [blockchain]);
     const initWallet = async ({ type: accountType }: { type: "light" | "multisig" }) => {
       setInitializing(true)
       const mnemonic = generateMnemonic();
@@ -344,7 +523,34 @@ export function AccountProvider({ children }: PropsWithChildren) {
       setUser(updatedUser)
       setInitializing(false)
     }
-    
+
+    useEffect(() => {
+      if (!lightAccount) {
+        setErc20LightAccount(null)
+      }
+      if (lightAccount) {
+        createLightAccountClient({ signer: lightAccount.account.getSigner(), chainConfig: blockchain, withErc20Gas: true }).then(setErc20LightAccount)
+      }
+    }, [lightAccount])
+
+    useEffect(() => {
+      if (!initiator) {
+        setErc20Initiator(null)
+      }
+      if (initiator) {
+        createMultisigClient({ signer: initiator.account.getSigner(), accountAddress: user!.walletAddress!, chainConfig: blockchain, withErc20Gas: true }).then(setErc20Initiator)
+      }
+    }, [initiator])
+
+    useEffect(() => {
+      if (!submitter) {
+        setErc20Submitter(null)
+      }
+      if (submitter) {
+        createMultisigClient({ signer: submitter.account.getSigner(), accountAddress: user!.walletAddress!, chainConfig: blockchain, withErc20Gas: true }).then(setErc20Submitter)
+      }
+    }, [submitter])
+
     useEffect(() => {
       if (needsRecovery) {
         async function checkRecovery() {
@@ -487,6 +693,10 @@ export function AccountProvider({ children }: PropsWithChildren) {
         accountType: accountType!,
         setAccountType,
         lightAccount,
+        // @ts-ignore
+        erc20LightAccount,
+        erc20Initiator,
+        erc20Submitter,
         initiator,
         submitter,
         needsRecovery,
