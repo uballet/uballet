@@ -1,84 +1,173 @@
 import { useCallback, useState } from "react";
 import { useAccountContext } from "./useAccountContext";
-import { parseEther, toHex } from "viem";
+import { parseEther, parseUnits, toHex } from "viem";
 import { ethers } from "ethers";
+import { useUsdcContractAddress } from "../providers/UsdcContractProvider";
 
 export function useTransfer() {
-  const { lightAccount, initiator, submitter } = useAccountContext();
+  // @ts-ignore
+  const { lightAccount, erc20LightAccount, initiator, erc20Initiator, submitter, erc20Submitter } = useAccountContext();
   const { sdkClient } = useAccountContext();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<null | string>(null);  // Store error message instead of just a boolean
   const [txHash, setTxHash] = useState<null | string>(null);
-  
+  const usdcAddress = useUsdcContractAddress()
+
   const transferToAddress = useCallback(
-    async (address: `0x${string}`, etherAmount: string) => {
+    async (address: `0x${string}`, etherAmount: string, usdcTokenGas?: string) => {
       setLoading(true);
       setError(null);
+
+      const withErc20 = !!usdcTokenGas;
       try {
-        setLoading(true);
+        const abi = ["function approve(address,uint)"];
+        const iface = new ethers.Interface(abi);
+        const tokenApprovalData = iface.encodeFunctionData("approve", [
+          "0x00000000000000fb866daaa79352cc568a005d96",
+          parseUnits(usdcTokenGas ?? "1", 6)
+        ]);
+
+        const tokenApprovalUo = {
+          target: usdcAddress as `0x${string}`,
+          data: tokenApprovalData as `0x${string}`,
+          value: 0n
+        }
+
         if (lightAccount) {
           let uo;
-          try {
-            uo = await lightAccount.sendUserOperation({
-              uo: {
-                target: address,
-                data: "0x",
-                value: parseEther(etherAmount),
-              },
-            });
-          } catch (e) {
-            console.error("Error during client.sendUserOperation:", e);
-            setError("Error during client.sendUserOperation");
-            return;
-          }
-  
-          try {
-            const txHash = await lightAccount.waitForUserOperationTransaction(uo);
-            setTxHash(txHash);
-          } catch (e) {
-            setError("waitForUserOperationTransaction");
+          if (withErc20) {
+            try {
+              uo = await erc20LightAccount!.sendUserOperation({
+                uo: [
+                  tokenApprovalUo,
+                  {
+                    target: address,
+                    data: "0x",
+                    value: parseEther(etherAmount),
+                  }
+                ],
+                overrides: {
+                  preVerificationGas: toHex(73000n),
+                }
+              });
+            } catch (e) {
+              console.error("Error during client.sendUserOperation:", e);
+              setError("Error during client.sendUserOperation");
+              return;
+            }
+            try {
+              const txHash = await erc20LightAccount.waitForUserOperationTransaction(uo);
+              setTxHash(txHash);
+            } catch (e) {
+              setError("waitForUserOperationTransaction");
+            }
+          } else {
+            try {
+              uo = await lightAccount.sendUserOperation({
+                uo: {
+                  target: address,
+                  data: "0x",
+                  value: parseEther(etherAmount),
+                }
+              });
+            } catch (e) {
+              console.error("Error during client.sendUserOperation:", e);
+              setError("Error during client.sendUserOperation");
+              return;
+            }
+            try {
+              const txHash = await lightAccount.waitForUserOperationTransaction(uo);
+              setTxHash(txHash);
+            } catch (e) {
+              setError("waitForUserOperationTransaction");
+            }
           }
         } else if (initiator && submitter) {
           let tx
-          try {
-            const { signatureObj, aggregatedSignature, request } = await initiator.proposeUserOperation({
-              uo: {
-                target: address,
-                data: "0x",
-                value: parseEther(etherAmount),
-              },
-              overrides: {
-                preVerificationGas: toHex(50400n),
-              }
-            })
+          if (withErc20) {
+            try {
+              const { signatureObj, aggregatedSignature, request } = await erc20Initiator!.proposeUserOperation({
+                uo: [
+                  tokenApprovalUo,
+                  {
+                  target: address,
+                  data: "0x",
+                  value: parseEther(etherAmount),
+                }],
+                overrides: {
+                  preVerificationGas: toHex(73000n),
+                }
+              })
 
-            tx = await submitter.sendUserOperation({
-              uo: request.callData,
-              context: {
-                signatures: [signatureObj],
-                aggregatedSignature,
-                userOpSignatureType: 'UPPERLIMIT',
-              },
-              overrides: {
-                preVerificationGas: request.preVerificationGas,
-                callGasLimit: request.callGasLimit,
-                verificationGasLimit: request.verificationGasLimit,
-                maxFeePerGas: request.maxFeePerGas,
-                maxPriorityFeePerGas: request.maxPriorityFeePerGas,
-                // @ts-ignore
-                paymasterAndData: request.paymasterAndData ?? request.paymasterData,
-              }
-            })
-          } catch (e) {
-            console.error("Error during client.sendUserOperation:", e);
-            setError("Error during client.sendUserOperation");
-            return;
-          }
-          try {
-            const txHash = await submitter!.waitForUserOperationTransaction(tx);
-            setTxHash(txHash);
-          } catch (e) {
-            setError("waitForUserOperationTransaction");
+              tx = await erc20Submitter.sendUserOperation({
+                uo: request.callData,
+                context: {
+                  signatures: [signatureObj],
+                  aggregatedSignature,
+                  userOpSignatureType: 'UPPERLIMIT',
+                },
+                overrides: {
+                  preVerificationGas: request.preVerificationGas,
+                  callGasLimit: request.callGasLimit,
+                  verificationGasLimit: request.verificationGasLimit,
+                  maxFeePerGas: request.maxFeePerGas,
+                  maxPriorityFeePerGas: request.maxPriorityFeePerGas,
+                  // @ts-ignore
+                  paymasterAndData: request.paymasterAndData ?? request.paymasterData,
+                }
+              })
+            } catch (e) {
+              console.error("Error during client.sendUserOperation:", e);
+              setError("Error during client.sendUserOperation");
+              return;
+            }
+            try {
+              const txHash = await erc20Submitter!.waitForUserOperationTransaction(tx);
+              setTxHash(txHash);
+            } catch (e) {
+              setError("waitForUserOperationTransaction");
+            }
+          } else {
+            try {
+              const { signatureObj, aggregatedSignature, request } = await initiator.proposeUserOperation({
+                uo: {
+                  target: address,
+                  data: "0x",
+                  value: parseEther(etherAmount),
+                },
+                overrides: {
+                  preVerificationGas: toHex(50400),
+                }
+              })
+
+              tx = await submitter.sendUserOperation({
+                uo: request.callData,
+                context: {
+                  signatures: [signatureObj],
+                  aggregatedSignature,
+                  userOpSignatureType: 'UPPERLIMIT',
+                },
+                overrides: {
+                  preVerificationGas: request.preVerificationGas,
+                  callGasLimit: request.callGasLimit,
+                  verificationGasLimit: request.verificationGasLimit,
+                  maxFeePerGas: request.maxFeePerGas,
+                  maxPriorityFeePerGas: request.maxPriorityFeePerGas,
+                  // @ts-ignore
+                  paymasterAndData: request.paymasterAndData ?? request.paymasterData,
+                }
+              })
+            } catch (e) {
+              console.error("Error during client.sendUserOperation:", e);
+              setError("Error during client.sendUserOperation");
+              return;
+            }
+            try {
+              const txHash = await submitter!.waitForUserOperationTransaction(tx);
+              setTxHash(txHash);
+            } catch (e) {
+              setError("waitForUserOperationTransaction");
+            }
           }
         }
       } catch (e) {
@@ -112,10 +201,27 @@ export function useTransfer() {
     async (
       tokenContractAddress: `0x${string}`,
       address: `0x${string}`,
-      amount: string
+      amount: string,
+      usdcTokenGas?: string
     ) => {
       setLoading(true);
       setError(null);  // Clear previous error
+
+      const withErc20 = !!usdcTokenGas;
+      console.log({ usdcTokenGas })
+      const abi = ["function approve(address,uint)"];
+      const iface = new ethers.Interface(abi);
+      const tokenApprovalData = iface.encodeFunctionData("approve", [
+        "0x00000000000000fb866daaa79352cc568a005d96",
+        parseUnits(usdcTokenGas ?? "1", 6)
+      ]);
+
+      const tokenApprovalUo = {
+        target: usdcAddress as `0x${string}`,
+        data: tokenApprovalData as `0x${string}`,
+        value: 0n
+      }
+
       try {
         let decimals;
         try {
@@ -125,6 +231,7 @@ export function useTransfer() {
           setError("Error fetching token decimals");
           return;
         }
+      
 
         const abi = ["function transfer(address to, uint256 amount)"];
         const iface = new ethers.Interface(abi);
@@ -134,58 +241,123 @@ export function useTransfer() {
         ]);
         if (lightAccount) {
           let uo;
-          try {
-            uo = await lightAccount.sendUserOperation({
+          if (withErc20) {
+
+            try {
+              uo = await erc20LightAccount.sendUserOperation({
+                uo: [
+                  tokenApprovalUo,
+                  {
+                  target: tokenContractAddress,
+                  data: data as `0x${string}`,
+                  value: BigInt(0),
+                  }
+                ],
+                overrides: {
+                  preVerificationGas: { multiplier: 2 },
+                }
+              });
+            } catch (e) {
+              console.error("Error during client.sendUserOperation:", e);
+              setError("sendUserOperation");
+              return;
+            }
+            try {
+              const txHash = await erc20LightAccount.waitForUserOperationTransaction(uo);
+              setTxHash(txHash);
+            } catch (e) {
+              setError("waitForUserOperationTransaction");
+            }
+          } else {
+            try {
+              uo = await lightAccount.sendUserOperation({
+                uo: {
+                  target: tokenContractAddress,
+                  data: data as `0x${string}`,
+                  value: BigInt(0),
+                },
+              });
+            } catch (e) {
+              console.error("Error during client.sendUserOperation:", e);
+              setError("sendUserOperation");
+              return;
+            }
+            try {
+              const txHash = await lightAccount.waitForUserOperationTransaction(uo);
+              setTxHash(txHash);
+            } catch (e) {
+              setError("waitForUserOperationTransaction");
+            }
+          }
+        } else if (initiator && submitter) {
+          if (withErc20) {
+            const { signatureObj, aggregatedSignature, request } = await erc20Initiator.proposeUserOperation({
+              uo: [
+                tokenApprovalUo,
+                {
+                  target: tokenContractAddress,
+                  data: data as `0x${string}`,
+                  value: BigInt(0),
+                },
+              ],
+              overrides: {
+                preVerificationGas: { multiplier: 2 },
+              }
+            })
+  
+            const tx = await erc20Submitter.sendUserOperation({
+              uo: request.callData,
+              context: {
+                signatures: [signatureObj],
+                aggregatedSignature,
+                userOpSignatureType: 'UPPERLIMIT',
+              },
+              overrides: {
+                preVerificationGas: request.preVerificationGas,
+                callGasLimit: request.callGasLimit,
+                verificationGasLimit: request.verificationGasLimit,
+                maxFeePerGas: request.maxFeePerGas,
+                maxPriorityFeePerGas: request.maxPriorityFeePerGas,
+                // @ts-ignore
+                paymasterAndData: request.paymasterAndData ?? request.paymasterData,
+              }
+            })
+  
+            const txHash = await erc20Submitter.waitForUserOperationTransaction(tx)
+            setTxHash(txHash);
+          } else {
+            const { signatureObj, aggregatedSignature, request } = await initiator.proposeUserOperation({
               uo: {
                 target: tokenContractAddress,
                 data: data as `0x${string}`,
                 value: BigInt(0),
               },
-            });
-          } catch (e) {
-            console.error("Error during client.sendUserOperation:", e);
-            setError("sendUserOperation");
-            return;
-          }
-  
-          try {
-            const txHash = await lightAccount.waitForUserOperationTransaction(uo);
+              overrides: {
+                preVerificationGas: toHex(50400n),
+              }
+            })
+
+            const tx = await submitter.sendUserOperation({
+              uo: request.callData,
+              context: {
+                signatures: [signatureObj],
+                aggregatedSignature,
+                userOpSignatureType: 'UPPERLIMIT',
+              },
+              overrides: {
+                preVerificationGas: request.preVerificationGas,
+                callGasLimit: request.callGasLimit,
+                verificationGasLimit: request.verificationGasLimit,
+                maxFeePerGas: request.maxFeePerGas,
+                maxPriorityFeePerGas: request.maxPriorityFeePerGas,
+                // @ts-ignore
+                paymasterAndData: request.paymasterAndData ?? request.paymasterData,
+              }
+            })
+
+            const txHash = await submitter.waitForUserOperationTransaction(tx)
             setTxHash(txHash);
-          } catch (e) {
-            setError("waitForUserOperationTransaction");
           }
-        } else if (initiator && submitter) {
-          const { signatureObj, aggregatedSignature, request } = await initiator.proposeUserOperation({
-            uo: {
-              target: tokenContractAddress,
-              data: data as `0x${string}`,
-              value: BigInt(0),
-            },
-            overrides: {
-              preVerificationGas: toHex(50400n),
-            }
-          })
-
-          const tx = await submitter.sendUserOperation({
-            uo: request.callData,
-            context: {
-              signatures: [signatureObj],
-              aggregatedSignature,
-              userOpSignatureType: 'UPPERLIMIT',
-            },
-            overrides: {
-              preVerificationGas: request.preVerificationGas,
-              callGasLimit: request.callGasLimit,
-              verificationGasLimit: request.verificationGasLimit,
-              maxFeePerGas: request.maxFeePerGas,
-              maxPriorityFeePerGas: request.maxPriorityFeePerGas,
-              // @ts-ignore
-              paymasterAndData: request.paymasterAndData ?? request.paymasterData,
-            }
-          })
-
-          const txHash = await submitter.waitForUserOperationTransaction(tx)
-          setTxHash(txHash);
         }
       } catch (e) {
         console.error({ error: e });
