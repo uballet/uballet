@@ -20,3 +20,5 @@ export const IS_STORYBOOK = process.env.EXPO_PUBLIC_STORYBOOK === "true";
 
 // e2e
 export const IS_E2E_TESTING = process.env.IS_E2E_TESTING === "1";
+
+export const PIMLICO_API_KEY = process.env.EXPO_PUBLIC_PIMLICO_API_KEY
