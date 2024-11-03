@@ -12,6 +12,7 @@ import "node-libs-react-native/globals.js";
 import "react-native-get-random-values";
 import { IS_STORYBOOK } from "../env";
 import { PushNotificationProvider } from "../providers/PushNotificationProvider";
+import { UsdcContractProvider } from "../providers/UsdcContractProvider";
 
 export default function App() {
   if (IS_STORYBOOK) {
@@ -25,13 +26,15 @@ export default function App() {
     <QueryProvider>
         <BlockchainProvider>
           <AuthProvider>
-            <PushNotificationProvider>
-              <AccountProvider >
-                  <PaperProvider theme={theme}>
-                    <Slot />
-                  </PaperProvider>          
-              </AccountProvider>
-            </PushNotificationProvider>
+            <UsdcContractProvider>
+              <PushNotificationProvider>
+                <AccountProvider >
+                    <PaperProvider theme={theme}>
+                      <Slot />
+                    </PaperProvider>          
+                </AccountProvider>
+              </PushNotificationProvider>
+            </UsdcContractProvider>
           </AuthProvider>
         </BlockchainProvider>
       </QueryProvider>
