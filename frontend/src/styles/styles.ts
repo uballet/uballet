@@ -9,9 +9,8 @@ const globalStyles = StyleSheet.create({
   },
   containerTransfer: {
     flex: 1,
-    alignItems: "stretch",
+    alignItems: "center",
     padding: 16,
-    marginTop: 20,
   },
   containerLogin: {
     height: "100%",
@@ -63,7 +62,7 @@ const globalStyles = StyleSheet.create({
     width: "100%",
     marginVertical: 20,
   },
-  movementsCard: {
+  genericCard: {
     margin: 16,
     width: "100%",
   },

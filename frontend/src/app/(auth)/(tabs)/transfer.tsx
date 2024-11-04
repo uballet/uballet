@@ -1,7 +1,7 @@
-import { ScrollView, View, TouchableOpacity } from "react-native";
-import { Text } from "react-native-paper";
+import { ScrollView, View } from "react-native";
+import { Button, Card, Text } from "react-native-paper";
 import ContactList from "../../../components/ContactList/ContactList";
-import { useContacts } from '../../../hooks/contacts/useContacts';
+import { useContacts } from "../../../hooks/contacts/useContacts";
 import { useENS } from "../../../hooks/useENS";
 import { Separator } from "../../../components/Separator/Separator";
 import { MaterialIcons } from "@expo/vector-icons";
@@ -19,38 +19,41 @@ function TransferScreen() {
 
   return (
     <ScrollView>
-
-      {/* Send to new address button */}
-      <View style={{ alignItems: "center", marginVertical: 20 }}>
-        <TouchableOpacity
-          testID="new-address-button"
-          onPress={handleNewPress}
+      <View style={styles.containerTransfer}>
+        <Card style={styles.genericCard}>
+          <Card.Title titleVariant="titleLarge" title="Send to an address" />
+          <Card.Content>
+            <Button
+              mode="contained"
+              testID="new-address-button"
+              onPress={handleNewPress}
+              icon={({ size, color }) => (
+                <MaterialIcons name="add" size={40} color="#fff" />
+              )}
+            >
+              <Text style={{ color: "#fff" }}>New address</Text>
+            </Button>
+          </Card.Content>
+        </Card>
+        <View
           style={{
-            backgroundColor: "#007bff",
-            borderRadius: 50,
-            padding: 20,
-            width: 100,
-            height: 100,
-            justifyContent: "center",
-            alignItems: "center",
-            marginTop: 20,
-            marginBottom: 10,
+            width: "100%",
           }}
         >
-          <MaterialIcons name="add" size={40} color="#fff" />
-          <Text style={{ color: "#fff", marginTop: 4 }}>New</Text>
-        </TouchableOpacity>
+          <Separator />
+        </View>
+        <Card style={styles.genericCard}>
+          <Card.Title titleVariant="titleLarge" title="Send to your contacts" />
+          <Card.Content>
+            <ContactList
+              contacts={contacts ?? []}
+              resolveName={resolveName}
+              isPending={false}
+              enableDelete={false}
+            />
+          </Card.Content>
+        </Card>
       </View>
-
-      <Separator />
-
-      <Text style={ styles.infoText }>Send to your contacts</Text>
-
-      <ContactList
-        contacts={contacts ?? []}
-        resolveName={resolveName}
-        isPending={false}
-        enableDelete={ false }/>
     </ScrollView>
   );
 }
