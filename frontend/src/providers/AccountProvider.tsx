@@ -122,6 +122,20 @@ const erc20PaymasterTransport = (alchemyUrl: string, pimlicoUrl: string) => spli
     fallback: http(alchemyUrl),
 });
 
+const GAS_FEE_OPTIONS = {
+  preVerificationGas: { multiplier: 1.25 },
+  paymasterPostOpGasLimit: { multiplier: 1.25 },
+  paymasterVerificationGasLimit: { multiplier: 1.25 },
+  maxFeePerGas: { multiplier: 1.5 },
+  maxPriorityFeePerGas: { multiplier: 1.25 },
+}
+
+const RETRY_OPTIONS = {
+  txMaxRetries: 7,
+  txRetryIntervalMs: 2_000,
+  txRetryMultiplier: 1.5
+}
+
 async function createMultisigClient({
   signer,
   owners,
@@ -229,13 +243,8 @@ async function createMultisigClient({
         }
       },
       opts: {
-        feeOptions: {
-          preVerificationGas: { multiplier: 1.25 },
-          paymasterPostOpGasLimit: { multiplier: 1.25 },
-          paymasterVerificationGasLimit: { multiplier: 1.25 },
-          maxFeePerGas: { multiplier: 1.5 },
-          maxPriorityFeePerGas: { multiplier: 1.25 },
-        }
+        feeOptions: GAS_FEE_OPTIONS,
+        ...RETRY_OPTIONS
       }
     })
   }
@@ -248,7 +257,12 @@ async function createMultisigClient({
     threshold: 2n,
     chain: getAlchemyChain(chainConfig.sdk_name),
     rpcUrl: `${chainConfig.api_key_endpoint}${ALCHEMY_API_KEY}`,
-    policyId: withoutPaymaster ? undefined : getAlchemyPolicyId(chainConfig.sdk_name)
+    policyId: withoutPaymaster ? undefined : getAlchemyPolicyId(chainConfig.sdk_name),
+    
+    opts: {
+      feeOptions: GAS_FEE_OPTIONS,
+      ...RETRY_OPTIONS
+    }
   })
 }
 
@@ -344,13 +358,8 @@ async function createLightAccountClient({ signer, address, chainConfig, withErc2
           }
         },
         opts: {
-          feeOptions: {
-            preVerificationGas: { multiplier: 1.25 },
-            paymasterPostOpGasLimit: { multiplier: 1.25 },
-            paymasterVerificationGasLimit: { multiplier: 1.25 },
-            maxFeePerGas: { multiplier: 1.5 },
-            maxPriorityFeePerGas: { multiplier: 1.25 },
-          }
+          feeOptions: GAS_FEE_OPTIONS,
+          ...RETRY_OPTIONS
         }
       })
 
@@ -364,7 +373,11 @@ async function createLightAccountClient({ signer, address, chainConfig, withErc2
       accountAddress: address,
       chain: getAlchemyChain(chainConfig.sdk_name),
       rpcUrl: `${chainConfig.api_key_endpoint}${ALCHEMY_API_KEY}`,
-      policyId: getAlchemyPolicyId(chainConfig.sdk_name)!!
+      policyId: getAlchemyPolicyId(chainConfig.sdk_name)!!,
+      opts: {
+        feeOptions: GAS_FEE_OPTIONS,
+        ...RETRY_OPTIONS
+      }
     })
 
     return client

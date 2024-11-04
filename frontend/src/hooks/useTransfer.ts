@@ -47,7 +47,7 @@ export function useTransfer() {
                   }
                 ],
                 overrides: {
-                  preVerificationGas: toHex(73000n),
+                  preVerificationGas: { multiplier: 3 },
                 }
               });
             } catch (e) {
@@ -95,7 +95,7 @@ export function useTransfer() {
                   value: parseEther(etherAmount),
                 }],
                 overrides: {
-                  preVerificationGas: toHex(73000n),
+                  preVerificationGas: { multiplier: 3 },
                 }
               })
 
@@ -136,7 +136,7 @@ export function useTransfer() {
                   value: parseEther(etherAmount),
                 },
                 overrides: {
-                  preVerificationGas: toHex(50400),
+                  preVerificationGas: { multiplier: 3 },
                 }
               })
 
@@ -333,7 +333,7 @@ export function useTransfer() {
                 value: BigInt(0),
               },
               overrides: {
-                preVerificationGas: toHex(50400n),
+                preVerificationGas: { multiplier: 3 },
               }
             })
 

@@ -11,8 +11,10 @@ export const AuthContext = createContext<{
     setUser: (user: User | null) => void,
     logout: () => void,
     passkeysOnboarded: boolean,
-    requiresLocalAuthentication: boolean
-    skipPasskeys: () => void
+    requiresLocalAuthentication: boolean,
+    skipPasskeys: () => void,
+    requestAuthentication: () => Promise<void>,
+    temporarilyDisableAuth: () => void
 }>({
     user: null,
     setUser: () => {},
@@ -20,6 +22,8 @@ export const AuthContext = createContext<{
     passkeysOnboarded: false,
     requiresLocalAuthentication: false,
     skipPasskeys: () => {},
+    requestAuthentication: async () => {},
+    temporarilyDisableAuth: () => {},
 })
 
 let temporarilyMovedToBackground = false
@@ -110,6 +114,14 @@ export default function AuthProvider({ children }: PropsWithChildren) {
         }
     }, [user])
 
+    const temporarilyDisableAuth = useCallback(() => {
+        temporarilyMovedToBackground = true;
+        setTimeout(() => {
+            temporarilyMovedToBackground = false;
+            setRequiresLocalAuthentication(false);
+        }, 1000);
+    }, []);
+
     if (!isReady) {
         return (
             <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
@@ -126,7 +138,9 @@ export default function AuthProvider({ children }: PropsWithChildren) {
                 logout,
                 passkeysOnboarded,
                 skipPasskeys,
-                requiresLocalAuthentication
+                requiresLocalAuthentication,
+                requestAuthentication,
+                temporarilyDisableAuth
             }}
         >
             {children}

@@ -5,9 +5,21 @@ import { Link } from "expo-router";
 import { Button, Text, TextInput } from "react-native-paper";
 
 export default function SignUpScreen() {
-    const { signup, isPending, isError } = useSignUp()
+    const { signup, isPending, isError, error } = useSignUp()
     const [email, setEmail] = useState<string>('');
 
+    const errorMessage = error instanceof Error 
+        ? error.message 
+        : 'Invalid email / Already signed up'
+
+    const handleSignUp = async () => {
+        try {
+            await signup({ email })
+        } catch (err) {
+            // Error is already handled by the mutation
+            // and displayed through the error state
+        }
+    }
 
     return (
         <View className="flex-1 justify-center items-center">
@@ -22,13 +34,13 @@ export default function SignUpScreen() {
                 onChangeText={setEmail}
                 autoFocus={true}
             />
-            {isError && <Text className="text-red-500 mb-4">Invalid email / Already signed up</Text>}
+            {isError && <Text className="text-red-500 mb-4">{errorMessage}</Text>}
             <Button
                 testID="sign-up-button"
                 mode="contained"
                 className="w-4/5 mb-2"
                 disabled={isPending}
-                onPress={() => signup({ email })}
+                onPress={handleSignUp}
             >
                 <Text className="text-white">Sign up</Text>
             </Button>
