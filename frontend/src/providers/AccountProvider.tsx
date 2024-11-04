@@ -7,7 +7,7 @@ import {
   useState,
 } from "react";
 import { Address, deepHexlify, LocalAccountSigner, resolveProperties, split } from "@aa-sdk/core"
-import { arbitrum, arbitrumSepolia, base, baseSepolia, mainnet, optimism, optimismSepolia, sepolia, createAlchemyPublicRpcClient } from "@account-kit/infra"
+import { arbitrum, arbitrumSepolia, base, baseSepolia, mainnet, optimism, optimismSepolia, sepolia, createAlchemyPublicRpcClient, alchemy } from "@account-kit/infra"
 import { createMultisigAccountAlchemyClient, createMultisigModularAccountClient, createLightAccountClient as createCustomLightAccountClient, createLightAccountAlchemyClient } from "@account-kit/smart-contracts";
 
 import { Alchemy } from "alchemy-sdk";
@@ -256,7 +256,9 @@ async function createMultisigClient({
     accountAddress,
     threshold: 2n,
     chain: getAlchemyChain(chainConfig.sdk_name),
-    rpcUrl: `${chainConfig.api_key_endpoint}${ALCHEMY_API_KEY}`,
+    transport: alchemy({
+      apiKey: ALCHEMY_API_KEY!
+    }),
     policyId: withoutPaymaster ? undefined : getAlchemyPolicyId(chainConfig.sdk_name),
     
     opts: {
@@ -372,7 +374,9 @@ async function createLightAccountClient({ signer, address, chainConfig, withErc2
       version: 'v1.1.0',
       accountAddress: address,
       chain: getAlchemyChain(chainConfig.sdk_name),
-      rpcUrl: `${chainConfig.api_key_endpoint}${ALCHEMY_API_KEY}`,
+      transport: alchemy({
+        apiKey: ALCHEMY_API_KEY!
+      }),
       policyId: getAlchemyPolicyId(chainConfig.sdk_name)!!,
       opts: {
         feeOptions: GAS_FEE_OPTIONS,

@@ -19,12 +19,12 @@
     "postinstall": "patch-package"
   },
   "dependencies": {
-    "@aa-sdk/core": "^4.0.1",
-    "@account-kit/core": "^4.0.0-beta.0",
-    "@account-kit/infra": "^4.0.0-beta.0",
-    "@account-kit/react": "^4.0.0-beta.0",
-    "@account-kit/signer": "^4.0.0-beta.0",
-    "@account-kit/smart-contracts": "^4.0.0-beta.0",
+    "@aa-sdk/core": "4.0.1",
+    "@account-kit/core": "4.0.1",
+    "@account-kit/infra": "4.0.1",
+    "@account-kit/react": "4.0.1",
+    "@account-kit/signer": "4.0.1",
+    "@account-kit/smart-contracts": "4.0.1",
     "@expo/vector-icons": "^14.0.2",
     "@json-rpc-tools/utils": "^1.7.6",
     "@noble/ciphers": "^0.5.3",
