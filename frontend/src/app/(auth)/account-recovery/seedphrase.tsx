@@ -3,6 +3,7 @@ import { Button, TextInput } from "react-native-paper";
 import { useState } from "react";
 import { useSeedPhraseRecovery } from "../../../hooks/useSeedPhraseRecovery";
 import { Redirect } from "expo-router";
+import { useLogout } from "../../../hooks/useLogout";
 
 
 function ErrorText({ isError }: { isError: boolean }) {
@@ -18,6 +19,7 @@ function ErrorText({ isError }: { isError: boolean }) {
 export default function SeedPhraseRecoveryScreen() {
     const [seedPhrase, setSeedphrase] = useState('')
     const { recover, isPending, isSuccess, isError } = useSeedPhraseRecovery()
+    const logout = useLogout()
     const onButtonPress = () => {
         recover({ code: seedPhrase })
     }
@@ -43,6 +45,9 @@ export default function SeedPhraseRecoveryScreen() {
             <ErrorText isError={isError} />
             <Button disabled={isPending} onPress={onButtonPress} mode="contained" className="m-2">
                 <Text>Recover</Text>
+            </Button>
+            <Button testID="logout-button" mode="outlined" className="m-4 w-2/3" onPress={logout}>
+                <Text className="text-red-700">Log Out</Text>
             </Button>
         </View>
     );

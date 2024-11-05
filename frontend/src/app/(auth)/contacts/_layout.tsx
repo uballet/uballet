@@ -17,10 +17,12 @@ function ContactsLayout() {
     setAddress(address);
   }, []);
 
-  const onPress = useCallback(() => {
+  const onAddNewContact = useCallback(() => {
     console.log("Adding new contact...");
     addNewContact({ name, address });
     setModalVisible(false);
+    setName("");
+    setAddress("");
   }, [addNewContact, name, address]);
 
   return (
@@ -99,7 +101,7 @@ function ContactsLayout() {
 
               <Button
                 testID="submit-new-contact-button"
-                onPress={onPress}
+                onPress={onAddNewContact}
                 buttonColor="#277ca5"
                 className="ml-2 rounded-lg px-4 py-2"
               >

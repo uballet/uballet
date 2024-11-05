@@ -1,7 +1,8 @@
 import React from "react";
 import { View, ActivityIndicator } from "react-native";
-import { Text } from "react-native-paper";
+import { Card, Text } from "react-native-paper";
 import { useGasEstimation } from "../../hooks/useGasEstimation";
+import { theme } from "../../styles/color";
 
 interface EstimateGasFeesProps {
   target: `0x${string}`;
@@ -20,7 +21,7 @@ const EstimateGasFees: React.FC<EstimateGasFeesProps> = ({
   if (isLoading) {
     return (
       <View style={{ margin: 8 }}>
-        <ActivityIndicator testID="ActivityIndicator" size="small" color="#0000ff" />
+        <ActivityIndicator testID="ActivityIndicator" size="small" color={theme.colors.primary} />
       </View>
     );
   }
