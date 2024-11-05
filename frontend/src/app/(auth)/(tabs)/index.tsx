@@ -50,7 +50,7 @@ const HomeScreen: React.FC = () => {
           contractDeployed={isDeployed}
           publicAddress={ account!.getAddress() }
         />
-        <Card style={styles.movementsCard} mode="contained">
+        <Card style={styles.genericCard} mode="contained">
           <Card.Content>
             <Text variant="titleLarge">Balance</Text>
             {!isLoading && balance ? (
@@ -82,7 +82,7 @@ const HomeScreen: React.FC = () => {
           </View>
         </View>
 
-        <Card style={styles.movementsCard} mode="elevated">
+        <Card style={styles.genericCard} mode="elevated">
           <Card.Content>
             <Card.Title title="Transaction History" />
             <MovementsList
