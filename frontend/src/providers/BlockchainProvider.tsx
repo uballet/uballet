@@ -47,6 +47,17 @@ const saveUserTokens = async (tokens: ERC20Token[], networkName: keyof Config) =
   }
 };
 
+const LOCAL_STORAGE_NETWORK_KEY = 'last_selected_network';
+
+const loadLastSelectedNetwork = async (): Promise<keyof Config> => {
+  try {
+    const storedNetwork = await AsyncStorage.getItem(LOCAL_STORAGE_NETWORK_KEY);
+    return storedNetwork ? (JSON.parse(storedNetwork) as keyof Config) : 'sepolia';
+  } catch (error) {
+    return 'sepolia';
+  }
+};
+
 export const DEFAULT_CONFIG = config['sepolia'];
 
 const BlockchainContext = createContext<BlockchainContextType | undefined>(undefined);
@@ -56,6 +67,15 @@ export const BlockchainProvider: React.FC<{ children: ReactNode }> = ({ children
   const [userTokens, setUserTokens] = useState<ERC20Token[]>([]);
   const [mergedConfig, setMergedConfig] = useState<BlockchainConfig>(config[selectedNetwork]);
   const client = useQueryClient();
+
+  useEffect(() => {
+    const initializeNetwork = async () => {
+      const lastNetwork = await loadLastSelectedNetwork();
+      setSelectedNetwork(lastNetwork);
+    };
+    initializeNetwork();
+  }, []);
+
   useEffect(() => {
     const loadTokens = async () => {
       const tokens = await loadUserTokens(selectedNetwork);
@@ -95,6 +115,15 @@ export const BlockchainProvider: React.FC<{ children: ReactNode }> = ({ children
   const setNetwork = (networkName: string) => {
     const networkKey = networkName as keyof Config;
     setSelectedNetwork(networkKey);
+    saveLastSelectedNetwork(networkKey);
+  };
+
+  const saveLastSelectedNetwork = async (networkName: keyof Config) => {
+    try {
+      await AsyncStorage.setItem(LOCAL_STORAGE_NETWORK_KEY, JSON.stringify(networkName));
+    } catch (error) {
+      console.error('Failed to save last selected network', error);
+    }
   };
 
   return (
