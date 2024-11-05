@@ -8,6 +8,7 @@ import styles from "../../styles/styles";
 import { router } from "expo-router";
 import { useAccountContext } from "../../hooks/useAccountContext";
 import * as Clipboard from "expo-clipboard";
+import { formatUnits } from "ethers";
 
 const TransactionScreen: React.FC = () => {
   const { txHash, isNew } = useLocalSearchParams<{ txHash?: string, isNew?: string }>();
@@ -125,7 +126,7 @@ const TransactionScreen: React.FC = () => {
                     Value:{" "}
                   </Text>
                   <Text variant="bodyMedium" style={styles.item}>
-                    {transaction.value.toString()}
+                    {formatUnits(transaction.value.toString(), 18)}
                   </Text>
                 </>
               )}
