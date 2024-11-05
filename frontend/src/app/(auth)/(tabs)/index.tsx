@@ -68,14 +68,18 @@ const HomeScreen: React.FC = () => {
         </Card>
 
         <View style={styles.horizontalContainer}>
-          <FAB
-            testID="home-contacts-button"
-            size="small" icon="contacts" variant="secondary" 
-            onPress={() => router.push({ pathname: "contacts" })} />
-          <FAB size="small" icon="qrcode" variant="secondary"
-            onPress={() => router.push({ pathname: "scanner" })} />
-          <FAB size="small" icon="cash-minus" variant="secondary" />
-          <FAB size="small" icon="account-cash-outline" variant="secondary" />
+          <View style={{ alignItems: 'center' }}>
+            <FAB
+              testID="home-contacts-button"
+              size="medium" icon="contacts" variant="secondary" 
+              onPress={() => router.push({ pathname: "contacts" })} />
+            <Text style={{ textAlign: 'center', marginTop: 8 }}>Contacts</Text>
+          </View>
+          <View style={{ alignItems: 'center' }}>
+            <FAB size="medium" icon="qrcode" variant="secondary"
+              onPress={() => router.push({ pathname: "scanner" })} />
+            <Text style={{ textAlign: 'center', marginTop: 8 }}>Scan QR Code</Text>
+          </View>
         </View>
 
         <Card style={styles.movementsCard} mode="elevated">
