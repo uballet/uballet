@@ -21,7 +21,7 @@ const globalStyles = StyleSheet.create({
     marginVertical: 8,
   },
   infoText: {
-    fontSize: 12,
+    fontSize: 14,
     color: "#2c3e50",
     marginVertical: 4,
     textAlign: "center",
@@ -115,6 +115,17 @@ const globalStyles = StyleSheet.create({
   fab: {
     top: 30,
     alignSelf: "center",
+  },
+  addressRow: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  margin: {
+    marginVertical: 8,
+  },
+  errorText: {
+    color: "red",
+    marginLeft: 8,
   },
 });
 

@@ -1,19 +1,31 @@
-import React from 'react';
-import { View, StyleSheet } from 'react-native';
-import { Text, TextInput } from 'react-native-paper';
+import React from "react";
+import {
+  NativeSyntheticEvent,
+  TextInputEndEditingEventData,
+} from "react-native";
+import { ActivityIndicator, Text, TextInput } from "react-native-paper";
+import styles from "../../styles/styles";
 
 interface ContactInputProps {
-  toAddress: string;
   handleAddressChange: (address: string) => void;
+  handleInputEndEditing: (
+    event: NativeSyntheticEvent<TextInputEndEditingEventData>
+  ) => void;
+  toAddress: string;
+  isResolving: boolean;
   isAddressValid: boolean;
+  inputType: string;
   testID?: string;
 }
 
 const ContactInput: React.FC<ContactInputProps> = ({
-  toAddress,
   handleAddressChange,
+  handleInputEndEditing,
+  toAddress,
+  isResolving,
   isAddressValid,
-  testID
+  inputType,
+  testID,
 }) => {
   return (
     <>
@@ -21,33 +33,26 @@ const ContactInput: React.FC<ContactInputProps> = ({
         testID={testID}
         mode="outlined"
         style={styles.margin}
-        placeholder="Address without 0x prefix"
-        value={toAddress}
-        left={<TextInput.Affix text="0x" />}
+        placeholder="Address or ENS name"
         onChangeText={handleAddressChange}
+        onEndEditing={handleInputEndEditing}
         error={!isAddressValid}
       />
       {!isAddressValid && (
         <Text style={styles.errorText}>
-          Invalid Ethereum address
+          {inputType === "address" ? "Invalid address" : "Invalid ENS name"}
         </Text>
       )}
+      {
+        <Text style={styles.infoText}>
+          {inputType === "ens" && isAddressValid
+            ? "Address resolved: " + toAddress
+            : ""}
+        </Text>
+      }
+      {isResolving && <ActivityIndicator />}
     </>
   );
 };
-
-const styles = StyleSheet.create({
-  addressRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  margin: {
-    marginVertical: 8,
-  },
-  errorText: {
-    color: 'red',
-    marginLeft: 8,
-  },
-});
 
 export default ContactInput;

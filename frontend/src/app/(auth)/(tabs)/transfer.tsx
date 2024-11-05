@@ -20,7 +20,7 @@ function TransferScreen() {
   return (
     <ScrollView>
       <View style={styles.containerTransfer}>
-        <Card style={styles.genericCard}>
+        <Card style={styles.genericCard} mode="contained">
           <Card.Title titleVariant="titleLarge" title="Send to an address" />
           <Card.Content>
             <Button
@@ -42,7 +42,7 @@ function TransferScreen() {
         >
           <Separator />
         </View>
-        <Card style={styles.genericCard}>
+        <Card style={styles.genericCard} mode="contained">
           <Card.Title titleVariant="titleLarge" title="Send to your contacts" />
           <Card.Content>
             <ContactList

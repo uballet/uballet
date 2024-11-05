@@ -1,14 +1,12 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { View } from "react-native";
-import { Button, Text, SegmentedButtons, TextInput } from "react-native-paper";
+import { Button, Text } from "react-native-paper";
 import { router } from "expo-router";
 import { ethers } from "ethers";
 import styles from "../../../styles/styles";
 import ContactInput from "../../../components/ContactInput/ContactInput";
-import AddressInput from "../../../components/AddressInput/AddressInput";
 import { theme } from "../../../styles/color";
 import { useENS } from "../../../hooks/useENS";
-import { SafeAreaView } from "react-native-safe-area-context";
 import NameInput from "../../../components/NameInput/NameInput";
 import { useAddContact } from "../../../hooks/contacts/useAddContact";
 
@@ -23,25 +21,33 @@ function InputAddress() {
   const { addNewContact, isSuccess } = useAddContact();
   const { resolveName } = useENS();
 
-  useEffect(() => {
-    if (inputType === "address") {
-      validateAddress(input);
-    }
-  }, [input, inputType]);
-
+  const isAddress = (value: string) => {
+    return value.startsWith("0x");
+  };
   const validateAddress = (value: string) => {
     const fullAddress = value.startsWith("0x") ? value : `0x${value}`;
     const isValid = ethers.isAddress(fullAddress);
-    setIsInputValid(isValid);
-    setResolvedAddress(isValid ? fullAddress : "");
+    return isValid;
   };
 
   const handleInputChange = (value: string) => {
     setInput(value);
-    if (inputType === "ens") {
-      setIsENSResolved(false);
+  };
+
+  const handleInputEndEditing = () => {
+    if (!input || input === "") {
       setIsInputValid(true);
-      setResolvedAddress("");
+      return;
+    }
+    let isAddressInput = isAddress(input);
+    if (isAddressInput) {
+      setInputType("address");
+      let isValidAddress = validateAddress(input);
+      setIsInputValid(isValidAddress);
+    } else {
+      setInputType("ens");
+      setIsENSResolved(false);
+      handleResolveENS();
     }
   };
 
@@ -96,64 +102,25 @@ function InputAddress() {
         }}
       >
         <View style={{ width: "100%", paddingHorizontal: 20 }}>
-          <Text style={styles.infoText}>Enter an address or ENS name</Text>
-
-          <SegmentedButtons
-            value={inputType}
-            onValueChange={(value) => {
-              setInputType(value as "address" | "ens");
-              setInput("");
-              setIsInputValid(true);
-              setResolvedAddress("");
-              setIsENSResolved(false);
-            }}
-            buttons={[
-              { value: "address", label: "Address" },
-              { value: "ens", label: "ENS Name" },
-            ]}
-            style={{ marginBottom: 16 }}
-          />
-
+          <Text style={styles.infoText}>
+            Enter a name to save this address as a contact
+          </Text>
           <NameInput
-            helperText="Add name to save this contact (optional)"
+            helperText="Name (optional)"
             testID="transfer-contact-name-input"
             name={contactName}
             handleNameChange={setContactName}
           />
-
-          {inputType === "address" ? (
-            <ContactInput
-              testID="transfer-address-input"
-              toAddress={input}
-              handleAddressChange={handleInputChange}
-              isAddressValid={isInputValid || input == ""}
-            />
-          ) : (
-            <View>
-              <AddressInput
-                input={input}
-                handleInputChange={handleInputChange}
-                isInputValid={isInputValid}
-                placeholder="Enter ENS name"
-              />
-              {resolvedAddress && <Text style={styles.infoText}>Address resolved: {resolvedAddress}</Text> }
-              <Button
-                mode="contained"
-                onPress={handleResolveENS}
-                disabled={!input || isResolving}
-                style={[
-                  { marginTop: 8 },
-                  isENSResolved && { backgroundColor: theme.colors.success },
-                ]}
-              >
-                {isResolving
-                  ? "Resolving..."
-                  : isENSResolved
-                  ? "Resolved"
-                  : "Resolve ENS"}
-              </Button>
-            </View>
-          )}
+          <Text style={styles.infoText}>Enter an address or ENS name</Text>
+          <ContactInput
+            testID="transfer-address-input"
+            toAddress={resolvedAddress}
+            isResolving={isResolving}
+            handleAddressChange={handleInputChange}
+            handleInputEndEditing={handleInputEndEditing}
+            isAddressValid={isInputValid || input == ""}
+            inputType={inputType}
+          />
         </View>
       </View>
 
