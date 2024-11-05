@@ -38,3 +38,6 @@ yarn-error.*
 
 # Google service values
 google-services.json
+
+# Backup files
+*.bkp

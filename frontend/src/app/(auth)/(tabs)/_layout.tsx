@@ -107,7 +107,6 @@ function TabsLayout() {
             options={{
               title: "Notifications",
               tabBarIcon: ({ color }) => (
-                // <View className={`rounded-full p-2 $`}>
                   <View>
                     {unseenNotification && <View className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full z-50"></View>}
                     <MaterialIcons name="notifications" size={24} color={color} />

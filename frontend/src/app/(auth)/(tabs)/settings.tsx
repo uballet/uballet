@@ -144,11 +144,6 @@ function SettingsScreen() {
         </View>
 
         <Separator />
-        <View className="p-4">
-          <Text className="text-xl mb-8 self-center">{`Account Type: ${user?.walletType === 'light' ? 'Light' : 'Pro'}`} </Text>
-          {user?.walletType === 'light' && <Button mode="contained" className="mb-4" onPress={() =>{}}>Upgrade to Pro</Button>}
-        </View>
-        <Separator />
         <Button testID="logout-button" mode="outlined" className="m-8" onPress={logout}>
           <Text className="text-red-500">Logout</Text>
         </Button>
