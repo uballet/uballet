@@ -1,11 +1,12 @@
 import React from 'react';
-import { useGetTransactioDetail } from "../../hooks/useGetTransactioDetail";
+import { useGetTransactioDetail } from "../../hooks/useGetTransactionDetail";
 import { Stack, useLocalSearchParams } from "expo-router";
 import { View, Linking } from "react-native";
 import { ActivityIndicator, Card, Text, FAB } from "react-native-paper";
 import { useBlockchainContext } from "../../providers/BlockchainProvider";
 import styles from "../../styles/styles";
 import { router } from "expo-router";
+import { useAccountContext } from "../../hooks/useAccountContext";
 
 const TransactionScreen: React.FC = () => {
   const { txHash, isNew } = useLocalSearchParams<{ txHash?: string, isNew?: string }>();
@@ -13,6 +14,11 @@ const TransactionScreen: React.FC = () => {
 
   const { blockchain } = useBlockchainContext();
   const blockExplorerUrl = blockchain.block_explorer;
+
+  const { lightAccount, initiator } = useAccountContext();
+
+  const account = lightAccount || initiator;
+  const publicKey = account!.getAddress();
 
   const openEtherscan = () => {
     if (txHash) {
@@ -23,8 +29,17 @@ const TransactionScreen: React.FC = () => {
 
   const isNewParam = isNew === "true";
 
+  const isInternalTransaction = transaction && 
+    (transaction.from !== publicKey && transaction.to !== publicKey);
+
   return (
     <View style={[styles.container, { flex: 1, justifyContent: 'center', paddingHorizontal: 16 }]}>
+      {isInternalTransaction && (
+        <Text style={{ color: 'orange', fontWeight: 'bold', marginBottom: 16 }}>
+          This transaction is internal. Internal transactions are behind-the-scenes actions in smart contracts. Check the block explorer below for more details on recipients and amounts.
+        </Text>
+      )}
+
       {!isNewParam && (
         <Stack.Screen
           options={{
@@ -44,7 +59,7 @@ const TransactionScreen: React.FC = () => {
         <ActivityIndicator size="large" />
       ) : transaction ? (
         <View style={{ justifyContent: 'center', alignItems: 'center', flex: 1 }}>
-          <Card style={{ width: '100%', marginBottom: 24 }}>
+          <Card style={{ width: '100%' }}>
             <Card.Content>
               <Text variant="titleMedium" style={styles.item}>
                 Hash:{" "}
@@ -91,7 +106,7 @@ const TransactionScreen: React.FC = () => {
             </Card.Content>
           </Card>
 
-          <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 16 }}>
+          <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
             <FAB
               size="medium"
               icon="link-variant"

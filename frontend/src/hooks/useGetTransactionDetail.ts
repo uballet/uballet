@@ -15,13 +15,18 @@ export function useGetTransactioDetail(txHash: string) {
   }
 
   useEffect(() => {
-    try {
-      sdkClient.core.getTransaction(txHash).then((response) => {
-        setLoading(false);
-        setTransaction(response);
-      });
-    } catch (error) {
-      console.error("Error fetching transaction details:", error);
+    if (sdkClient) {
+      try {
+        sdkClient.core.getTransaction(txHash).then((response) => {
+          setLoading(false);
+          setTransaction(response);
+        });
+      } catch (error) {
+        console.error("Error fetching transaction details:", error);
+      }
+    } else {
+      console.error("SDK Client is not available");
+      setLoading(false);
     }
   }, []);
 
