@@ -49,53 +49,6 @@ function AddRecoveryModal({ onConfirm, visible, onDismiss }: RecoveryModalProps)
     )
 }
 
-function RecoveryCodeSection() {
-    const [modalVisible, setModalVisible] = useState(false);
-    const { loadSeedphrase } = useSignerStore()
-    const [code, setCode] = useState('')
-
-    useEffect(() => {
-        if (!modalVisible) {
-            setCode('')
-        }
-    }, [modalVisible])
-
-    const onOpenModal = () => {
-        setModalVisible(true)
-        loadSeedphrase().then(code => setCode(code!))
-    }
-    return (
-        <View>
-            <Text className="text-xl font-semibold self-center">Recovery Code</Text>
-            <Button
-                mode="contained"
-                className="w-3/4 mt-4 self-center"
-                onPress={onOpenModal}
-            >
-                View Recovery Code
-            </Button>
-            <Portal>
-                <Modal visible={modalVisible} onDismiss={() => setModalVisible(false)}>
-                    <View className="items-center self-center p-4 m-4 rounded justify-center bg-white">
-                        <Text className="text-lg">Recovery Code</Text>
-                        {code && (
-                            <>
-                                <Text className="text-lg max-h-32 mt-4 p-4 bg-gray-200 items-center">
-                                    {code}
-                                </Text>
-                                <Button mode="contained" className="w-3/4 mt-4" onPress={() => {}}>
-                                    Copy
-                                </Button>
-                            </>
-                        )}
-                        {!code && <ActivityIndicator />}
-                    </View>
-                </Modal>
-            </Portal>
-        </View>
-    )
-}
-
 function MyRecoveryTeam() {
     const [modalVisible, setModalVisible] = useState(false);
     const myTeam = useMyRecoveryTeam()
@@ -275,9 +228,6 @@ export default function SecurityScreen() {
                 </View>
                 <View className="w-5/6 flex-1 mt-4 pb-4 mx-4 border-b self-center">
                     <MyRecoveryTeam />
-                </View>
-                <View className="w-full flex-1 mt-4">
-                    <RecoveryCodeSection />
                 </View>
             </ScrollView>
         </SafeAreaView>
