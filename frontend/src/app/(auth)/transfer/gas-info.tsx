@@ -6,13 +6,13 @@ import EstimateGasFees from "../../../components/EstimateGasFees/EstimateGasFees
 import { useCheckTransferSponsorship } from "../../../hooks/useCheckTransferSponsorship";
 import styles from "../../../styles/styles";
 import { theme } from "../../../styles/color";
-import SponsorshipCard from '../../../components/SponsorshipCard/SponsorshipCard';
+import SponsorshipCard from "../../../components/SponsorshipCard/SponsorshipCard";
 
 function GasInfoScreen() {
-  const { toAddress, amount, currency } = useLocalSearchParams<{ 
-    toAddress: `0x${string}`, 
-    amount: string, 
-    currency: string 
+  const { toAddress, amount, currency } = useLocalSearchParams<{
+    toAddress: `0x${string}`;
+    amount: string;
+    currency: string;
   }>();
 
   const eth_symbol = "ETH";
@@ -38,26 +38,49 @@ function GasInfoScreen() {
   };
 
   return (
-    <View style={{ flex: 1, justifyContent: 'space-between', backgroundColor: theme.colors.background }}>
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', width: '100%', paddingHorizontal: 20 }}>
-        
+    <View
+      style={{
+        flex: 1,
+        justifyContent: "space-between",
+        backgroundColor: theme.colors.background,
+      }}
+    >
+      <View
+        style={{
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "stretch",
+          width: "100%",
+          paddingHorizontal: 20,
+        }}
+      >
         {/* Gas Fees Explanation and Button */}
-        <Text style={styles.infoText}>Ethereum transactions require a small fee called 'gas'. Here's an estimate of how much gas you'll need to pay to complete your transaction:</Text>
+        <Card style={{ margin: 8 }} mode="contained">
+          <Card.Content>
+            <Text style={styles.infoText}>
+              Ethereum transactions require a small fee called 'gas'. Here's an
+              estimate of how much gas you'll need to pay to complete your
+              transaction:
+            </Text>
+          </Card.Content>
+        </Card>
         <Card style={{ margin: 8 }}>
-          {loadingSponsorship ? (
-            <ActivityIndicator style={{ margin: 16 }} />
-          ) : (
-            <EstimateGasFees
-              target={toAddress}
-              data={"0x"}
-            />
-          )}
+          <Card.Content>
+            {loadingSponsorship ? (
+              <ActivityIndicator style={{ margin: 16 }} />
+            ) : (
+              <EstimateGasFees target={toAddress} data={"0x"} />
+            )}
+          </Card.Content>
         </Card>
 
         {/* Sponsorship Card */}
         {currency === eth_symbol && (
           <>
-            <Text style={styles.infoText}>Sometimes, someone else can cover the fee. Here, we're checking if someone else can cover the fee for this transaction.</Text>
+            <Text style={{ ...styles.infoText, margin: 8 }}>
+              Sometimes, someone else can cover the fee. Here, we're checking if
+              someone else can cover the fee for this transaction.
+            </Text>
             <SponsorshipCard
               loadingSponsorship={loadingSponsorship}
               isSponsored={isSponsored ?? false}
@@ -67,11 +90,17 @@ function GasInfoScreen() {
       </View>
 
       {/* Next Button at the Bottom */}
-      <View style={{ paddingBottom: 20, alignItems: 'center' }}>
+      <View
+        style={{
+          paddingBottom: 20,
+          alignItems: "center",
+          marginHorizontal: 16,
+        }}
+      >
         <Button
           testID="transfer-gas-next-button"
           mode="contained"
-          style={[styles.button, { width: 200 }]}
+          style={styles.button}
           onPress={handleNext}
         >
           Next

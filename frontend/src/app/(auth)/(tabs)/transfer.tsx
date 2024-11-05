@@ -28,7 +28,7 @@ function TransferScreen() {
               testID="new-address-button"
               onPress={handleNewPress}
               icon={({ size, color }) => (
-                <MaterialIcons name="add" size={40} color="#fff" />
+                <MaterialIcons name="add" size={30} color="#fff" />
               )}
             >
               <Text style={{ color: "#fff" }}>New address</Text>

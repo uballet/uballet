@@ -85,11 +85,15 @@ function AmountAndCurrencyScreen() {
       </View>
 
       {/* Next Button */}
-      <View style={{ paddingBottom: 20, alignItems: 'center' }}>
+      <View style={{
+          paddingBottom: 20,
+          alignItems: "center",
+          marginHorizontal: 16,
+        }}>
         <Button
           testID="transfer-amount-next-button"
           mode="contained"
-          style={[styles.button, { width: 200 }]}
+          style={styles.button}
           onPress={handleNext}
           disabled={!isAmountValid || !amount || ethBalanceLoading || tokenBalancesLoading}
         >

@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   margin: {
-    margin: 8,
+    marginVertical: 8,
   },
   errorText: {
     color: 'red',

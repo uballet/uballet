@@ -35,7 +35,7 @@ const AddressInput: React.FC<AddressInputProps> = ({
 
 const styles = StyleSheet.create({
   input: {
-    margin: 8,
+    marginVertical: 8,
   },
   errorText: {
     color: 'red',
