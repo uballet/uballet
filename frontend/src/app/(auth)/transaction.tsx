@@ -1,7 +1,7 @@
 import React from 'react';
 import { useGetTransactioDetail } from "../../hooks/useGetTransactionDetail";
 import { Stack, useLocalSearchParams } from "expo-router";
-import { View, Linking } from "react-native";
+import { View, Linking, Share } from "react-native";
 import { ActivityIndicator, Card, Text, FAB, IconButton } from "react-native-paper";
 import { useBlockchainContext } from "../../providers/BlockchainProvider";
 import styles from "../../styles/styles";
@@ -35,6 +35,19 @@ const TransactionScreen: React.FC = () => {
 
   const handleCopyToClipboard = (address: string) => {
     Clipboard.setStringAsync(address);
+  };
+
+  const shareBlockExplorerLink = async () => {
+    if (txHash) {
+      const url = `${blockExplorerUrl}${txHash}`;
+      try {
+        await Share.share({
+          message: `Check out this transaction: ${url}`,
+        });
+      } catch (error) {
+        console.log("Error sharing:", error);
+      }
+    }
   };
 
   return (
@@ -147,6 +160,13 @@ const TransactionScreen: React.FC = () => {
                 onPress={() => { router.navigate('/(auth)'); }}
               />
             )}
+            <FAB
+              testID='share-button'
+              size="medium"
+              icon="share"
+              style={styles.fab}
+              onPress={shareBlockExplorerLink}
+            />
           </View>
         </View>
       ) : (
