@@ -38,7 +38,7 @@ const TransactionScreen: React.FC = () => {
   };
 
   return (
-    <View style={[styles.container, { flex: 1, justifyContent: 'center', paddingHorizontal: 16 }]}>
+    <View style={[styles.container, { flex: 1, justifyContent: 'center' }]}>
       {isInternalTransaction && (
         <Text style={{ color: 'orange', fontWeight: 'bold' }}>
           This transaction is internal. Internal transactions are behind-the-scenes actions in smart contracts. Check the block explorer below for more details on recipients and amounts.
@@ -96,7 +96,7 @@ const TransactionScreen: React.FC = () => {
                 <IconButton
                   icon="content-copy"
                   size={20}
-                  onPress={() => handleCopyToClipboard(transaction.to)}
+                  onPress={() => transaction.to && handleCopyToClipboard(transaction.to)}
                   accessibilityLabel="Copy to address"
                 />
               </View>
@@ -106,12 +106,16 @@ const TransactionScreen: React.FC = () => {
               <Text testID='transaction-block-number' variant="bodyMedium" style={styles.item}>
                 {transaction.blockNumber}
               </Text>
-              <Text variant="titleMedium" style={styles.item}>
-                Value:{" "}
-              </Text>
-              <Text variant="bodyMedium" style={styles.item}>
-                {transaction.value.toString()}
-              </Text>
+              {transaction.value.toNumber() > 0 && (
+                <>
+                  <Text variant="titleMedium" style={styles.item}>
+                    Value:{" "}
+                  </Text>
+                  <Text variant="bodyMedium" style={styles.item}>
+                    {transaction.value.toString()}
+                  </Text>
+                </>
+              )}
               <Text variant="titleMedium" style={styles.item}>
                 Gas Used:{" "}
               </Text>
