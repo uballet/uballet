@@ -2,11 +2,12 @@ import React from 'react';
 import { useGetTransactioDetail } from "../../hooks/useGetTransactionDetail";
 import { Stack, useLocalSearchParams } from "expo-router";
 import { View, Linking } from "react-native";
-import { ActivityIndicator, Card, Text, FAB } from "react-native-paper";
+import { ActivityIndicator, Card, Text, FAB, IconButton } from "react-native-paper";
 import { useBlockchainContext } from "../../providers/BlockchainProvider";
 import styles from "../../styles/styles";
 import { router } from "expo-router";
 import { useAccountContext } from "../../hooks/useAccountContext";
+import * as Clipboard from "expo-clipboard";
 
 const TransactionScreen: React.FC = () => {
   const { txHash, isNew } = useLocalSearchParams<{ txHash?: string, isNew?: string }>();
@@ -32,10 +33,14 @@ const TransactionScreen: React.FC = () => {
   const isInternalTransaction = transaction && 
     (transaction.from !== publicKey && transaction.to !== publicKey);
 
+  const handleCopyToClipboard = (address: string) => {
+    Clipboard.setStringAsync(address);
+  };
+
   return (
     <View style={[styles.container, { flex: 1, justifyContent: 'center', paddingHorizontal: 16 }]}>
       {isInternalTransaction && (
-        <Text style={{ color: 'orange', fontWeight: 'bold', marginBottom: 16 }}>
+        <Text style={{ color: 'orange', fontWeight: 'bold' }}>
           This transaction is internal. Internal transactions are behind-the-scenes actions in smart contracts. Check the block explorer below for more details on recipients and amounts.
         </Text>
       )}
@@ -70,15 +75,31 @@ const TransactionScreen: React.FC = () => {
               <Text variant="titleMedium" style={styles.item}>
                 From:{" "}
               </Text>
-              <Text testID='transaction-from' variant="bodySmall" selectable style={styles.item}>
-                {transaction.from}
-              </Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Text testID='transaction-from' variant="bodySmall" selectable style={styles.item}>
+                  {transaction.from}
+                </Text>
+                <IconButton
+                  icon="content-copy"
+                  size={20}
+                  onPress={() => handleCopyToClipboard(transaction.from)}
+                  accessibilityLabel="Copy from address"
+                />
+              </View>
               <Text variant="titleMedium" style={styles.item}>
                 To:{" "}
               </Text>
-              <Text testID='transaction-to' variant="bodySmall" selectable style={styles.item}>
-                {transaction.to}
-              </Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Text testID='transaction-to' variant="bodySmall" selectable style={styles.item}>
+                  {transaction.to}
+                </Text>
+                <IconButton
+                  icon="content-copy"
+                  size={20}
+                  onPress={() => handleCopyToClipboard(transaction.to)}
+                  accessibilityLabel="Copy to address"
+                />
+              </View>
               <Text variant="titleMedium" style={styles.item}>
                 Block Number:{" "}
               </Text>
