@@ -136,6 +136,7 @@ function InputAddress() {
                 isInputValid={isInputValid}
                 placeholder="Enter ENS name"
               />
+              {resolvedAddress && <Text style={styles.infoText}>Address resolved: {resolvedAddress}</Text> }
               <Button
                 mode="contained"
                 onPress={handleResolveENS}
