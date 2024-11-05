@@ -50,7 +50,7 @@ const ContactInput: React.FC<ContactInputProps> = ({
             : ""}
         </Text>
       }
-      {isResolving && <ActivityIndicator />}
+      {isResolving && <ActivityIndicator testID="activity-indicator"/>}
     </>
   );
 };

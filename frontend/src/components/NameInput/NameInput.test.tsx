@@ -38,7 +38,7 @@ describe("NameInput Component", () => {
   });
 
   it("renders with default props", () => {
-    render(<NameInput name="" handleNameChange={mockHandleNameChange} />);
+    render(<NameInput name="" testID="name-input"  handleNameChange={mockHandleNameChange} />);
 
     const input = screen.getByTestId("name-input");
     expect(input.props.value).toBe("");
