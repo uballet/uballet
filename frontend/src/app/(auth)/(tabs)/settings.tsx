@@ -32,7 +32,7 @@ const networkLabels: Record<string, string> = {
 
 function getNetworkName(networkKey: string) {
   if (networkLabels[networkKey]) {
-    return networkLabels[networkKey]
+    return networkLabels[networkKey];
   } else {
     return networkKey;
   }
@@ -79,11 +79,8 @@ function SettingsScreen() {
       >
         {/* Network Selection Section */}
         <Card>
+          <Card.Title titleVariant="titleMedium" title="Network selection" />
           <Card.Content>
-            <Text variant="titleMedium" style={styles.item}>
-              Network selection
-            </Text>
-
             <Menu
               visible={menuVisible}
               onDismiss={closeMenu}
@@ -104,16 +101,12 @@ function SettingsScreen() {
               />
               <Divider />
               <Menu.Item
-                onPress={() =>
-                  handleNetworkChange("optimismSepolia")
-                }
+                onPress={() => handleNetworkChange("optimismSepolia")}
                 title={"Optimism Sepolia"}
               />
               <Divider />
               <Menu.Item
-                onPress={() =>
-                  handleNetworkChange("arbitrumSepolia")
-                }
+                onPress={() => handleNetworkChange("arbitrumSepolia")}
                 title={"Arbitrum Sepolia"}
               />
               <Divider />
@@ -128,32 +121,58 @@ function SettingsScreen() {
         <Separator />
 
         {/* Passkeys Section */}
-        <View>
-          <Text className="text-xl mb-8 self-center">Passkeys</Text>
-            {hasNoPasskeys && <Text className="self-center">You don't have any passkeys</Text>}
-            {hasPasskeys && passkeys?.map((passkey) => (
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                <Text>{passkey.name.slice(0, 16) + '...'}</Text>
-                <Text>{'Registered At: ' + passkey.registeredAt.toLocaleDateString()}</Text>
-              </View>
-            ))}
-          {isLoading && <ActivityIndicator />}
-          <Button mode="contained" className="m-4" onPress={() => register()} disabled={isLoading}>
-            Register New Passkey
+        <Card>
+          <Card.Title titleVariant="titleMedium" title="Passkeys" />
+          <Card.Content>
+            {hasNoPasskeys && (
+              <Text className="self-center">You don't have any passkeys</Text>
+            )}
+            {hasPasskeys &&
+              passkeys?.map((passkey) => (
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <Text>{passkey.name.slice(0, 16) + "..."}</Text>
+                  <Text>
+                    {"Registered At: " +
+                      passkey.registeredAt.toLocaleDateString()}
+                  </Text>
+                </View>
+              ))}
+            {isLoading && <ActivityIndicator />}
+            <Button
+              mode="contained"
+              style={styles.button}
+              onPress={() => register()}
+              disabled={isLoading}
+            >
+              Register New Passkey
+            </Button>
+          </Card.Content>
+        </Card>
+        
+        <View style={{ justifyContent: "center", alignItems: "center" }}>
+          <Separator />
+          <Button
+            testID="logout-button"
+            mode="outlined"
+            style={settingsStyles.settingButtons}
+            onPress={logout}
+          >
+            <Text className="text-red-500">Logout</Text>
+          </Button>
+          <Button
+            mode="contained-tonal"
+            style={settingsStyles.settingButtons}
+            textColor="white"
+            onPress={() => router.push({ pathname: "wallet-connect" })}
+          >
+            Connections
           </Button>
         </View>
-
-        <Separator />
-        <Button testID="logout-button" mode="outlined" className="m-8" onPress={logout}>
-          <Text className="text-red-500">Logout</Text>
-        </Button>
-        <Button
-          mode="outlined"
-          style={styles.button}
-          onPress={() => router.push({ pathname: "wallet-connect" })}
-        >
-          Connections
-        </Button>
       </View>
     </ScrollView>
   );
@@ -171,25 +190,15 @@ const Separator = () => (
 );
 
 const settingsStyles = StyleSheet.create({
-  emptyText: {
-    alignSelf: "center",
-  },
-  sectionHeader: {
-    alignSelf: "center",
-    fontSize: 18,
-    marginTop: 12,
-    marginBottom: 22,
-    color: theme.colors.primary,
-  },
-  sectionContainer: {
-    width: "90%",
-    padding: 8,
-  },
   networkDropdown: {
     width: "70%",
     alignSelf: "center",
     marginVertical: 16,
   },
+  settingButtons: {
+    ...styles.button,
+    marginVertical: 8
+  }
 });
 
 export default SettingsScreen;
