@@ -84,9 +84,9 @@ function AmountAndCurrencyScreen() {
           ) : (
             <>
               <Card mode="contained" style={{ marginBottom: 16 }}>
-                <Card.Title title={"Sending ETH to: "} />
+                <Card.Title title={"Sending ETH to: "} titleStyle={{ fontWeight: "bold" }}/>
                 <Card.Content>
-                  <Text>{toAddress}</Text>
+                  <Text style={styles.infoText}>{toAddress}</Text>
                 </Card.Content>
               </Card>
               <Text style={styles.infoText}>Enter the amount and currency</Text>
