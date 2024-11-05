@@ -30,3 +30,10 @@ InvalidAddress.args = {
   handleAddressChange: (address: string) => console.log('Address changed:', address),
   isAddressValid: false,
 };
+
+export const FilledAddress = Template.bind({});
+FilledAddress.args = {
+  toAddress: '0xD50a356D31857636d96Ebe500F51835FB04E6B08',
+  handleAddressChange: (address: string) => console.log('Address changed:', address),
+  isAddressValid: true,
+};
