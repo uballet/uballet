@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
 import { View, ScrollView } from "react-native";
-import { Button, Text } from "react-native-paper";
+import { Button, Card, Text } from "react-native-paper";
 import { useLocalSearchParams, router } from "expo-router";
 import styles from "../../../styles/styles";
 import TransferInput from "../../../components/TransferInput/TransferInput";
 import { useBlockchainContext } from "../../../providers/BlockchainProvider";
-import { theme } from "../../../styles/color"
+import { theme } from "../../../styles/color";
 import { useBalance } from "../../../hooks/useBalance";
 import { useTokenBalance } from "../../../hooks/useTokenBalance";
 import { ActivityIndicator } from "react-native";
@@ -17,13 +17,17 @@ function AmountAndCurrencyScreen() {
   const { blockchain } = useBlockchainContext();
   const tokens = blockchain.erc20_tokens;
   const currencies = [eth_symbol, ...tokens.map((token) => token.symbol)];
-  
+
   const [amount, setAmount] = useState("");
   const [currency, setCurrency] = useState(eth_symbol);
   const [isAmountValid, setIsAmountValid] = useState(true);
 
   const { data: ethBalance, isLoading: ethBalanceLoading } = useBalance();
-  const { tokenBalances, loading: tokenBalancesLoading, error } = useTokenBalance();
+  const {
+    tokenBalances,
+    loading: tokenBalancesLoading,
+    error,
+  } = useTokenBalance();
 
   const [currentBalance, setCurrentBalance] = useState<string | null>(null);
 
@@ -42,8 +46,11 @@ function AmountAndCurrencyScreen() {
     const validAmount = amountWithoutComma.match(/^\d*\.?\d{0,18}$/);
     if (validAmount) {
       setAmount(amountWithoutComma);
-      setIsAmountValid(parseFloat(amountWithoutComma) > 0 && 
-        (currentBalance === null || parseFloat(amountWithoutComma) <= parseFloat(currentBalance)));
+      setIsAmountValid(
+        parseFloat(amountWithoutComma) > 0 &&
+          (currentBalance === null ||
+            parseFloat(amountWithoutComma) <= parseFloat(currentBalance))
+      );
     }
   };
 
@@ -55,15 +62,33 @@ function AmountAndCurrencyScreen() {
   };
 
   return (
-    <ScrollView contentContainerStyle={{ flex: 1, justifyContent: 'space-between', backgroundColor: theme.colors.background }}>
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <View style={{ width: '100%', paddingHorizontal: 20 }}>
-          {(ethBalanceLoading || tokenBalancesLoading) ? (
-            <View style={{ justifyContent: 'center', alignItems: 'center', height: 100 }}>
+    <ScrollView
+      contentContainerStyle={{
+        flex: 1,
+        justifyContent: "space-between",
+        backgroundColor: theme.colors.background,
+      }}
+    >
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <View style={{ width: "100%", paddingHorizontal: 20 }}>
+          {ethBalanceLoading || tokenBalancesLoading ? (
+            <View
+              style={{
+                justifyContent: "center",
+                alignItems: "center",
+                height: 100,
+              }}
+            >
               <ActivityIndicator size="large" color={theme.colors.primary} />
             </View>
           ) : (
             <>
+              <Card mode="contained" style={{ marginBottom: 16 }}>
+                <Card.Title title={"Sending ETH to: "} />
+                <Card.Content>
+                  <Text>{toAddress}</Text>
+                </Card.Content>
+              </Card>
               <Text style={styles.infoText}>Enter the amount and currency</Text>
               <TransferInput
                 testID="transfer-amount-input"
@@ -76,26 +101,38 @@ function AmountAndCurrencyScreen() {
                 currentBalance={currentBalance}
               />
               <Text style={styles.infoText}>
-                Balance: {currentBalance ? `${currentBalance} ${currency}` : 'N/A'}
+                Balance:{" "}
+                {currentBalance ? `${currentBalance} ${currency}` : "N/A"}
               </Text>
-              {error && <Text className="text-red-500 mt-2">Error loading token balances </Text>}
+              {error && (
+                <Text className="text-red-500 mt-2">
+                  Error loading token balances{" "}
+                </Text>
+              )}
             </>
           )}
         </View>
       </View>
 
       {/* Next Button */}
-      <View style={{
+      <View
+        style={{
           paddingBottom: 20,
           alignItems: "center",
           marginHorizontal: 16,
-        }}>
+        }}
+      >
         <Button
           testID="transfer-amount-next-button"
           mode="contained"
           style={styles.button}
           onPress={handleNext}
-          disabled={!isAmountValid || !amount || ethBalanceLoading || tokenBalancesLoading}
+          disabled={
+            !isAmountValid ||
+            !amount ||
+            ethBalanceLoading ||
+            tokenBalancesLoading
+          }
         >
           Next
         </Button>
