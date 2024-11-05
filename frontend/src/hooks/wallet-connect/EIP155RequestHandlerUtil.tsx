@@ -40,6 +40,7 @@ export async function approveEIP155Request(
 
           return formatJsonRpcResult(id, signedMessage);
         } else {
+          // @ts-ignore
           const signedMessage = await initiator.signMessageWith6492({
             message: message,
           })
@@ -66,6 +67,7 @@ export async function approveEIP155Request(
           const signedMessage = await lightAccount.signTypedData(args);
           return formatJsonRpcResult(id, signedMessage);
         } else {
+          // @ts-ignore
           const signedMessage = await submitter.signTypedDataWith6492(args);
           return formatJsonRpcResult(id, signedMessage);
         }
@@ -84,7 +86,7 @@ export async function approveEIP155Request(
             uo: {
               target: toAddress,
               data: "0x",
-              value: parseEther(input),
+              value: parseEther(input!),
             },
           });
           const txHash = await lightAccount.waitForUserOperationTransaction(uo);
@@ -98,10 +100,10 @@ export async function approveEIP155Request(
             uo: {
               target: toAddress,
               data: "0x",
-              value: parseEther(input),
+              value: parseEther(input!),
             },
             overrides: {
-              preVerificationGas: toHex(50400n),
+              preVerificationGas: { multiplier: 3 },
             }
           })
           const tx = await submitter.sendUserOperation({
