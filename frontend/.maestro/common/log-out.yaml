@@ -1,0 +1,5 @@
+appId: com.flperez.uballet
+---
+- tapOn: "Settings"
+- tapOn:
+    id: "logout-button"

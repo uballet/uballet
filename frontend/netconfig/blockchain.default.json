@@ -1,0 +1,110 @@
+{
+  "arbitrum": {
+    "name": "Arbitrum",
+    "block_explorer": "https://arbiscan.io/tx/",
+    "erc20_tokens": [],
+    "sdk_name": "arb-mainnet",
+    "api_key_endpoint": "https://arb-mainnet.g.alchemy.com/v2/",
+    "supports_internal_transaction_history": false
+  },
+  "arbitrumSepolia": {
+    "name": "Arbitrum Sepolia",
+    "block_explorer": "https://sepolia.arbiscan.io/tx/",
+    "erc20_tokens": [
+      {
+        "name": "USD Coin",
+        "symbol": "USDC",
+        "address": "0x75faf114eafb1BDbe2F0316DF893fd58CE46AA4d"
+      }
+    ],
+    "sdk_name": "arb-sepolia",
+    "api_key_endpoint": "https://arb-sepolia.g.alchemy.com/v2/",
+    "supports_internal_transaction_history": false
+  },
+  "base": {
+    "name": "Base",
+    "block_explorer": "https://base.blockscout.com/tx/",
+    "erc20_tokens": [],
+    "sdk_name": "base-mainnet",
+    "api_key_endpoint": "https://base-mainnet.g.alchemy.com/v2/",
+    "supports_internal_transaction_history": false
+  },
+  "baseSepolia": {
+    "name": "Base Sepolia",
+    "block_explorer": "https://base-sepolia.blockscout.com/tx/",
+    "erc20_tokens": [
+      {
+        "name": "USD Coin",
+        "symbol": "USDC",
+        "address": "0x036CbD53842c5426634e7929541eC2318f3dCF7e"
+      }
+    ],
+    "sdk_name": "base-sepolia",
+    "api_key_endpoint": "https://base-sepolia.g.alchemy.com/v2/",
+    "supports_internal_transaction_history": false
+  },
+  "mainnet": {
+    "name": "Ethereum",
+    "block_explorer": "https://etherscan.io/tx/",
+    "erc20_tokens": [],
+    "sdk_name": "eth-mainnet",
+    "api_key_endpoint": "https://eth-mainnet.g.alchemy.com/v2/",
+    "supports_internal_transaction_history": true
+  },
+  "optimism": {
+    "name": "Optimism",
+    "block_explorer": "https://optimistic.etherscan.io/tx/",
+    "erc20_tokens": [],
+    "sdk_name": "opt-mainnet",
+    "api_key_endpoint": "https://opt-mainnet.g.alchemy.com/v2/",
+    "supports_internal_transaction_history": false
+  },
+  "optimismSepolia": {
+    "name": "Optimism Sepolia",
+    "block_explorer": "https://sepolia-optimism.etherscan.io/tx/",
+    "erc20_tokens": [
+      {
+        "name": "USD Coin",
+        "symbol": "USDC",
+        "address": "0x5fd84259d66Cd46123540766Be93DFE6D43130D7"
+      }
+    ],
+    "sdk_name": "opt-sepolia",
+    "api_key_endpoint": "https://opt-sepolia.g.alchemy.com/v2/",
+    "supports_internal_transaction_history": false
+  },
+  "sepolia": {
+    "name": "Sepolia",
+    "block_explorer": "https://sepolia.etherscan.io/tx/",
+    "erc20_tokens": [
+      {
+        "name": "DAI",
+        "symbol": "DAI",
+        "address": "0xff34b3d4aee8ddcd6f9afffb6fe49bd371b8a357"
+      },
+      {
+        "name": "Tether USD",
+        "symbol": "USDT",
+        "address": "0xaA8E23Fb1079EA71e0a56F48a2aA51851D8433D0"
+      },
+      {
+        "name": "USD Coin",
+        "symbol": "USDC",
+        "address": "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238"
+      },
+      {
+        "name": "Wrapped Bitcoin",
+        "symbol": "WBTC",
+        "address": "0x29f2D40B0605204364af54EC677bD022dA425d03"
+      },
+      {
+        "name": "Aave",
+        "symbol": "AAVE",
+        "address": "0x88541670E55cC00bEEFD87eB59EDd1b7C511AC9a"
+      }
+    ],
+    "sdk_name": "eth-sepolia",
+    "api_key_endpoint": "https://eth-sepolia.g.alchemy.com/v2/",
+    "supports_internal_transaction_history": true
+  }
+}

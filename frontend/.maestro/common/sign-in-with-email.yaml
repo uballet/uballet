@@ -1,0 +1,17 @@
+appId: com.flperez.uballet
+---
+- runFlow:
+    when:
+      visible:
+        text: "Sign In"
+    commands:
+      - tapOn:
+          text: "Email"
+- inputText: ${EMAIL}
+- tapOn:
+    text: "return"
+- tapOn:
+    id: "sign-in-button"
+- tapOn: "Input Code"
+- inputText: "123456"
+- tapOn: "Submit Code"

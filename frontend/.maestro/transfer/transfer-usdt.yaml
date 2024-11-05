@@ -1,0 +1,93 @@
+appId: com.flperez.uballet
+---
+- runFlow: ../common/start-app.yaml
+- runFlow:
+    file: ../common/sign-in-with-email.yaml
+    env:
+      EMAIL: "funded-11@test.com"
+- runFlow:
+    file: '../common/recover-with-seedphrase.yaml'
+    env:
+      SEED_PHRASE: "quarter punch list during dilemma stock ivory slot present beyond hope discover"
+- tapOn: "BalanceBottomTab"
+- assertVisible:
+    id: "token-balance-ETH"
+- scrollUntilVisible:
+    element:
+      id: "token-balance-USDT"
+- copyTextFrom:
+    id: "token-balance-USDT-amount"
+- evalScript: ${output.receiverInitialBalance = parseFloat(maestro.copiedText.replace(" ETH", ""))}
+- runFlow: ../common/log-out.yaml
+- runFlow:
+    file: ../common/sign-in-with-email.yaml
+    env:
+      EMAIL: "funded-10@test.com"
+- runFlow:
+    file: ../common/recover-with-seedphrase.yaml
+    env:
+      SEED_PHRASE: "clever make parent vessel damage screen enact soap umbrella hip gentle current"
+- tapOn: "BalanceBottomTab"
+- assertVisible:
+    id: "token-balance-ETH"
+- scrollUntilVisible:
+    element:
+      id: "token-balance-USDT"
+- copyTextFrom:
+    id: "token-balance-USDT-amount"
+- evalScript: ${output.previousBalance = parseFloat(maestro.copiedText.replace(" ETH", ""))}
+- tapOn: "Transfer"
+- tapOn:
+    id: "new-address-button"
+- tapOn:
+    id: "transfer-address-input"
+- inputText: "4c84FcabaC95B4cD71541201C264610f30F007d5"
+- tapOn: "return"
+- tapOn:
+    id: "input-address-next-button"
+- swipe:
+    start: 75%, 45%
+    end: 75%, 35%
+- tapOn:
+    id: "transfer-amount-input"
+- inputText: "25"
+- tapOn: "Done"
+- tapOn:
+    id: "transfer-amount-next-button"
+- tapOn:
+    id: "transfer-gas-next-button"
+- tapOn:
+    id: "transfer-submit-button"
+- assertVisible:
+    id: "transaction-to"
+- assertVisible:
+    id: "transaction-from"
+- assertVisible:
+    id: "transaction-block-number"
+- tapOn:
+    id: "go-to-home-button"
+- tapOn: "BalanceBottomTab"
+- assertVisible:
+    id: "token-balance-ETH"
+- scrollUntilVisible:
+    element:
+      id: "token-balance-USDT"
+- copyTextFrom:
+    id: "token-balance-USDT-amount"
+- evalScript: ${output.newBalance = parseFloat(maestro.copiedText.replace(" ETH", ""))}
+- assertTrue: ${output.newBalance < output.previousBalance}
+- runFlow: ../common/log-out.yaml
+- runFlow:
+    file: ../common/sign-in-with-email.yaml
+    env:
+      EMAIL: "funded-11@test.com"
+- tapOn: "BalanceBottomTab"
+- assertVisible:
+    id: "token-balance-ETH"
+- scrollUntilVisible:
+    element:
+      id: "token-balance-USDT"
+- copyTextFrom:
+    id: "token-balance-USDT-amount"
+- evalScript: ${output.receiverFinalBalance = parseFloat(maestro.copiedText.replace(" ETH", ""))}
+- assertTrue: ${output.receiverInitialBalance < output.receiverFinalBalance}

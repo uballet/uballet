@@ -1,0 +1,30 @@
+appId: com.flperez.uballet
+---
+- tapOn:
+    id: "sign-up-link"
+- tapOn:
+    id: "sign-up-email-input"
+- inputText: ${EMAIL}
+- tapOn:
+    id: "return"
+- tapOn:
+    id: "sign-up-button"
+- tapOn:
+    id: "sign-up-code-input"
+- inputText: "123456"
+- tapOn:
+    id: "verify-email-button"
+- tapOn:
+    id: "pro-account-button"
+- runFlow:
+    when:
+      visible:
+        id: "mnemonic-text"
+    commands:
+      - tapOn:
+          id: "mnemonic-done-button"
+- tapOn:
+    id: "mnemonic-done-input"
+- inputText: "COPIED"
+- tapOn:
+    id: "mnemonic-confirm-done-button"

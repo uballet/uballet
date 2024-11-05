@@ -1,0 +1,29 @@
+appId: com.flperez.uballet
+---
+- runFlow: ../common/start-app.yaml
+- runFlow:
+    file: ../common/sign-in-with-email.yaml
+    env:
+      EMAIL: "funded-1@test.com"
+- runFlow:
+    file: ../common/recover-with-seedphrase.yaml
+    env:
+      SEED_PHRASE: "cake still pioneer lunch valid wisdom urge author report box utility utility"
+- assertVisible:
+    text: "Invalid seed phrase"
+- tapOn:
+    point: 50%,50%
+- eraseText: 7
+- inputText: "possible"
+- tapOn: "done"
+- tapOn: "Recover"
+- assertVisible:
+    text: "Balance"
+- runFlow: ../common/log-out.yaml
+
+- runFlow:
+    file: ../common/sign-in-with-email.yaml
+    env:
+      EMAIL: "funded-1@test.com"
+- assertVisible:
+    text: "Balance"

@@ -1,0 +1,61 @@
+appId: com.flperez.uballet
+---
+- runFlow: ../common/start-app.yaml
+- runFlow:
+    file: ../common/sign-in-with-email.yaml
+    env:
+      EMAIL: "funded-4@test.com"
+- runFlow:
+    file: ../common/recover-with-seedphrase.yaml
+    env:
+      SEED_PHRASE: "carbon test obey pulse gospel liar rebuild tone arch seminar immune father"
+- tapOn:
+    text: "Security"
+- tapOn:
+    id: "create-recovery-team-button"
+- tapOn:
+    text: "Recoverer 1 Email"
+- inputText: "new-recoverer-1@test.com"
+- tapOn:
+    text: "Recoverer 2 Email"
+- inputText: "new-recoverer-2@test.com"
+- tapOn:
+    id: "add-recovery-button"
+- assertVisible:
+    id: "pending-recoverers-text"
+- runFlow: ../common/log-out.yaml
+
+- runFlow:
+    file: "../common/sign-up.yaml"
+    env:
+      EMAIL: "new-recoverer-1@test.com"
+- tapOn: "Security"
+- tapOn:
+    id: "join-recovery-team-button"
+- runFlow: ../common/log-out.yaml
+
+- runFlow:
+    file: "../common/sign-up.yaml"
+    env:
+      EMAIL: "new-recoverer-2@test.com"
+- tapOn: "Security"
+- tapOn:
+    id: "join-recovery-team-button"
+- runFlow: ../common/log-out.yaml
+
+- runFlow:
+    file: ../common/sign-in-with-email.yaml
+    env:
+      EMAIL: "funded-4@test.com"
+- tapOn:
+    text: "Security"
+- assertNotVisible:
+    id: "pending-recoverers-text"
+- tapOn:
+    id: "confirm-recovery-team-button"
+- tapOn:
+    id: "confirm-team-button"
+- assertVisible:
+    text: "new-recoverer-1@test.com"
+- assertVisible:
+    text: "new-recoverer-2@test.com"
