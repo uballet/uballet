@@ -1,6 +1,6 @@
 export default {
   expo: {
-    name: "uballet",
+    name: "Uballet",
     slug: "uballet",
     version: "1.0.0",
     orientation: "portrait",
@@ -22,6 +22,7 @@ export default {
       ]
     ],
     ios: {
+      icon: "./assets/icon.png",
       supportsTablet: true,
       bundleIdentifier: "com.flperez.uballet",
       associatedDomains: [
@@ -42,8 +43,9 @@ export default {
     android: {
       package: "com.uballet.wallet",
       googleServicesFile: process.env.GOOGLE_SERVICES_JSON,
+      icon: "./assets/icon.png",
       adaptiveIcon: {
-        foregroundImage: "./assets/adaptive-icon.png",
+        foregroundImage: "./assets/icon.png",
         backgroundColor: "#ffffff",
       },
       permissions: [
