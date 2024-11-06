@@ -1,4 +1,4 @@
-import { Text, View } from "react-native";
+import { KeyboardAvoidingView, Text, View } from "react-native";
 import {
   ActivityIndicator,
   Modal,
@@ -85,7 +85,7 @@ export default function RememberScreen() {
         <Text>Done</Text>
       </Button>
       <Modal
-        style={{ justifyContent: "center", alignItems: "center" }}
+        style={{ justifyContent: "flex-start", alignItems: "center" }}
         visible={modalVisible}
         dismissable={modalText === "COPIED"}
         onDismiss={() => setModalVisible(false)}
@@ -101,6 +101,7 @@ export default function RememberScreen() {
             style={{ marginVertical: 16, width: "100%" }}
             placeholder="Input the word COPIED"
             value={modalText}
+            autoFocus={true}
             onChangeText={setModalText}
           />
 
