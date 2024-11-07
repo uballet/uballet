@@ -54,8 +54,10 @@ const TransactionScreen: React.FC = () => {
   return (
     <View style={[styles.container, { flex: 1, justifyContent: 'center' }]}>
       {isInternalTransaction && (
-        <Text style={{ color: 'orange', fontWeight: 'bold' }}>
-          This transaction is internal. Internal transactions are behind-the-scenes actions in smart contracts. Check the block explorer below for more details on recipients and amounts.
+        <Text style={{ color: 'orange', fontWeight: 'bold', marginTop: 30, marginBottom: -55 }}>
+          This transaction is internal. 
+          Internal transactions are behind-the-scenes actions in smart contracts.
+          Check the block explorer below for more details on recipients and amounts.
         </Text>
       )}
 
@@ -157,7 +159,7 @@ const TransactionScreen: React.FC = () => {
                 testID='go-to-home-button'
                 size="medium"
                 icon="home"
-                style={styles.fab}
+                style={[styles.fab, { marginRight: 16 }]}
                 onPress={() => { router.navigate('/(auth)'); }}
               />
             )}
