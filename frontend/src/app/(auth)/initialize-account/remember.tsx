@@ -75,7 +75,7 @@ export default function RememberScreen() {
                         testID="mnemonic-done-input"
                         mode="outlined"
                         autoCapitalize="none"
-                        placeholder="Input the word COPIED"
+                        placeholder="Input word"
                         className="m-2 w-[90%]"
                         value={modalText}
                         onChangeText={setModalText}
