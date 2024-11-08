@@ -51,9 +51,7 @@ const BalanceScreen = () => {
     <ScrollView
       refreshControl={<RefreshControl refreshing={false} onRefresh={refresh} />}
     >
-      <View style={{ ...styles.container, alignItems: "stretch" }}>
-        <Text style={styles.screenHeader}>Balance</Text>
-
+      <View className="p-3 mt-5">
         <Card
           className="mb-4"
           onPress={() => {

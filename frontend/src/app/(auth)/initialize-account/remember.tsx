@@ -1,15 +1,16 @@
-import { KeyboardAvoidingView, Text, View } from "react-native";
+import * as Clipboard from "expo-clipboard";
+import { useRouter } from "expo-router";
+import { useEffect, useState } from "react";
+import { ScrollView, Text, View } from "react-native";
 import {
   ActivityIndicator,
-  Modal,
-  TextInput,
   Button,
   Card,
+  Modal,
+  TextInput,
 } from "react-native-paper";
-import { useEffect, useState } from "react";
-import { useRouter } from "expo-router";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { useSignerStore } from "../../../hooks/useSignerStore";
-import * as Clipboard from "expo-clipboard";
 import styles from "../../../styles/styles";
 
 export default function RememberScreen() {
@@ -42,48 +43,69 @@ export default function RememberScreen() {
     Clipboard.setStringAsync(mnemonic);
   };
 
-  return (
-    <View
-      className="flex-1 items-center justify-center"
-      style={styles.container}
-    >
-      <Card style={styles.genericCard} mode="contained">
-        <Card.Title titleVariant="titleMedium" title="Remember your account" />
-        <Card.Content>
-          <Text style={styles.infoText}>
-            You'll need the following code in order to recover your account in
-            case of changing/lossing your device
-          </Text>
-        </Card.Content>
-      </Card>
+  if (!mnemonic) {
+    return (
+      <View className="flex-1 items-center justify-center">
+        <ActivityIndicator />
+      </View>
+    );
+  }
 
-      <Text style={styles.infoText}>COPY AND SAVE SOMEWHERE SAFE!</Text>
-      {!mnemonic && <ActivityIndicator />}
-      {mnemonic && (
-        <View
-          testID="mnemonic-text"
-          style={{ marginVertical: 16 }}
-          className="p-2 border h-64 bg-gray-200 rounded-md"
-        >
-          <Text className="p-2 text-black">{mnemonic}</Text>
+  const mnemonicWords = mnemonic.split(" ");
+
+  return (
+    <SafeAreaView className="flex-1 h-full">
+      <ScrollView
+        className="flex-1 h-full"
+        contentContainerStyle={{ padding: 8, justifyContent: "space-between" }}
+      >
+        <Card style={styles.genericCard} mode="contained">
+          <Card.Title
+            titleVariant="titleMedium"
+            title="Remember your account"
+          />
+          <Card.Content>
+            <Text style={styles.infoText}>
+              You'll need the following code in order to recover your account in
+              case of changing/lossing your device
+            </Text>
+          </Card.Content>
+        </Card>
+
+        <Text style={styles.infoText}>COPY AND SAVE SOMEWHERE SAFE!</Text>
+        <View className="flex-1 justify-between">
+          {mnemonicWords.map((word, index) => (
+            <View key={index}>
+              <View className="flex-row items-center">
+                <Text>Word {index + 1}:</Text>
+                <Text
+                  testID={`mnemonic-word-${index}`}
+                  className="flex-1 m-2 p-2 border border-gray-700 bg-gray-200 rounded-md text-black"
+                >
+                  {word}
+                </Text>
+              </View>
+            </View>
+          ))}
+          <Button
+            testID="mnemonic-clipboard-button"
+            mode="contained-tonal"
+            style={styles.button}
+            onPress={clipboardButtonHandler}
+          >
+            <Text style={{ color: "white" }}>Copy to clipboard</Text>
+          </Button>
+          <Button
+            testID="mnemonic-done-button"
+            mode="contained"
+            style={styles.button}
+            onPress={onOpenModal}
+          >
+            <Text>Done</Text>
+          </Button>
         </View>
-      )}
-      <Button
-        testID="mnemonic-clipboard-button"
-        mode="contained-tonal"
-        style={styles.button}
-        onPress={clipboardButtonHandler}
-      >
-        <Text style={{ color: "white" }}>Copy to clipboard</Text>
-      </Button>
-      <Button
-        testID="mnemonic-done-button"
-        mode="contained"
-        style={styles.button}
-        onPress={onOpenModal}
-      >
-        <Text>Done</Text>
-      </Button>
+      </ScrollView>
+
       <Modal
         style={{ justifyContent: "flex-start", alignItems: "center" }}
         visible={modalVisible}
@@ -116,6 +138,6 @@ export default function RememberScreen() {
           </Button>
         </View>
       </Modal>
-    </View>
+    </SafeAreaView>
   );
 }
