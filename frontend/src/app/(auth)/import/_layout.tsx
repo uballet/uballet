@@ -11,17 +11,6 @@ function ImportLayout() {
           title: "Import Tokens",
           headerStyle: { backgroundColor: "#277ca5" },
           headerShown: true,
-          headerLeft: () => (
-            <Ionicons
-              testID="header-back-button"
-              name="arrow-back-outline"
-              size={24}
-              color="white"
-              onPress={() => {
-                router.canGoBack() ? router.back() : router.navigate('/(auth)/')
-              }}
-            />
-          ),
           headerTintColor: "#fff",
           headerBackTitleVisible: false,
           headerTitleStyle: {
