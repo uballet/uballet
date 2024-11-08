@@ -39,17 +39,6 @@ function ContactsLayout() {
           headerTitleStyle: {
             fontWeight: "bold",
           },
-          headerLeft: () => (
-            <Ionicons
-              testID="new-contacts-back-button"
-              name="arrow-back-outline"
-              size={24}
-              color="white"
-              onPress={() => {
-                router.canGoBack() ? router.back() : router.navigate('/(auth)/')
-              }}
-            ></Ionicons>
-          ),
           headerRight: () => (
             <Ionicons
               testID="new-contact-header-button"
