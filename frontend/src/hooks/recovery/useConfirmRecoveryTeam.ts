@@ -1,7 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import uballet from "../../api/uballet";
 import { useAccountContext } from "../useAccountContext";
-import { toHex } from "viem";
 
 export default function useConfirmRecoveryTeam() {
     const { initiator, submitter } = useAccountContext()
@@ -15,7 +14,7 @@ export default function useConfirmRecoveryTeam() {
             const { signatureObj: signature1, aggregatedSignature, request } = await initiator!.proposeUserOperation({
                 uo,
                 overrides: {
-                    preVerificationGas: toHex(53000n),
+                    preVerificationGas: { multiplier: 3 },
                 }
             })
 
