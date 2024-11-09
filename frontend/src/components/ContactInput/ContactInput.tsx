@@ -45,7 +45,7 @@ const ContactInput: React.FC<ContactInputProps> = ({
       )}
       {
         <Text style={styles.infoText}>
-          {inputType === "ens" && isAddressValid
+          {inputType === "ens" && isAddressValid && toAddress !== ""
             ? "Address resolved: " + toAddress
             : ""}
         </Text>

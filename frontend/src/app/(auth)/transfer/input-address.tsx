@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { View } from "react-native";
 import { Button, Text } from "react-native-paper";
 import { router } from "expo-router";
@@ -13,7 +13,7 @@ import { useAddContact } from "../../../hooks/contacts/useAddContact";
 function InputAddress() {
   const [input, setInput] = useState("");
   const [contactName, setContactName] = useState("");
-  const [isInputValid, setIsInputValid] = useState(true);
+  const [isInputValid, setIsInputValid] = useState(false);
   const [inputType, setInputType] = useState<"address" | "ens">("address");
   const [resolvedAddress, setResolvedAddress] = useState("");
   const [isENSResolved, setIsENSResolved] = useState(false);
@@ -32,43 +32,60 @@ function InputAddress() {
 
   const handleInputChange = (value: string) => {
     setInput(value);
+    setIsInputValid(value != "")
   };
 
-  const handleInputEndEditing = () => {
-    if (!input || input === "") {
-      setIsInputValid(true);
-      return;
+  useEffect(() => {
+    if (isInputValid) {
+      console.log(
+        "Navigating to next screen... with address: ",
+        resolvedAddress
+      );
+      navigateToNextScreen();
     }
+  }, [resolvedAddress]);
+
+  const handleInputEndEditing = async () => {    
     let isAddressInput = isAddress(input);
+    console.log("isAddressInput: ", isAddressInput);
+    var isInputValid = false;
     if (isAddressInput) {
       setInputType("address");
-      let isValidAddress = validateAddress(input);
-      setIsInputValid(isValidAddress);
+      isInputValid = validateAddress(input);
+      if(isInputValid){
+        setResolvedAddress(input);
+      }
     } else {
       setInputType("ens");
-      setIsENSResolved(false);
-      handleResolveENS();
+      isInputValid = await handleResolveENS();
     }
+    setIsInputValid(isInputValid);
   };
 
   const handleResolveENS = async () => {
-    if (!input) return;
+    if (!input) return false;
     setIsResolving(true);
+    var isInputValid = false
     try {
       const resolved = await resolveName(input);
-      setIsInputValid(!!resolved);
-      setResolvedAddress(resolved || "");
-      setIsENSResolved(!!resolved);
+      isInputValid = resolved != null;
+      if(resolved){
+        setResolvedAddress(resolved);
+      } else {
+        setResolvedAddress("");
+      }
     } catch (error) {
       setIsInputValid(false);
       setResolvedAddress("");
-      setIsENSResolved(false);
     } finally {
+      setIsENSResolved(true);
       setIsResolving(false);
     }
+    return isInputValid
   };
 
-  const handleNext = () => {
+
+  const navigateToNextScreen = () => {
     if (contactName != "") {
       console.log("Adding new contact...");
       addNewContact({ name: contactName, address: resolvedAddress });
@@ -79,11 +96,11 @@ function InputAddress() {
     });
   };
 
-  const isNextButtonDisabled = () => {
+  const isContactInputEnabled = () => {
     if (inputType === "address") {
-      return !isInputValid || !input;
+      return isInputValid || input == "";
     } else {
-      return !isENSResolved || !resolvedAddress;
+      return isInputValid && (isENSResolved || isResolving);
     }
   };
 
@@ -117,8 +134,8 @@ function InputAddress() {
             toAddress={resolvedAddress}
             isResolving={isResolving}
             handleAddressChange={handleInputChange}
-            handleInputEndEditing={handleInputEndEditing}
-            isAddressValid={isInputValid || input == ""}
+            handleInputEndEditing={() => {}}
+            isAddressValid={isContactInputEnabled()}
             inputType={inputType}
           />
         </View>
@@ -143,8 +160,8 @@ function InputAddress() {
           testID="input-address-next-button"
           style={styles.button}
           mode="contained"
-          onPress={handleNext}
-          disabled={isNextButtonDisabled()}
+          onPress={handleInputEndEditing}
+          disabled={input == ""}
         >
           Next
         </Button>
