@@ -8,6 +8,7 @@ import styles from "../../../styles/styles";
 import { theme } from "../../../styles/color";
 import SponsorshipCard from '../../../components/SponsorshipCard/SponsorshipCard';
 import { useERC20GasEstimation } from "../../../hooks/useGasEstimation";
+import { useBlockchainContext } from "../../../providers/BlockchainProvider";
 
 function GasInfoScreen() {
   const { toAddress, amount, currency } = useLocalSearchParams<{
@@ -15,6 +16,16 @@ function GasInfoScreen() {
     amount: string;
     currency: string;
   }>();
+
+  const { blockchain } = useBlockchainContext();
+  const tokens = blockchain.erc20_tokens;
+  const tokenAddresses = tokens.reduce<{ [key: string]: `0x${string}` }>(
+    (acc, token) => {
+      acc[token.symbol] = token.address as `0x${string}`;
+      return acc;
+    },
+    {}
+  );
 
   const eth_symbol = "ETH";
   const {
@@ -24,7 +35,7 @@ function GasInfoScreen() {
     isSponsored,
   } = useCheckTransferSponsorship();
 
-  const { data, isLoading: isLoadingErc20, isError: isERC20EstimationError } = useERC20GasEstimation({ target: toAddress, data: "0x" });
+  const { data, isLoading: isLoadingErc20, isError: isERC20EstimationError } = useERC20GasEstimation({ address: toAddress, amount, tokenAddress: tokenAddresses[currency] });
 
   useEffect(() => {
     if (currency === eth_symbol) {
@@ -71,7 +82,7 @@ function GasInfoScreen() {
             {loadingSponsorship ? (
               <ActivityIndicator style={{ margin: 16 }} />
             ) : (
-              <EstimateGasFees target={toAddress} data={"0x"} />
+              <EstimateGasFees address={toAddress} amount={amount} tokenAddress={tokenAddresses[currency]} />
             )}
           </Card.Content>
         </Card>
@@ -90,10 +101,10 @@ function GasInfoScreen() {
           </>
         )}
         <View className="mt-8 items-center">
-          {!isSponsored && isLoadingErc20 && (
+          {!isSponsored && !loadingSponsorship && isLoadingErc20 && (
               <ActivityIndicator style={{ margin: 16 }} />
           )}
-          {!isSponsored && data?.formattedInUsdc && (
+          {!isSponsored && !loadingSponsorship && data?.formattedInUsdc && (
             <>
               <Text style={styles.infoText}>You can also pay gas with USDC.</Text>
               <Card className="m-2">

@@ -23,8 +23,7 @@ function SubmitTransferScreen() {
   const amountScanned = useLocalSearchParams<{ amount: string }>()?.amount;
   
   const {
-    transferToAddress,
-    transferTokenToAddress,
+    transfer,
     loading,
     error,
     setError,
@@ -101,14 +100,9 @@ function SubmitTransferScreen() {
           currency={currency}
           ethSymbol={eth_symbol}
           loading={loading}
-          onTransferETH={() => transferToAddress(toAddress, amount, usdcTokenGas)}
+          onTransferETH={() => transfer({ address: toAddress, amount, gasInUsdc: usdcTokenGas })}
           onTransferToken={() =>
-            transferTokenToAddress(
-              tokenAddresses[currency],
-              toAddress,
-              amount,
-              usdcTokenGas
-            )
+            transfer({ address: toAddress, tokenAddress: tokenAddresses[currency], amount, gasInUsdc: usdcTokenGas })
           }
         />
       </View>

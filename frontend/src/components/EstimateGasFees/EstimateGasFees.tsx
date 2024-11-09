@@ -5,17 +5,20 @@ import { useGasEstimation } from "../../hooks/useGasEstimation";
 import { theme } from "../../styles/color";
 
 interface EstimateGasFeesProps {
-  target: `0x${string}`;
-  data: `0x${string}`;
+  address: `0x${string}`;
+  tokenAddress?: `0x${string}`;
+  amount: string;
 }
 
 const EstimateGasFees: React.FC<EstimateGasFeesProps> = ({
-  target,
-  data,
+  address,
+  tokenAddress,
+  amount,
 }) => {
   const { data: gasEstimation, isLoading, isError } = useGasEstimation({
-    target,
-    data,
+    address,
+    amount,
+    tokenAddress
   })
 
   if (isLoading) {

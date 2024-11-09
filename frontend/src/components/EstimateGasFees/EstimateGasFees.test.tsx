@@ -39,10 +39,10 @@ const mockAccount = {
 
 const queryClient = new QueryClient();
 
-const renderComponent = (client: any, account: any, target: `0x${string}`, data: `0x${string}`) => {
+const renderComponent = (client: any, account: any, target: `0x${string}`, amount: string) => {
   return render(
     <QueryClientProvider client={queryClient}>
-      <EstimateGasFees target={target} data={data} />
+      <EstimateGasFees address={target} amount={amount} />
     </QueryClientProvider>
   );
 };
@@ -52,7 +52,7 @@ describe('EstimateGasFees Component', () => {
     // @ts-ignore
     jest.spyOn(accountContextHooks, 'useAccountContext').mockImplementation(() => ({ lightAccount: mockClient }));
       //rest of the test
-    renderComponent(mockClient, mockAccount, "0xabcdef1234567890abcdef1234567890abcdef12", "0x123456");
+    renderComponent(mockClient, mockAccount, "0xabcdef1234567890abcdef1234567890abcdef12", "0.1");
 
     await waitFor(async () => {
       const maxFeePerGas = await screen.findByText(/Estimated Max Fees/);
@@ -66,7 +66,7 @@ describe('EstimateGasFees Component', () => {
     // @ts-ignore
     jest.spyOn(accountContextHooks, 'useAccountContext').mockImplementation(() => ({ lightAccount: mockClient, getBalance: () => Promise.resolve(50n) }));
 
-    renderComponent(mockClient, mockAccount, "0xabcdef1234567890abcdef1234567890abcdef12", "0x123456");
+    renderComponent(mockClient, mockAccount, "0xabcdef1234567890abcdef1234567890abcdef12", "0.1");
 
     const activityIndicator = screen.getByTestId('ActivityIndicator');
     expect(activityIndicator).toBeTruthy();
@@ -75,7 +75,7 @@ describe('EstimateGasFees Component', () => {
   it('renders message when no data is available', async () => {
     // @ts-ignore
     jest.spyOn(gasEstimationHooks, 'useGasEstimation').mockImplementation(() => ({ data: null, isLoading: false, isError: true }));
-    renderComponent(mockClientNoData, mockAccount, "0xabcdef1234567890abcdef1234567890abcdef12", "0x");
+    renderComponent(mockClientNoData, mockAccount, "0xabcdef1234567890abcdef1234567890abcdef12", "0.1");
 
     await waitFor(async () => {
       const message = await screen.findByText(/Unable to estimate gas fees/);
