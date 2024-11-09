@@ -90,9 +90,10 @@ function GasInfoScreen() {
           </>
         )}
         <View className="mt-8 items-center">
-        {(loadingSponsorship || isLoadingErc20) ? (
-            <ActivityIndicator style={{ margin: 16 }} />
-          ): !isERC20EstimationError && data && (
+          {!isSponsored && isLoadingErc20 && (
+              <ActivityIndicator style={{ margin: 16 }} />
+          )}
+          {!isSponsored && data?.formattedInUsdc && (
             <>
               <Text style={styles.infoText}>You can also pay gas with USDC.</Text>
               <Card className="m-2">
@@ -110,8 +111,8 @@ function GasInfoScreen() {
               >
                 Pay Gas With USDC
               </Button>
-          </>
-        )}
+            </>
+          )}
         </View>
       </View>
       {/* Next Button at the Bottom */}
