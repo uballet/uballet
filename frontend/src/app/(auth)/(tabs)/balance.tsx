@@ -71,7 +71,7 @@ const BalanceScreen = () => {
                 <Text className="text-3xl font-bold">
                   {totalSumData ? totalSumData.toFixed(2) : "0.00"}
                 </Text>
-                <Text className="mt-2"> USDT</Text>
+                <Text className="mt-2"> USD</Text>
                 <View className="-mb-2 ml-1">
                   <AntDesign
                     name="doubleright"
@@ -197,7 +197,7 @@ const BalanceScreen = () => {
                           {data?.[symbol].balanceInUSDT === undefined
                             ? "0"
                             : data[symbol].balanceInUSDT.toFixed(2)}{" "}
-                          USDT
+                          USD
                         </Text>
                       </View>
                     </View>
