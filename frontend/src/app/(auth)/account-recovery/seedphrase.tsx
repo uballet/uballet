@@ -43,7 +43,7 @@ export default function SeedPhraseRecoveryScreen() {
     }
 
     return (
-        <SafeAreaView className="flex-1">
+        <SafeAreaView className="flex-1 mt-16">
             <Text className="m-2 self-center" variant="titleLarge">Recover with seedphrase</Text>
             <View className="flex-row">
                 <View className="w-1/2">
@@ -80,7 +80,7 @@ export default function SeedPhraseRecoveryScreen() {
                             <TextInput
                                 testID={`seed-phrase-input-${index + 6}`}
                                 key={`word-${index + 6}`}
-                                returnKeyType="done"
+                                returnKeyType="next"
                                 blurOnSubmit
                                 ref={refs[index + 6]}
                                 mode="outlined"
