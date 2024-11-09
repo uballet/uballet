@@ -80,7 +80,7 @@ export default function SeedPhraseRecoveryScreen() {
                             <TextInput
                                 testID={`seed-phrase-input-${index + 6}`}
                                 key={`word-${index + 6}`}
-                                returnKeyType="next"
+                                returnKeyType={index === 5 ? "done" : "next"}
                                 blurOnSubmit
                                 ref={refs[index + 6]}
                                 mode="outlined"
