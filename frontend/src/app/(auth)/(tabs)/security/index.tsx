@@ -11,6 +11,7 @@ import { useAccountContext } from "../../../../hooks/useAccountContext";
 import { useRouter } from "expo-router";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { JoinedRecoveryTeam } from "../../../../api/uballet/types";
+import styles from "../../../../styles/styles";
 
 interface RecoveryModalProps {
     onConfirm: ({ email1, email2 }: { email1: string; email2: string }) => void
@@ -68,12 +69,13 @@ function MyRecoveryTeam() {
 
     if (!myTeam.data) {
         return (
-            <View className="flex-1 max-h-full">
-                <Text className="text-xl font-semibold self-center">My Recovery Team</Text>
-                <Button
+            <Card>
+                <Card.Title title="My Recovery Team" />
+                <Card.Content>
+                    <Button
                     testID="create-recovery-team-button"
                     mode="contained"
-                    className="w-3/4 mt-4 self-center"
+                    style={styles.button}
                     disabled={accountType !== "multisig"}
                     onPress={() => setModalVisible(true)}
                 >
@@ -89,7 +91,8 @@ function MyRecoveryTeam() {
                     visible={modalVisible}
                     onDismiss={() => setModalVisible(false)}
                 />
-            </View>
+                </Card.Content>
+            </Card>
         )
     }
 

@@ -40,13 +40,16 @@ export function useTokenBalance() {
       const balances: TokenBalances = {};
 
       for (const token of tokens) {
-        const balance: BigNumberish = await getTokenBalance(account.getAddress(), token.address);
+        const balance: BigNumberish = await getTokenBalance(
+          account.getAddress(),
+          token.address
+        );
 
-        if (balance && balance !== 0n) {
-          const decimals = getTokenDecimals(token.symbol);
-          const redeableFormat = ethers.formatUnits(balance, decimals);
-          balances[token.symbol] = redeableFormat;
-        }
+        console.log("For token", token.symbol, "balance is", balance);
+
+        const decimals = getTokenDecimals(token.symbol);
+        const redeableFormat = ethers.formatUnits(balance, decimals);
+        balances[token.symbol] = redeableFormat;
       }
       setTokenBalances(balances);
       setLoading(false);
