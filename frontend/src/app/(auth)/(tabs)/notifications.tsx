@@ -48,7 +48,14 @@ function NotificationScreen() {
         className="flex-1 pt-2"
         data={data}
         ListEmptyComponent={
-          <Text className="text-xl py-5">No notifications yet</Text>
+          <View className="flex-1 justify-center items-center p-2">
+            <Text className="text-2xl font-bold text-gray-600 mb-2">
+              No notifications yet
+            </Text>
+            <Text className="text-md text-gray-500 text-center px-8">
+              Here will be displayed all the notifications you receive.
+            </Text>
+          </View>
         }
         renderItem={({ item }) => <RenderNotification notification={item} />}
       />

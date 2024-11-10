@@ -226,7 +226,12 @@ function WhoIProtectSection() {
       <Card>
         <Card.Title titleVariant="titleMedium" title="Who I Protect" />
         <Card.Content>
-          <Text className=" self-center">No one to protect right now</Text>
+          <View className="flex-1 justify-center items-center bg-white p-2">
+            <Text className="text-md text-gray-500 text-center px-8">
+              You are not protecting any account. Friends and familiy can add
+              you as a recoverer to recover their accounts in case of emergency.
+            </Text>
+          </View>
         </Card.Content>
       </Card>
     );

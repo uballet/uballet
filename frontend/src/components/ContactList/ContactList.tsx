@@ -29,7 +29,7 @@ const ContactList: React.FC<ContactListProps> = ({
     return (
       <View className="flex-1 justify-center items-center bg-white p-4">
         <MaterialIcons name="contacts" size={80} color="gray" />
-        <Text className="text-xl font-semibold text-gray-600 mt-4">
+        <Text className="text-xl font-bold text-gray-600 mt-4">
           No Contacts Found
         </Text>
         <Text className="text-md text-gray-500 mt-2 text-center px-8">

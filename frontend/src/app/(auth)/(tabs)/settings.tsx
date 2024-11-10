@@ -130,7 +130,15 @@ function SettingsScreen() {
           <Card.Title titleVariant="titleMedium" title="Passkeys" />
           <Card.Content>
             {hasNoPasskeys && (
-              <Text className="self-center">You don't have any passkeys</Text>
+              <View className="flex-1 justify-center items-center bg-white p-2">
+                <Text className="text-xl font-bold text-gray-600">
+                  No passkeys
+                </Text>
+                <Text className="text-md text-gray-500 mt-2 text-center px-8">
+                  Passkeys are a the most secure way to access your account.
+                  Register a new passkey to secure your account.
+                </Text>
+              </View>
             )}
             {hasPasskeys &&
               passkeys?.map((passkey) => (
