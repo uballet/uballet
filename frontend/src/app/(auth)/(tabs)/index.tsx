@@ -112,7 +112,7 @@ const HomeScreen: React.FC = () => {
                 });
               }}
             >
-              <Text variant="bodyMedium" style={{ margin: 8 }}>
+              <Text variant="bodyLarge" style={{ margin: 8 }}>
                 See all history
               </Text>
             </Pressable>

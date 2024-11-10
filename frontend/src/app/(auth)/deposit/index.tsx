@@ -9,6 +9,8 @@ import styles from "../../../styles/styles";
 import QRCode from "react-native-qrcode-svg";
 import * as Clipboard from "expo-clipboard";
 import { useAccountContext } from "../../../hooks/useAccountContext";
+import { Button } from "react-native-paper";
+import { theme } from "../../../styles/color";
 
 const DepositScreen = () => {
   const { lightAccount, initiator } = useAccountContext();
@@ -36,18 +38,17 @@ const DepositScreen = () => {
             />
           </View>
 
-          <View className="bg-gray-200 p-3 rounded-lg mb-1">
+          <View className="bg-gray-200 p-4 rounded-lg">
             <Text className="text-black text-sm">{address}</Text>
           </View>
-          <TouchableOpacity
-            style={{ ...styles.button, backgroundColor: "black" }}
+          <Button
+            style={{ ...styles.button, backgroundColor: theme.colors.primary }}
             onPress={copyToClipboard}
-            className="p-3 rounded-md"
           >
-            <Text className="text-white text-center font-medium">
+            <Text className="text-white text-center font-bold">
               Copy to Clipboard
             </Text>
-          </TouchableOpacity>
+          </Button>
         </View>
       </ScrollView>
     </SafeAreaView>

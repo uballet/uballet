@@ -4,6 +4,7 @@ import { useAllNotifications } from "../../../hooks/notifications/useAllNotifica
 import { ActivityIndicator, Card, Text } from "react-native-paper";
 import { Notification } from "../../../api/uballet/types";
 import { useSetNotificationsSeen } from "../../../hooks/notifications/useSetNotificationsSeen";
+import { Ionicons } from "@expo/vector-icons";
 
 function RenderNotification({ notification }: { notification: Notification }) {
   return (
@@ -49,6 +50,7 @@ function NotificationScreen() {
         data={data}
         ListEmptyComponent={
           <View className="flex-1 justify-center items-center p-2">
+            <Ionicons name="notifications" size={80} color="gray" />
             <Text className="text-2xl font-bold text-gray-600 mb-2">
               No notifications yet
             </Text>

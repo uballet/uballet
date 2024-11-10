@@ -17,6 +17,7 @@ import { useBlockchainContext } from "../../../providers/BlockchainProvider";
 import { useNavigation, CommonActions } from "@react-navigation/native";
 import { useAuthContext } from "../../../providers/AuthProvider";
 import { useAccountContext } from "../../../hooks/useAccountContext";
+import { Entypo } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { Separator } from "../../../components/Separator/Separator";
 
@@ -79,7 +80,7 @@ function SettingsScreen() {
         }}
       >
         {/* Network Selection Section */}
-        <Card className="mb-1">
+        <Card className="mb-1 pb-1">
           <Card.Title titleVariant="titleMedium" title="Network selection" />
           <Card.Content>
             <Menu
@@ -131,6 +132,7 @@ function SettingsScreen() {
           <Card.Content>
             {hasNoPasskeys && (
               <View className="flex-1 justify-center items-center bg-white p-2">
+                <Entypo name="key" size={24} color="gray" />
                 <Text className="text-xl font-bold text-gray-600">
                   No passkeys
                 </Text>
