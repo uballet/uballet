@@ -21,6 +21,7 @@ import { JoinedRecoveryTeam } from "../../../../api/uballet/types";
 import styles from "../../../../styles/styles";
 import UballetSpinner from "../../../../components/UballetSpinner/UballetSpinner";
 import { theme } from "../../../../styles/color";
+import { Separator } from "../../../../components/Separator/Separator";
 
 interface RecoveryModalProps {
   onConfirm: ({ email1, email2 }: { email1: string; email2: string }) => void;
@@ -316,17 +317,6 @@ function WhoIProtectSection() {
   );
 }
 
-const Separator = () => (
-  <View
-    style={{
-      height: 1,
-      backgroundColor: theme.colors.primary,
-      width: "100%",
-      marginVertical: 16,
-    }}
-  />
-);
-
 export default function SecurityScreen() {
   return (
     <SafeAreaView className="flex-1 overflow-hidden">
@@ -341,11 +331,17 @@ export default function SecurityScreen() {
             alignItems: "stretch",
           }}
         >
-          <View className="self-center w-full">
+          <View className="self-center w-full mb-1">
             <MyRecoveryTeam />
           </View>
-          <Separator />
-          <View>
+          <View
+            style={{
+              width: "100%",
+            }}
+          >
+            <Separator />
+          </View>
+          <View className="self-center w-full">
             <WhoIProtectSection />
           </View>
         </View>

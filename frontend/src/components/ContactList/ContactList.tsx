@@ -1,6 +1,6 @@
-import React, { useCallback } from 'react';
-import { ScrollView, View, Pressable, Text } from 'react-native';
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import React, { useCallback } from "react";
+import { ScrollView, View, Pressable, Text } from "react-native";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useDeleteContact } from "../../hooks/contacts/useDeleteContact";
 import { router } from "expo-router";
 
@@ -11,20 +11,30 @@ interface ContactListProps {
   enableDelete?: boolean;
 }
 
-const ContactList: React.FC<ContactListProps> = ({ contacts, resolveName, enableDelete = true }) => {
+const ContactList: React.FC<ContactListProps> = ({
+  contacts,
+  resolveName,
+  enableDelete = true,
+}) => {
   const { deleteContactMutate } = useDeleteContact();
 
-  const onDelete = useCallback((id: string) => {
-    deleteContactMutate({ contactId: id });
-  }, [deleteContactMutate]);
+  const onDelete = useCallback(
+    (id: string) => {
+      deleteContactMutate({ contactId: id });
+    },
+    [deleteContactMutate]
+  );
 
   if (!contacts.length) {
     return (
-      <View className="flex-1 justify-center items-center bg-gray-100 p-4">
+      <View className="flex-1 justify-center items-center bg-white p-4">
         <MaterialIcons name="contacts" size={80} color="gray" />
-        <Text className="text-xl font-semibold text-gray-600 mt-4">No Contacts Found</Text>
+        <Text className="text-xl font-semibold text-gray-600 mt-4">
+          No Contacts Found
+        </Text>
         <Text className="text-md text-gray-500 mt-2 text-center px-8">
-          You haven't added any contacts yet. Add new contacts to manage your transfers easily.
+          You haven't added any contacts yet. Add new contacts to manage your
+          transfers easily.
         </Text>
       </View>
     );
@@ -48,8 +58,14 @@ const ContactList: React.FC<ContactListProps> = ({ contacts, resolveName, enable
             android_ripple={{ color: "rgba(0,0,0,0.1)" }}
           >
             <View className="flex-1">
-              <Text className="text-lg font-semibold text-gray-800">{contact.name}</Text>
-              <Text adjustsFontSizeToFit numberOfLines={1} className="text-sm text-gray-600">
+              <Text className="text-lg font-semibold text-gray-800">
+                {contact.name}
+              </Text>
+              <Text
+                adjustsFontSizeToFit
+                numberOfLines={1}
+                className="text-sm text-gray-600"
+              >
                 {contact.address}
               </Text>
             </View>

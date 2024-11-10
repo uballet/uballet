@@ -57,8 +57,8 @@ const HomeScreen: React.FC = () => {
           publicAddress={account!.getAddress()}
         />
         <Card style={styles.genericCard}>
+          <Card.Title title="Balance" titleVariant="titleLarge" />
           <Card.Content>
-            <Text variant="titleLarge">Balance</Text>
             {!isLoading && balance ? (
               <Text testID="home-balance" style={styles.balance}>
                 {formatBalance(parseFloat(balance), 4)} ETH
@@ -97,9 +97,9 @@ const HomeScreen: React.FC = () => {
           </View>
         </View>
 
-        <Card style={styles.genericCard} mode="elevated">
+        <Card style={styles.genericCard}>
+          <Card.Title title="Transaction History" titleVariant="titleMedium" />
           <Card.Content>
-            <Card.Title title="Transaction History" />
             <MovementsList
               toTransfers={transactionsData?.toTransfers ?? []}
               fromTransfers={transactionsData?.fromTransfers ?? []}

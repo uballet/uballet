@@ -9,9 +9,9 @@ const TransactionHistory = () => {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.innerContainer}>
-        <MovementsList 
-          toTransfers={data?.toTransfers ?? []} 
-          fromTransfers={data?.fromTransfers ?? []} 
+        <MovementsList
+          toTransfers={data?.toTransfers ?? []}
+          fromTransfers={data?.fromTransfers ?? []}
         />
       </View>
     </ScrollView>
@@ -20,12 +20,11 @@ const TransactionHistory = () => {
 
 const styles = StyleSheet.create({
   container: {
-    paddingVertical: 16,
-    paddingHorizontal: 12,
+    padding: 4,
   },
   innerContainer: {
-    padding: 12, 
-    backgroundColor: '#fff', 
+    padding: 12,
+    backgroundColor: "#fff",
   },
 });
 

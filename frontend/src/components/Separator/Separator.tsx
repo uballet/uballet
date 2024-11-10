@@ -4,10 +4,10 @@ import { theme } from "../../styles/color";
 export const Separator = () => (
   <View
     style={{
-      height: 1,
+      height: 0.5,
       backgroundColor: theme.colors.primary,
       marginVertical: 16,
-      marginHorizontal: 8,
+      marginHorizontal: 4,
     }}
   />
 );
