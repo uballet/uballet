@@ -88,8 +88,11 @@ function SettingsScreen() {
                 <Button
                   mode="outlined"
                   onPress={openMenu}
-                  contentStyle={{ justifyContent: "space-between" }}
-                  style={settingsStyles.networkDropdown}
+                  contentStyle={{
+                    ...styles.button,
+                    padding: 1,
+                    margin: 0,
+                  }}
                 >
                   {networkLabel}
                 </Button>
@@ -149,28 +152,40 @@ function SettingsScreen() {
               onPress={() => register()}
               disabled={isLoading}
             >
-              Register New Passkey
+              <Text style={{ color: "white", fontWeight: "bold" }}>
+                {" "}
+                Register New Passkey{" "}
+              </Text>
             </Button>
           </Card.Content>
         </Card>
-        
+
         <View style={{ justifyContent: "center", alignItems: "center" }}>
           <Separator />
           <Button
-            testID="logout-button"
-            mode="outlined"
-            style={settingsStyles.settingButtons}
-            onPress={logout}
-          >
-            <Text className="text-red-500">Logout</Text>
-          </Button>
-          <Button
             mode="contained-tonal"
-            style={settingsStyles.settingButtons}
+            style={{
+              ...settingsStyles.settingButtons,
+              backgroundColor: theme.colors.primary,
+            }}
             textColor="white"
             onPress={() => router.push({ pathname: "wallet-connect" })}
           >
-            Connections
+            <Text style={{ color: "white", fontWeight: "bold" }}>
+              {" "}
+              Connections{" "}
+            </Text>
+          </Button>
+          <Button
+            testID="logout-button"
+            mode="outlined"
+            style={{
+              ...settingsStyles.settingButtons,
+              backgroundColor: "white",
+            }}
+            onPress={logout}
+          >
+            <Text className="text-red-700 font-bold">Logout</Text>
           </Button>
         </View>
       </View>
@@ -197,8 +212,8 @@ const settingsStyles = StyleSheet.create({
   },
   settingButtons: {
     ...styles.button,
-    marginVertical: 8
-  }
+    marginVertical: 8,
+  },
 });
 
 export default SettingsScreen;

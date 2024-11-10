@@ -9,19 +9,20 @@ import { router } from "expo-router";
 import TransferButton from "../../../components/TransferButton/TransferButton";
 
 function SubmitTransferScreen() {
-  const { toAddress, amount, currency, usdcTokenGas } = useLocalSearchParams<{ 
-    toAddress: `0x${string}`, 
-    amount: string, 
-    currency: string,
-    usdcTokenGas?: string
+  const { toAddress, amount, currency, usdcTokenGas } = useLocalSearchParams<{
+    toAddress: `0x${string}`;
+    amount: string;
+    currency: string;
+    usdcTokenGas?: string;
   }>();
 
   const eth_symbol = "ETH";
 
-  const currencyScanned = useLocalSearchParams<{ currency: string }>()?.currency;
+  const currencyScanned = useLocalSearchParams<{ currency: string }>()
+    ?.currency;
   const addressScanned = useLocalSearchParams<{ address: string }>()?.address;
   const amountScanned = useLocalSearchParams<{ amount: string }>()?.amount;
-  
+
   const {
     transfer,
     loading,
@@ -43,8 +44,8 @@ function SubmitTransferScreen() {
   useEffect(() => {
     if (error == "waitForUserOperationTransaction") {
       router.push({
-        pathname: `transfer/pending-transaction`
-      })
+        pathname: `transfer/pending-transaction`,
+      });
     }
   }, [error]);
 
@@ -59,23 +60,26 @@ function SubmitTransferScreen() {
   }, [txHash, currencyScanned, addressScanned, amountScanned]);
 
   return (
-    <View style={{ flex: 1, justifyContent: 'space-between' }}>
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 20 }}>
-        <Card style={{ width: '100%' }}>
+    <View style={{ flex: 1, justifyContent: "space-between" }}>
+      <View
+        style={{
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+          paddingHorizontal: 20,
+        }}
+      >
+        <Card style={{ width: "100%" }}>
           <Card.Content>
             {/* Summary */}
-            <Text style={[styles.summaryText]}>
-              Summary
-            </Text>
+            <Text style={[styles.summaryText]}>Summary</Text>
 
             {/* To Address */}
             <View style={{ marginVertical: 8 }}>
               <Text style={styles.infoText}>
                 <Text style={{ fontWeight: "bold" }}>To Address:</Text>
               </Text>
-              <Text style={styles.infoText}>
-                {toAddress}
-              </Text>
+              <Text style={styles.infoText}>{toAddress}</Text>
             </View>
 
             {/* Amount */}
@@ -87,19 +91,21 @@ function SubmitTransferScreen() {
                 {amount} {currency}
               </Text>
             </View>
-            
           </Card.Content>
         </Card>
-
-
       </View>
 
       {/* Transfer Button at the Bottom */}
-      <View style={{ paddingBottom: 20, alignItems: 'center' }} testID="transfer-submit-button">
+      <View
+        style={{ paddingBottom: 20, alignItems: "center" }}
+        testID="transfer-submit-button"
+        className="px-5"
+      >
         <TransferButton
           currency={currency}
           ethSymbol={eth_symbol}
           loading={loading}
+
           onTransferETH={() => transfer({ address: toAddress, amount, gasInUsdc: usdcTokenGas })}
           onTransferToken={() =>
             transfer({ address: toAddress, tokenAddress: tokenAddresses[currency], amount, gasInUsdc: usdcTokenGas })

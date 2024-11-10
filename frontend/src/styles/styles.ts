@@ -11,6 +11,7 @@ const globalStyles = StyleSheet.create({
   containerTransfer: {
     flex: 1,
     alignItems: "center",
+    marginTop: 4,
     padding: 16,
   },
   containerLogin: {

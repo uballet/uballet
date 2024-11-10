@@ -15,6 +15,7 @@ import { router } from "expo-router";
 import { useAccountContext } from "../../hooks/useAccountContext";
 import * as Clipboard from "expo-clipboard";
 import { formatUnits } from "ethers";
+import UballotSpinner from "../../components/UballetSpinner/UballetSpinner";
 
 const TransactionScreen: React.FC = () => {
   const { txHash, isNew } = useLocalSearchParams<{
@@ -80,7 +81,7 @@ const TransactionScreen: React.FC = () => {
       )}
 
       {loading ? (
-        <ActivityIndicator size="large" />
+        <UballotSpinner />
       ) : transaction ? (
         <View
           style={{ justifyContent: "center", alignItems: "center", flex: 1 }}

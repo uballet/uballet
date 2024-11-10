@@ -20,12 +20,8 @@ function TransferScreen() {
   return (
     <ScrollView>
       <View style={styles.containerTransfer}>
-        <Card style={styles.genericCard} mode="contained">
-          <Card.Title
-            titleVariant="titleMedium"
-            titleStyle={{ fontWeight: "bold" }}
-            title="Send to an address"
-          />
+        <Card style={styles.genericCard}>
+          <Card.Title titleVariant="titleMedium" title="Send to an address" />
           <Card.Content>
             <Button
               mode="contained"
@@ -36,7 +32,9 @@ function TransferScreen() {
                 <MaterialIcons name="add" size={30} color="#fff" />
               )}
             >
-              <Text style={{ color: "#fff" }}>New address</Text>
+              <Text className="text-white text-center font-bold">
+                New address
+              </Text>
             </Button>
           </Card.Content>
         </Card>
@@ -47,10 +45,11 @@ function TransferScreen() {
         >
           <Separator />
         </View>
-        <Card style={styles.genericCard} mode="contained">
+
+        {/* Send to contacts */}
+        <Card style={styles.genericCard}>
           <Card.Title
             titleVariant="titleMedium"
-            titleStyle={{ fontWeight: "bold" }}
             title="Send to your contacts"
           />
           <Card.Content>

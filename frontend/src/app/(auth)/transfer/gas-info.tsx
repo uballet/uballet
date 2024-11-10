@@ -6,8 +6,9 @@ import EstimateGasFees from "../../../components/EstimateGasFees/EstimateGasFees
 import { useCheckTransferSponsorship } from "../../../hooks/useCheckTransferSponsorship";
 import styles from "../../../styles/styles";
 import { theme } from "../../../styles/color";
-import SponsorshipCard from '../../../components/SponsorshipCard/SponsorshipCard';
+import SponsorshipCard from "../../../components/SponsorshipCard/SponsorshipCard";
 import { useERC20GasEstimation } from "../../../hooks/useGasEstimation";
+import UballetSpinner from "../../../components/UballetSpinner/UballetSpinner";
 import { useBlockchainContext } from "../../../providers/BlockchainProvider";
 
 function GasInfoScreen() {
@@ -35,7 +36,9 @@ function GasInfoScreen() {
     isSponsored,
   } = useCheckTransferSponsorship();
 
+
   const { data, isLoading: isLoadingErc20, isError: isERC20EstimationError } = useERC20GasEstimation({ address: toAddress, amount, tokenAddress: tokenAddresses[currency] });
+
 
   useEffect(() => {
     if (currency === eth_symbol) {
@@ -80,7 +83,7 @@ function GasInfoScreen() {
         <Card style={{ margin: 8 }}>
           <Card.Content>
             {loadingSponsorship ? (
-              <ActivityIndicator style={{ margin: 16 }} />
+              <UballetSpinner />
             ) : (
               <EstimateGasFees address={toAddress} amount={amount} tokenAddress={tokenAddresses[currency]} />
             )}
@@ -88,7 +91,7 @@ function GasInfoScreen() {
         </Card>
 
         {/* Sponsorship Card */}
-        {(
+        {
           <>
             <Text style={{ ...styles.infoText, margin: 8 }}>
               Sometimes, someone else can cover the fee. Here, we're checking if
@@ -99,20 +102,32 @@ function GasInfoScreen() {
               isSponsored={isSponsored ?? false}
             />
           </>
-        )}
+        }
         <View className="mt-8 items-center">
+
           {!isSponsored && !loadingSponsorship && isLoadingErc20 && (
-              <ActivityIndicator style={{ margin: 16 }} />
+              <UballetSpinner />
           )}
           {!isSponsored && !loadingSponsorship && data?.formattedInUsdc && (
             <>
-              <Text style={styles.infoText}>You can also pay gas with USDC.</Text>
+              <Text style={styles.infoText}>
+                You can also pay gas with USDC.
+              </Text>
               <Card className="m-2">
-                  <View className="m-2">
-                    <Text variant="labelLarge">Estimated Max Fees: {data!.formattedInUsdc} USDC </Text>
-                  </View>
+                <View className="m-2">
+                  <Text variant="labelLarge">
+                    Estimated Max Fees: {data!.formattedInUsdc} USDC{" "}
+                  </Text>
+                </View>
               </Card>
-              <Text variant="labelLarge" className={data!.enoughInUsdc ? "text-green-700" : "text-red-700"}>Your USDC Balance: {data!.formattedUsdcBalance}</Text>
+              <Text
+                variant="labelLarge"
+                className={
+                  data!.enoughInUsdc ? "text-green-700" : "text-red-700"
+                }
+              >
+                Your USDC Balance: {data!.formattedUsdcBalance}
+              </Text>
               <Button
                 testID="transfer-gas-previous-button"
                 mode="contained"
