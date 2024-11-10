@@ -73,10 +73,6 @@ export default function CompleteRecoveryScreen() {
         return <Redirect href={'/(auth)/(tabs)/security'} />
     }
 
-    if (recoverAccountMutation.isSuccess) {
-        return <Redirect href={'/(auth)/(tabs)/security'} />
-    }
-
     return (
         <SafeAreaView className="items-center px-8">
             <Text className="text-xl mt-8 font-semibold">
