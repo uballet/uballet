@@ -8,7 +8,7 @@ import { useBlockchainContext } from "../../../providers/BlockchainProvider";
 import { theme } from "../../../styles/color";
 import { useBalance } from "../../../hooks/useBalance";
 import { useTokenBalance } from "../../../hooks/useTokenBalance";
-import { ActivityIndicator } from "react-native";
+import UballetSpinner from "../../../components/UballetSpinner/UballetSpinner";
 
 function AmountAndCurrencyScreen() {
   const { toAddress } = useLocalSearchParams<{ toAddress: `0x${string}` }>(); // Receiving the address from the previous screen
@@ -79,12 +79,15 @@ function AmountAndCurrencyScreen() {
                 height: 100,
               }}
             >
-              <ActivityIndicator size="large" color={theme.colors.primary} />
+              <UballetSpinner />
             </View>
           ) : (
             <>
               <Card mode="contained" style={{ marginBottom: 16 }}>
-                <Card.Title title={"Sending ETH to: "} titleStyle={{ fontWeight: "bold" }}/>
+                <Card.Title
+                  title={"Sending ETH to: "}
+                  titleStyle={{ fontWeight: "bold" }}
+                />
                 <Card.Content>
                   <Text style={styles.infoText}>{toAddress}</Text>
                 </Card.Content>
@@ -134,7 +137,7 @@ function AmountAndCurrencyScreen() {
             tokenBalancesLoading
           }
         >
-          Next
+          <Text className="text-white text-center font-bold"> Next </Text>
         </Button>
       </View>
     </ScrollView>

@@ -5,18 +5,14 @@ import {
   RefreshControl,
   Pressable,
 } from "react-native";
-import {
-  Card,
-  Text,
-  Button,
-  Switch,
-  ActivityIndicator,
-} from "react-native-paper";
+import { Card, Text, Button, Switch } from "react-native-paper";
 import { useTokenInfo } from "../../../hooks/useTokenInfo";
 import styles from "../../../styles/styles";
+import { theme } from "../../../styles/color";
 import { router } from "expo-router";
 import { useState } from "react";
 import AntDesign from "@expo/vector-icons/AntDesign";
+import UballetSpinner from "../../../components/UballetSpinner/UballetSpinner";
 
 const BalanceScreen = () => {
   const defaultLogoUrl = "https://cryptologos.cc/logos/ethereum-eth-logo.png";
@@ -58,11 +54,11 @@ const BalanceScreen = () => {
             router.push("/(auth)/portfolio");
           }}
         >
+          <Card.Title titleVariant="titleMedium" title="Total balance" />
           <Card.Content>
-            <Text>Total Balance</Text>
             {loading ? (
               <View className="flex justify-center items-center m-5">
-                <ActivityIndicator size="small" color="#0000ff" />
+                <UballetSpinner />
               </View>
             ) : (
               <View className="flex flex-row justify-start w-50 items-center mt-2">
@@ -84,28 +80,28 @@ const BalanceScreen = () => {
         </Card>
 
         <Button
-          style={{ ...styles.button, backgroundColor: "black" }}
+          style={{ ...styles.button, backgroundColor: theme.colors.primary }}
           textColor="white"
           className="-mt-0.5"
           onPress={() => {
             router.push("/(auth)/deposit");
           }}
         >
-          <Text className="text-white text-center font-medium">
+          <Text className="text-white text-center font-bold">
             Deposit Tokens
           </Text>
         </Button>
 
         <Button
           testID="import-tokens-button"
-          style={{ ...styles.button, backgroundColor: "black" }}
+          style={{ ...styles.button, backgroundColor: theme.colors.primary }}
           textColor="white"
           className="-mt-0.5"
           onPress={() => {
             router.push("/(auth)/import");
           }}
         >
-          <Text className="text-white text-center font-medium">
+          <Text className="text-white text-center font-bold">
             Import Tokens
           </Text>
         </Button>
@@ -121,12 +117,11 @@ const BalanceScreen = () => {
         </View>
 
         <Card>
+          <Card.Title titleVariant="titleMedium" title="Balance by token" />
           <Card.Content>
-            <Text>Balance by Token</Text>
-
             {loading ? (
               <View className="flex justify-center items-center m-5">
-                <ActivityIndicator size="small" color="#0000ff" />
+                <UballetSpinner />
               </View>
             ) : (
               <View className="flex flex-col justify-between mt-2 items-center text-center">

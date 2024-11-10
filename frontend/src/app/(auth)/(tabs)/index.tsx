@@ -18,7 +18,12 @@ const formatBalance = (balance: number | null, significantFigures: number) => {
 
 const HomeScreen: React.FC = () => {
   const { data: balance, isLoading, refetch, isRefetching } = useBalance();
-  const { data: transactionsData, isLoading: isLoadingTransactions, refetch: refreshTransactions, isRefetching: isRefetchingTransactions } = useRecentTransactions();
+  const {
+    data: transactionsData,
+    isLoading: isLoadingTransactions,
+    refetch: refreshTransactions,
+    isRefetching: isRefetchingTransactions,
+  } = useRecentTransactions();
   const { user } = useAuthContext();
   const [isDeployed, setIsDeployed] = useState(false);
   const { lightAccount, initiator } = useAccountContext(); // Get contractDeployed from AccountContext
@@ -27,14 +32,16 @@ const HomeScreen: React.FC = () => {
 
   useEffect(() => {
     if (account) {
-      account.account.isAccountDeployed().then((isDeployed) => setIsDeployed(isDeployed));
+      account.account
+        .isAccountDeployed()
+        .then((isDeployed) => setIsDeployed(isDeployed));
     }
   }, [account]);
-  
+
   const onRefresh = () => {
     refetch();
     refreshTransactions();
-  }
+  };
   const refreshing = isRefetching || isRefetchingTransactions;
 
   return (
@@ -44,13 +51,12 @@ const HomeScreen: React.FC = () => {
       }
     >
       <View style={styles.container}>
-        
         <UserInfo
           email={`${user?.email}`}
           contractDeployed={isDeployed}
-          publicAddress={ account!.getAddress() }
+          publicAddress={account!.getAddress()}
         />
-        <Card style={styles.genericCard} mode="contained">
+        <Card style={styles.genericCard}>
           <Card.Content>
             <Text variant="titleLarge">Balance</Text>
             {!isLoading && balance ? (
@@ -68,17 +74,26 @@ const HomeScreen: React.FC = () => {
         </Card>
 
         <View style={styles.horizontalContainer}>
-          <View style={{ alignItems: 'center' }}>
+          <View style={{ alignItems: "center" }}>
             <FAB
               testID="home-contacts-button"
-              size="medium" icon="contacts" variant="secondary" 
-              onPress={() => router.push({ pathname: "contacts" })} />
-            <Text style={{ textAlign: 'center', marginTop: 8 }}>Contacts</Text>
+              size="medium"
+              icon="contacts"
+              variant="secondary"
+              onPress={() => router.push({ pathname: "contacts" })}
+            />
+            <Text style={{ textAlign: "center", marginTop: 8 }}>Contacts</Text>
           </View>
-          <View style={{ alignItems: 'center' }}>
-            <FAB size="medium" icon="qrcode" variant="secondary"
-              onPress={() => router.push({ pathname: "scanner" })} />
-            <Text style={{ textAlign: 'center', marginTop: 8 }}>Scan QR Code</Text>
+          <View style={{ alignItems: "center" }}>
+            <FAB
+              size="medium"
+              icon="qrcode"
+              variant="secondary"
+              onPress={() => router.push({ pathname: "scanner" })}
+            />
+            <Text style={{ textAlign: "center", marginTop: 8 }}>
+              Scan QR Code
+            </Text>
           </View>
         </View>
 

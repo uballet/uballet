@@ -32,7 +32,7 @@ function InputAddress() {
 
   const handleInputChange = (value: string) => {
     setInput(value);
-    setIsInputValid(value != "")
+    setIsInputValid(value != "");
   };
 
   useEffect(() => {
@@ -45,14 +45,14 @@ function InputAddress() {
     }
   }, [resolvedAddress]);
 
-  const handleInputEndEditing = async () => {    
+  const handleInputEndEditing = async () => {
     let isAddressInput = isAddress(input);
     console.log("isAddressInput: ", isAddressInput);
     var isInputValid = false;
     if (isAddressInput) {
       setInputType("address");
       isInputValid = validateAddress(input);
-      if(isInputValid){
+      if (isInputValid) {
         setResolvedAddress(input);
       }
     } else {
@@ -65,11 +65,11 @@ function InputAddress() {
   const handleResolveENS = async () => {
     if (!input) return false;
     setIsResolving(true);
-    var isInputValid = false
+    var isInputValid = false;
     try {
       const resolved = await resolveName(input);
       isInputValid = resolved != null;
-      if(resolved){
+      if (resolved) {
         setResolvedAddress(resolved);
       } else {
         setResolvedAddress("");
@@ -81,9 +81,8 @@ function InputAddress() {
       setIsENSResolved(true);
       setIsResolving(false);
     }
-    return isInputValid
+    return isInputValid;
   };
-
 
   const navigateToNextScreen = () => {
     if (contactName != "") {
@@ -163,7 +162,7 @@ function InputAddress() {
           onPress={handleInputEndEditing}
           disabled={input == ""}
         >
-          Next
+          <Text className="text-white text-center font-bold"> Next</Text>
         </Button>
       </View>
     </View>
