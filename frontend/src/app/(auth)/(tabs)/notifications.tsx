@@ -45,7 +45,7 @@ function NotificationScreen() {
   return (
     <SafeAreaView className="flex-1 justify-center items-center">
       <FlatList
-        className="flex-1 pt-2"
+        className="flex-1 pt-6"
         data={data}
         ListEmptyComponent={
           <View className="flex-1 justify-center items-center p-2">
