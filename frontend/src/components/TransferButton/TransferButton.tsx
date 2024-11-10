@@ -28,7 +28,7 @@ const TransferButton: React.FC<TransferButtonProps> = ({
       {loading ? (
         <ActivityIndicator testID="transfer-button-activity-indicator" />
       ) : (
-        <Text className="text-white text-center font-bold"> Transfer</Text>
+        <Text className="text-white text-center font-bold"> Transfer!</Text>
       )}
     </Button>
   );
