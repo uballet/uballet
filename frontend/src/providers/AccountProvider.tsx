@@ -260,7 +260,6 @@ async function createMultisigClient({
       apiKey: ALCHEMY_API_KEY!
     }),
     policyId: withoutPaymaster ? undefined : getAlchemyPolicyId(chainConfig.sdk_name),
-    
     opts: {
       feeOptions: GAS_FEE_OPTIONS,
       ...RETRY_OPTIONS
@@ -551,22 +550,28 @@ export function AccountProvider({ children }: PropsWithChildren) {
     }, [lightAccount])
 
     useEffect(() => {
-      if (!initiator) {
-        setErc20Initiator(null)
+      async function initErc20Clients() {
+        if (!initiator && !submitter) {
+          setErc20Initiator(null)
+          setErc20Submitter(null)
+        }
+        if (initiator && submitter) {
+          let owners = await initiator.readOwners();
+          if (!owners.length) {
+            const owner1 = await initiator.account.getSigner().getAddress();
+            const owner2 = await submitter.account.getSigner().getAddress();
+            owners = [owner1, owner2]
+          }
+          const [newErc20Initiator, newErc20Submitter] = await Promise.all([
+            createMultisigClient({ signer: initiator.account.getSigner(), owners: [...owners], accountAddress: user!.walletAddress!, chainConfig: blockchain, withErc20Gas: true }),
+            createMultisigClient({ signer: submitter.account.getSigner(), owners: [...owners], accountAddress: user!.walletAddress!, chainConfig: blockchain, withErc20Gas: true })
+          ])
+          setErc20Initiator(newErc20Initiator)
+          setErc20Submitter(newErc20Submitter)
+        }
       }
-      if (initiator) {
-        createMultisigClient({ signer: initiator.account.getSigner(), accountAddress: user!.walletAddress!, chainConfig: blockchain, withErc20Gas: true }).then(setErc20Initiator)
-      }
-    }, [initiator])
-
-    useEffect(() => {
-      if (!submitter) {
-        setErc20Submitter(null)
-      }
-      if (submitter) {
-        createMultisigClient({ signer: submitter.account.getSigner(), accountAddress: user!.walletAddress!, chainConfig: blockchain, withErc20Gas: true }).then(setErc20Submitter)
-      }
-    }, [submitter])
+      initErc20Clients();
+    }, [initiator, submitter])
 
     useEffect(() => {
       if (needsRecovery) {

@@ -7,10 +7,7 @@ import { pimlicoClients } from "../providers/AccountProvider";
 import { useERC20 } from "./useERC20";
 import { ethers } from "ethers";
 import { useUsdcContractAddress } from "../providers/UsdcContractProvider";
-
-const DEFAULT_VALUE = "0.00001"
-const DEFAULT_TARGET = "0xc54ea2fde46a9dd4cf3a849c88ce62f8d8635205";
-const DEFAULT_DATA = "0x";
+import { useTransfer } from "./useTransfer";
 
 export function formatUoEstimation(uo: UserOperationStruct, postOpGas?: bigint, exchangeRate?: bigint) {
     // @ts-ignore
@@ -38,40 +35,28 @@ export function formatUoEstimation(uo: UserOperationStruct, postOpGas?: bigint, 
     }
 }
 
-export function useGasEstimation({ target = DEFAULT_TARGET, data = DEFAULT_DATA, value = DEFAULT_VALUE }: { target?: `0x${string}`, data?: `0x${string}`, value?: string }) {
+export function useGasEstimation({ address, amount, tokenAddress }: { address: `0x${string}`, amount: string, tokenAddress?: `0x${string}`}) {
     const { lightAccount, initiator } = useAccountContext();
+    const account = initiator || lightAccount
+    const { getUserOperationCallData } = useTransfer()
     const estimateGas = useCallback(async () => {
       let uo: UserOperationStruct
+      const { transferUoCallData } = await getUserOperationCallData({
+        address,
+        amount,
+        tokenAddress
+      })
+
       if (initiator) {
-        const balance = await initiator.getBalance({
-            address: initiator.getAddress()
-        })
-        if (balance === 0n) {
-            return null
-        }
         uo = await initiator.buildUserOperation({
-          uo: {
-            target: target.length === 42 ? target : DEFAULT_TARGET,
-            data: data ?? "0x",
-            value: parseEther(value),
-          },
+          uo: transferUoCallData,
           context: {
             userOpSignatureType: "UPPERLIMIT",
           }
         })
       } else {
-        const balance = await lightAccount!.getBalance({
-            address: lightAccount!.getAddress()
-        })
-        if (balance === 0n) {
-            return null
-        }
         uo = await lightAccount!.buildUserOperation({
-          uo: {
-            target: target.length === 42 ? target : DEFAULT_TARGET,
-            data: data ?? "0x",
-            value: parseEther("0.0001"),
-          }
+          uo: transferUoCallData,
         })
       }
   
@@ -79,7 +64,7 @@ export function useGasEstimation({ target = DEFAULT_TARGET, data = DEFAULT_DATA,
       return formatted
     }, [])
     const estimationQuery = useQuery({
-      queryKey: ["gasEstimation", target, data],
+      queryKey: ["gasEstimation", address, amount, tokenAddress, account?.chain?.id],
       queryFn: async () => {
         return await estimateGas()
       }
@@ -90,12 +75,13 @@ export function useGasEstimation({ target = DEFAULT_TARGET, data = DEFAULT_DATA,
 
 
 
-export function useERC20GasEstimation({ target = DEFAULT_TARGET, data = DEFAULT_DATA, value = DEFAULT_VALUE }: { target?: `0x${string}`, data?: `0x${string}`, value?: string }) {
+export function useERC20GasEstimation({ address, amount, tokenAddress }: { address: `0x${string}`, amount: string, tokenAddress?: `0x${string}` }) {
   // @ts-ignore
-  const { erc20LightAccount, erc20Initiator } = useAccountContext();
+  const { erc20LightAccount, erc20Initiator, initiator } = useAccountContext();
   const account = erc20Initiator || erc20LightAccount
   const usdcAddress = useUsdcContractAddress()
   const { getTokenBalance } = useERC20()
+  const { getUserOperationCallData } = useTransfer()
   const estimateGas = useCallback(async () => {
     let uo: UserOperationStruct
     const pimlicoClient = pimlicoClients[await account!.chain!.id]
@@ -106,25 +92,23 @@ export function useERC20GasEstimation({ target = DEFAULT_TARGET, data = DEFAULT_
       }),
       getTokenBalance(account!.getAddress(), usdcAddress)
     ])
+    const { transferUoCallData, usdcGasCallData} = await getUserOperationCallData({
+      tokenAddress,
+      address,
+      amount,
+      gasInUsdc: "1"
+    })
 
     if (erc20Initiator) {
-      uo = await erc20Initiator.buildUserOperation({ 
-        uo: {
-          target: target.length === 42 ? target : DEFAULT_TARGET,
-          data: data ?? "0x",
-          value: parseEther(value),
-        },
-        context: {
-          userOpSignatureType: "UPPERLIMIT",
-        },
-      })
+        uo = await erc20Initiator.buildUserOperation({ 
+          uo: usdcGasCallData ? [usdcGasCallData, transferUoCallData] : transferUoCallData,
+          context: {
+            userOpSignatureType: "UPPERLIMIT",
+          },
+        })
     } else {
       uo = await erc20LightAccount!.buildUserOperation({ 
-        uo: {
-          target: target.length === 42 ? target : DEFAULT_TARGET,
-          data: data ?? "0x",
-          value: parseEther("0.0001"),
-        }
+        uo: usdcGasCallData ? [usdcGasCallData, transferUoCallData] : transferUoCallData,
       })
     }
 
@@ -137,13 +121,11 @@ export function useERC20GasEstimation({ target = DEFAULT_TARGET, data = DEFAULT_
     return { formattedInUsdc: intPartOfGas.toString(), formattedUsdcBalance, enoughInUsdc }
   }, [account])
   const estimationQuery = useQuery({
-    queryKey: ["gasEstimation-erc20", target, data, account?.chain?.id],
+    queryKey: ["gasEstimation-erc20", address, amount, tokenAddress, account?.chain?.id],
     queryFn: async () => {
       return await estimateGas()
     }
   })
-
-  console.log({ error: estimationQuery.error })
 
   return estimationQuery
 }

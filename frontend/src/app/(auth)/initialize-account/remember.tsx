@@ -29,11 +29,6 @@ export default function RememberScreen() {
     loadSeedphrase().then((code) => setMnemonic(code!));
   };
 
-  useEffect(() => {
-    if (!modalVisible) {
-      setMnemonic("");
-    }
-  }, [modalVisible]);
 
   const onModalDone = () => {
     router.replace("/(auth)/");
@@ -52,6 +47,7 @@ export default function RememberScreen() {
   }
 
   const mnemonicWords = mnemonic.split(" ");
+  const mnemonicThirdWord = mnemonicWords[2];
 
   return (
     <SafeAreaView className="flex-1 h-full">
@@ -59,7 +55,7 @@ export default function RememberScreen() {
         className="flex-1 h-full"
         contentContainerStyle={{ padding: 8, justifyContent: "space-between" }}
       >
-        <Card style={styles.genericCard} mode="contained">
+        <Card style={{margin: 16}} mode="contained">
           <Card.Title
             titleVariant="titleMedium"
             title="Remember your account"
@@ -109,19 +105,20 @@ export default function RememberScreen() {
       <Modal
         style={{ justifyContent: "flex-start", alignItems: "center" }}
         visible={modalVisible}
-        dismissable={modalText === "COPIED"}
+        dismissable={true}
         onDismiss={() => setModalVisible(false)}
       >
         <View className="items-center justify-center p-8 rounded-md bg-white border">
           <Text style={styles.infoText}>
             Confirm you're done saving the code
           </Text>
-          <Text style={styles.infoText}>Input the word COPIED</Text>
+          <Text style={styles.infoText}>Input the 3rd word of your recovery phrase</Text>
           <TextInput
             testID="mnemonic-done-input"
             mode="outlined"
             style={{ marginVertical: 16, width: "100%" }}
-            placeholder="Input the word COPIED"
+            autoCapitalize="none"
+            placeholder="Input the 3rd word of your recovery phrase"
             value={modalText}
             autoFocus={true}
             onChangeText={setModalText}
@@ -132,7 +129,7 @@ export default function RememberScreen() {
             mode="contained"
             onPress={onModalDone}
             style={styles.button}
-            disabled={modalText !== "COPIED"}
+            disabled={modalText !== mnemonicThirdWord}
           >
             <Text>Done</Text>
           </Button>
