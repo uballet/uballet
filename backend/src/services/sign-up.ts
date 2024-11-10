@@ -35,8 +35,8 @@ async function signup(email: string): Promise<{ user: User }> {
     }
 
     if (existing && !existing.verified) {
-        await createEmailVerificationCode(existing.id, 'signup')
-
+        const code = await createEmailVerificationCode(existing.id, 'signup')
+        await sendUserVerificationEmail(existing, code.code)
         return { user: existing }
     }
 
