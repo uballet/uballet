@@ -117,6 +117,7 @@ export default function RememberScreen() {
             testID="mnemonic-done-input"
             mode="outlined"
             style={{ marginVertical: 16, width: "100%" }}
+            autoCapitalize="none"
             placeholder="Input the 3rd word of your recovery phrase"
             value={modalText}
             autoFocus={true}
