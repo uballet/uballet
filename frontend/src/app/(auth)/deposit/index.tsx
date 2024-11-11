@@ -16,6 +16,7 @@ const DepositScreen = () => {
   const { lightAccount, initiator } = useAccountContext();
   const account = initiator || lightAccount;
   const address = account!.getAddress();
+  const qrValue = "ethereum:" + address;
 
   // Function to copy the account address
   const copyToClipboard = async () => {
@@ -33,7 +34,7 @@ const DepositScreen = () => {
 
           <View className="flex items-center justify-center mb-5">
             <QRCode
-              value={address}
+              value={qrValue}
               size={150} // Adjust the size of the QR code
             />
           </View>

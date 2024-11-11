@@ -5,6 +5,7 @@ import { useTokenInfo } from "../../hooks/useTokenInfo";
 import { useEffect, useState } from "react";
 import config from "../../../netconfig/erc20-token-info.json";
 import { Card } from "react-native-paper";
+import UballetSpinner from "../UballetSpinner/UballetSpinner";
 
 const AssetsAllocationChart = () => {
   const title = "Assets Allocation";
@@ -53,10 +54,14 @@ const AssetsAllocationChart = () => {
   if (error) {
     return (
       <View>
-        <Text style={{ ...styles.screenHeader, textAlign: "left" }}>
-          {title}
-        </Text>
-        <Text>Error: no data available</Text>
+        <Card>
+          <Card.Content>
+            <Text className=" text-2xl font-bold text-center">{title}</Text>
+            <Text className="text-md text-gray-500 mt-2 text-center px-8">
+              Error! No data available
+            </Text>
+          </Card.Content>
+        </Card>
       </View>
     );
   }
@@ -67,7 +72,7 @@ const AssetsAllocationChart = () => {
         <Card>
           <Card.Content>
             <Text className=" text-2xl font-bold text-center">{title}</Text>
-            <Text className="text-left mt-2 text-lg">
+            <Text className="text-md text-gray-500 mt-2 text-center px-8">
               No balances to show! Try adding tokens to your wallet
             </Text>
           </Card.Content>
@@ -77,20 +82,23 @@ const AssetsAllocationChart = () => {
   }
 
   return (
-    <Card>
+    <Card
+      style={{
+        width: "100%",
+      }}
+    >
       <Card.Content>
         <View className="flex-col">
           <Text className=" text-2xl font-bold text-center">{title}</Text>
           {loading ? (
-            <View className="m-10">
-              <ActivityIndicator
-                testID="ActivityIndicator"
-                size="small"
-                color="#0000ff"
-              />
+            <View className="m-10" style={{ flex: 1 }}>
+              <UballetSpinner testID="ActivityIndicator" />
             </View>
           ) : (
             <View testID="assets-allocation-pie-chart">
+              <Text className="text-md text-gray-500 mt-2 text-center px-8">
+                Here is the distribution of your assets by token quote in USD
+              </Text>
               <PieChart
                 data={parsedData}
                 width={375}

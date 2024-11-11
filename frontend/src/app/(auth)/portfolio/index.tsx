@@ -6,14 +6,16 @@ import { Card } from "react-native-paper";
 
 function PortfolioScreen() {
   return (
-    <SafeAreaView className="w-full p-3 flex-1">
-      <ScrollView>
-        <View>
-          <AssetsAllocationChart />
-        </View>
-        <View></View>
-      </ScrollView>
-    </SafeAreaView>
+    <View
+      style={{
+        flex: 0,
+        padding: 12,
+        width: "100%",
+        height: "100%",
+      }}
+    >
+      <AssetsAllocationChart />
+    </View>
   );
 }
 

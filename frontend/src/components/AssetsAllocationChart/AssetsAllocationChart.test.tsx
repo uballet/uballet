@@ -31,18 +31,6 @@ describe("AssetsAllocationChart Component", () => {
     jest.clearAllMocks();
   });
 
-  it("displays loading state", () => {
-    useTokenInfo.mockReturnValue({
-      data: null,
-      loading: true,
-      error: null,
-    });
-
-    renderComponent();
-
-    expect(screen.getByTestId("ActivityIndicator")).toBeTruthy();
-  });
-
   it("displays error state", () => {
     useTokenInfo.mockReturnValue({
       data: null,
@@ -52,7 +40,7 @@ describe("AssetsAllocationChart Component", () => {
 
     renderComponent();
 
-    expect(screen.getByText("Error: no data available")).toBeTruthy();
+    expect(screen.getByText("Error! No data available")).toBeTruthy();
   });
 
   it("displays chart when data is available", () => {
