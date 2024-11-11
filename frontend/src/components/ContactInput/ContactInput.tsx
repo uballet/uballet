@@ -2,6 +2,7 @@ import React from "react";
 import {
   NativeSyntheticEvent,
   TextInputEndEditingEventData,
+  View,
 } from "react-native";
 import { ActivityIndicator, Text, TextInput } from "react-native-paper";
 import styles from "../../styles/styles";
@@ -32,11 +33,17 @@ const ContactInput: React.FC<ContactInputProps> = ({
       <TextInput
         testID={testID}
         mode="outlined"
-        style={styles.margin}
+        style={{
+          backgroundColor: "white",
+          borderColor: "gray",
+          borderWidth: 0,
+          marginVertical: 8,
+        }}
         placeholder="Address or ENS name"
         onChangeText={handleAddressChange}
         onEndEditing={handleInputEndEditing}
         error={!isAddressValid}
+        autoCapitalize="none"
       />
       {!isAddressValid && (
         <Text style={styles.errorText}>
@@ -50,7 +57,14 @@ const ContactInput: React.FC<ContactInputProps> = ({
             : ""}
         </Text>
       }
-      {isResolving && <ActivityIndicator testID="activity-indicator"/>}
+      {isResolving && (
+        <View>
+          <Text style={styles.infoText} className="mb-4">
+            Resolving Address...
+          </Text>
+          <ActivityIndicator testID="activity-indicator" />
+        </View>
+      )}
     </>
   );
 };

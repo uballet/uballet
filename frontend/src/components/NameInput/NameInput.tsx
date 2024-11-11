@@ -18,21 +18,16 @@ const NameInput: React.FC<NameInputProps> = ({
   <TextInput
     testID={testID}
     mode="outlined"
-    style={styles.margin}
+    style={{
+      backgroundColor: "white",
+      borderColor: "gray",
+      borderWidth: 0,
+    }}
     placeholder={helperText}
     value={name}
     onChangeText={handleNameChange}
+    autoCapitalize="none"
   />
 );
-
-const styles = StyleSheet.create({
-  addressRow: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  margin: {
-    marginVertical: 8,
-  },
-});
 
 export default NameInput;
