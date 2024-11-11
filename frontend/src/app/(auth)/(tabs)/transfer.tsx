@@ -20,7 +20,7 @@ function TransferScreen() {
   return (
     <ScrollView>
       <View style={styles.containerTransfer}>
-        <Card style={styles.genericCard}>
+        <Card style={{ ...styles.genericCard, marginBottom: 4 }}>
           <Card.Title titleVariant="titleMedium" title="Send to an address" />
           <Card.Content>
             <Button
@@ -47,7 +47,7 @@ function TransferScreen() {
         </View>
 
         {/* Send to contacts */}
-        <Card style={styles.genericCard}>
+        <Card style={{ ...styles.genericCard, margin: 4 }}>
           <Card.Title
             titleVariant="titleMedium"
             title="Send to your contacts"

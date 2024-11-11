@@ -18,6 +18,7 @@ import { useNavigation, CommonActions } from "@react-navigation/native";
 import { useAuthContext } from "../../../providers/AuthProvider";
 import { useAccountContext } from "../../../hooks/useAccountContext";
 import { router } from "expo-router";
+import { Separator } from "../../../components/Separator/Separator";
 
 const networkLabels: Record<string, string> = {
   arbitrum: "Arbitrum",
@@ -73,12 +74,12 @@ function SettingsScreen() {
       <View
         style={{
           ...styles.container,
-          justifyContent: "space-between",
+
           alignItems: "stretch",
         }}
       >
         {/* Network Selection Section */}
-        <Card>
+        <Card className="mb-1">
           <Card.Title titleVariant="titleMedium" title="Network selection" />
           <Card.Content>
             <Menu
@@ -120,15 +121,24 @@ function SettingsScreen() {
             </Menu>
           </Card.Content>
         </Card>
-
-        <Separator />
+        <View>
+          <Separator />
+        </View>
 
         {/* Passkeys Section */}
-        <Card>
+        <Card className="mb-1">
           <Card.Title titleVariant="titleMedium" title="Passkeys" />
           <Card.Content>
             {hasNoPasskeys && (
-              <Text className="self-center">You don't have any passkeys</Text>
+              <View className="flex-1 justify-center items-center bg-white p-2">
+                <Text className="text-xl font-bold text-gray-600">
+                  No passkeys
+                </Text>
+                <Text className="text-md text-gray-500 mt-2 text-center px-8">
+                  Passkeys are a the most secure way to access your account.
+                  Register a new passkey to secure your account.
+                </Text>
+              </View>
             )}
             {hasPasskeys &&
               passkeys?.map((passkey) => (
@@ -159,9 +169,11 @@ function SettingsScreen() {
             </Button>
           </Card.Content>
         </Card>
-
-        <View style={{ justifyContent: "center", alignItems: "center" }}>
+        <View>
           <Separator />
+        </View>
+        {/* Settings Section */}
+        <View style={{ justifyContent: "center", alignItems: "center" }}>
           <Button
             mode="contained-tonal"
             style={{
@@ -192,17 +204,6 @@ function SettingsScreen() {
     </ScrollView>
   );
 }
-
-const Separator = () => (
-  <View
-    style={{
-      height: 1,
-      backgroundColor: theme.colors.primary,
-      width: "100%",
-      marginVertical: 16,
-    }}
-  />
-);
 
 const settingsStyles = StyleSheet.create({
   networkDropdown: {
