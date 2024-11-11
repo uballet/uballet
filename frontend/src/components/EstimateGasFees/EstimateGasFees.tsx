@@ -3,6 +3,7 @@ import { View, ActivityIndicator } from "react-native";
 import { Card, Text } from "react-native-paper";
 import { useGasEstimation } from "../../hooks/useGasEstimation";
 import { theme } from "../../styles/color";
+import UballetSpinner from "../UballetSpinner/UballetSpinner";
 
 interface EstimateGasFeesProps {
   address: `0x${string}`;
@@ -15,16 +16,22 @@ const EstimateGasFees: React.FC<EstimateGasFeesProps> = ({
   tokenAddress,
   amount,
 }) => {
-  const { data: gasEstimation, isLoading, isError } = useGasEstimation({
+  const {
+    data: gasEstimation,
+    isLoading,
+    isError,
+  } = useGasEstimation({
     address,
     amount,
-    tokenAddress
-  })
+    tokenAddress,
+  });
 
   if (isLoading) {
     return (
       <View style={{ margin: 8 }}>
-        <ActivityIndicator testID="ActivityIndicator" size="small" color={theme.colors.primary} />
+        <Text variant="labelLarge" testID="ActivityIndicator">
+          Estimated Max Fees in ETH: 0.000000 ETH
+        </Text>
       </View>
     );
   }
@@ -37,9 +44,12 @@ const EstimateGasFees: React.FC<EstimateGasFeesProps> = ({
     );
   }
 
+  const gasEstimationParsed = parseFloat(gasEstimation).toFixed(6);
   return (
     <View style={{ margin: 8 }}>
-      <Text variant="labelLarge">Estimated Max Fees: {gasEstimation} ETH</Text>
+      <Text variant="labelLarge">
+        Estimated Max Fees in ETH: {gasEstimationParsed} ETH
+      </Text>
     </View>
   );
 };

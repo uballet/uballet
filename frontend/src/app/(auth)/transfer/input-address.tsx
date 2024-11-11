@@ -113,12 +113,12 @@ function InputAddress() {
       <View
         style={{
           flex: 1,
-          justifyContent: "space-around",
-          alignItems: "center",
+          padding: 4,
+          marginTop: 20,
         }}
       >
-        <View style={{ width: "100%", paddingHorizontal: 20 }}>
-          <Text style={styles.infoText}>
+        <View style={{ width: "100%", paddingHorizontal: 10 }}>
+          <Text style={styles.infoText} className="mb-3">
             Enter a name to save this address as a contact
           </Text>
           <NameInput
@@ -127,7 +127,9 @@ function InputAddress() {
             name={contactName}
             handleNameChange={setContactName}
           />
-          <Text style={styles.infoText}>Enter an address or ENS name</Text>
+          <Text style={styles.infoText} className="mt-4">
+            Enter an address or ENS name
+          </Text>
           <ContactInput
             testID="transfer-address-input"
             toAddress={resolvedAddress}
@@ -142,14 +144,14 @@ function InputAddress() {
 
       <View
         style={{
-          paddingBottom: 20,
+          paddingBottom: 4,
           alignItems: "center",
-          marginHorizontal: 16,
+          paddingHorizontal: 10,
         }}
       >
         <Button
           mode="outlined"
-          style={[styles.button, { alignSelf: "center", marginTop: 16 }]}
+          style={[styles.button, { alignSelf: "center", marginBottom: -4 }]}
           onPress={() => router.push({ pathname: "scanner" })}
         >
           Scan QR
