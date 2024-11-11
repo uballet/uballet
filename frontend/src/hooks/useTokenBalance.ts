@@ -4,20 +4,52 @@ import { BigNumberish, ethers } from "ethers";
 import { useBlockchainContext } from "../providers/BlockchainProvider";
 import tokenInfo from "../../netconfig/erc20-token-info.json";
 import { useERC20 } from "./useERC20";
+import { ERC20Token } from "../../netconfig/blockchain-config";
+import { Alchemy } from "alchemy-sdk";
 
 interface TokenBalances {
   [key: string]: string;
 }
 
-const getTokenDecimals = (symbol: string) => {
+const getTokenDecimals = async (
+  sdkClient: Alchemy | null,
+  tokens: ERC20Token[],
+  symbol: string
+) => {
   const tokens_info = tokenInfo.erc20_tokens;
   const token = tokens_info.find((t) => t.symbol === symbol);
   const DEFAULT_TOKEN_DECIMALS = 18;
-  return token ? token.decimals : DEFAULT_TOKEN_DECIMALS;
+
+  if (token) {
+    return token.decimals;
+  } else {
+    try {
+      const token = tokens.find((t) => t.symbol === symbol);
+      const tokenContractAddress = token?.address;
+
+      if (!tokenContractAddress) {
+        console.log("Token contract address not found for symbol:", symbol);
+        return DEFAULT_TOKEN_DECIMALS;
+      }
+
+      const abi = ["function decimals() view returns (uint8)"];
+      const provider = await sdkClient!.config.getProvider();
+      const tokenContract = new ethers.Contract(
+        tokenContractAddress,
+        abi,
+        provider as unknown as ethers.Provider
+      );
+      const decimals = await tokenContract.decimals();
+      return decimals;
+    } catch (error) {
+      console.log("Failed to fetch token decimals:", error);
+      return DEFAULT_TOKEN_DECIMALS;
+    }
+  }
 };
 
 export function useTokenBalance() {
-  const { lightAccount, initiator } = useAccountContext();
+  const { lightAccount, initiator, sdkClient } = useAccountContext();
   const account = initiator || lightAccount;
   const [tokenBalances, setTokenBalances] = useState<TokenBalances>({});
   const [loading, setLoading] = useState<boolean>(true);
@@ -45,10 +77,24 @@ export function useTokenBalance() {
           token.address
         );
 
-        console.log("For token", token.symbol, "balance is", balance);
-
-        const decimals = getTokenDecimals(token.symbol);
+        const decimals = await getTokenDecimals(
+          sdkClient,
+          tokens,
+          token.symbol
+        );
         const redeableFormat = ethers.formatUnits(balance, decimals);
+
+        console.log(
+          "For token",
+          token.symbol,
+          "raw balance is:",
+          balance,
+          "decimals are:",
+          decimals,
+          "redeable balance is:",
+          redeableFormat
+        );
+
         balances[token.symbol] = redeableFormat;
       }
       setTokenBalances(balances);
