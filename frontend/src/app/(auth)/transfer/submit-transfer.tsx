@@ -4,6 +4,7 @@ import { useTransfer } from "../../../hooks/useTransfer";
 import { useBlockchainContext } from "../../../providers/BlockchainProvider";
 import { Text, Card } from "react-native-paper";
 import styles from "../../../styles/styles";
+import { theme } from "../../../styles/color";
 import { useLocalSearchParams } from "expo-router";
 import { router } from "expo-router";
 import TransferButton from "../../../components/TransferButton/TransferButton";
@@ -23,13 +24,7 @@ function SubmitTransferScreen() {
   const addressScanned = useLocalSearchParams<{ address: string }>()?.address;
   const amountScanned = useLocalSearchParams<{ amount: string }>()?.amount;
 
-  const {
-    transfer,
-    loading,
-    error,
-    setError,
-    txHash,
-  } = useTransfer();
+  const { transfer, loading, error, setError, txHash } = useTransfer();
 
   const { blockchain } = useBlockchainContext();
   const tokens = blockchain.erc20_tokens;
@@ -60,16 +55,17 @@ function SubmitTransferScreen() {
   }, [txHash, currencyScanned, addressScanned, amountScanned]);
 
   return (
-    <View style={{ flex: 1, justifyContent: "space-between" }}>
+    <View
+      style={{
+        flex: 1,
+        backgroundColor: theme.colors.background,
+        justifyContent: "space-between",
+      }}
+    >
       <View
-        style={{
-          flex: 1,
-          justifyContent: "center",
-          alignItems: "center",
-          paddingHorizontal: 20,
-        }}
+        style={{ paddingHorizontal: 20, marginTop: 4, alignItems: "stretch" }}
       >
-        <Card style={{ width: "100%" }}>
+        <Card style={{ marginVertical: 12 }}>
           <Card.Content>
             {/* Summary */}
             <Text style={[styles.summaryText]}>Summary</Text>
@@ -97,18 +93,28 @@ function SubmitTransferScreen() {
 
       {/* Transfer Button at the Bottom */}
       <View
-        style={{ paddingBottom: 20, alignItems: "center" }}
         testID="transfer-submit-button"
-        className="px-5"
+        style={{
+          paddingBottom: 4,
+          paddingHorizontal: 0,
+          alignItems: "center",
+          marginHorizontal: 16,
+        }}
       >
         <TransferButton
           currency={currency}
           ethSymbol={eth_symbol}
           loading={loading}
-
-          onTransferETH={() => transfer({ address: toAddress, amount, gasInUsdc: usdcTokenGas })}
+          onTransferETH={() =>
+            transfer({ address: toAddress, amount, gasInUsdc: usdcTokenGas })
+          }
           onTransferToken={() =>
-            transfer({ address: toAddress, tokenAddress: tokenAddresses[currency], amount, gasInUsdc: usdcTokenGas })
+            transfer({
+              address: toAddress,
+              tokenAddress: tokenAddresses[currency],
+              amount,
+              gasInUsdc: usdcTokenGas,
+            })
           }
         />
       </View>

@@ -36,9 +36,15 @@ function GasInfoScreen() {
     isSponsored,
   } = useCheckTransferSponsorship();
 
-
-  const { data, isLoading: isLoadingErc20, isError: isERC20EstimationError } = useERC20GasEstimation({ address: toAddress, amount, tokenAddress: tokenAddresses[currency] });
-
+  const {
+    data,
+    isLoading: isLoadingErc20,
+    isError: isERC20EstimationError,
+  } = useERC20GasEstimation({
+    address: toAddress,
+    amount,
+    tokenAddress: tokenAddresses[currency],
+  });
 
   useEffect(() => {
     if (currency === eth_symbol) {
@@ -64,87 +70,115 @@ function GasInfoScreen() {
       <View
         style={{
           flex: 1,
-          justifyContent: "center",
           alignItems: "stretch",
           width: "100%",
           paddingHorizontal: 20,
+          marginTop: 4,
         }}
       >
         {/* Gas Fees Explanation and Button */}
-        <Card style={{ margin: 8 }} mode="contained">
+        <Card style={{ marginVertical: 12 }}>
           <Card.Content>
-            <Text style={styles.infoText}>
+            <Text style={{ ...styles.infoText }}>
+              Transaction gas estimation.
+            </Text>
+            <Text style={{ ...styles.infoText, color: "gray" }}>
               Ethereum transactions require a small fee called 'gas'. Here's an
               estimate of how much gas you'll need to pay to complete your
               transaction:
             </Text>
-          </Card.Content>
-        </Card>
-        <Card style={{ margin: 8 }}>
-          <Card.Content>
             {loadingSponsorship ? (
               <UballetSpinner />
             ) : (
-              <EstimateGasFees address={toAddress} amount={amount} tokenAddress={tokenAddresses[currency]} />
+              <View
+                style={{
+                  flex: 0,
+                  alignItems: "center",
+                  justifyContent: "center",
+                  width: "100%",
+                }}
+              >
+                <EstimateGasFees
+                  address={toAddress}
+                  amount={amount}
+                  tokenAddress={tokenAddresses[currency]}
+                />
+              </View>
             )}
+            {/* Sponsorship Card */}
+            {
+              <>
+                <Text style={{ ...styles.infoText, color: "gray" }}>
+                  Sometimes, someone else can cover the fee. Here, we're
+                  checking if someone else can cover the fee for this
+                  transaction.
+                </Text>
+                <SponsorshipCard
+                  loadingSponsorship={loadingSponsorship}
+                  isSponsored={isSponsored ?? false}
+                />
+              </>
+            }
           </Card.Content>
         </Card>
 
-        {/* Sponsorship Card */}
-        {
-          <>
-            <Text style={{ ...styles.infoText, margin: 8 }}>
-              Sometimes, someone else can cover the fee. Here, we're checking if
-              someone else can cover the fee for this transaction.
-            </Text>
-            <SponsorshipCard
-              loadingSponsorship={loadingSponsorship}
-              isSponsored={isSponsored ?? false}
-            />
-          </>
-        }
-        <View className="mt-8 items-center">
-
+        <View
+          className="mt-0"
+          style={{
+            flex: 1,
+            alignItems: "stretch",
+            width: "100%",
+          }}
+        >
           {!isSponsored && !loadingSponsorship && isLoadingErc20 && (
-              <UballetSpinner />
+            <UballetSpinner />
           )}
           {!isSponsored && !loadingSponsorship && data?.formattedInUsdc && (
-            <>
-              <Text style={styles.infoText}>
-                You can also pay gas with USDC.
-              </Text>
-              <Card className="m-2">
-                <View className="m-2">
+            <Card>
+              <Card.Content>
+                <Text style={styles.infoText}>
+                  You can also pay gas with USDC.
+                </Text>
+                <Text style={{ ...styles.infoText, color: "gray" }}>
+                  If gas fees sponsorhip is not available, you can pay gas fees
+                  with USDC to complete your transaction.
+                </Text>
+
+                <View className="m-2" style={{ alignItems: "center" }}>
                   <Text variant="labelLarge">
-                    Estimated Max Fees: {data!.formattedInUsdc} USDC{" "}
+                    Estimated Max Fees in USDC: {data!.formattedInUsdc} USDC{" "}
                   </Text>
                 </View>
-              </Card>
-              <Text
-                variant="labelLarge"
-                className={
-                  data!.enoughInUsdc ? "text-green-700" : "text-red-700"
-                }
-              >
-                Your USDC Balance: {data!.formattedUsdcBalance}
-              </Text>
-              <Button
-                testID="transfer-gas-previous-button"
-                mode="contained"
-                disabled={!data!.enoughInUsdc}
-                style={[styles.button, { width: 200 }]}
-                onPress={() => handleNext(data?.formattedInUsdc)}
-              >
-                Pay Gas With USDC
-              </Button>
-            </>
+
+                <Text
+                  variant="labelLarge"
+                  style={{
+                    textAlign: "center",
+                    color: data!.enoughInUsdc ? "green" : "red", // Apply green or custom red depending on the condition
+                  }}
+                >
+                  Your USDC Balance: {data!.formattedUsdcBalance}
+                </Text>
+                <Button
+                  testID="transfer-gas-previous-button"
+                  mode="contained"
+                  disabled={!data!.enoughInUsdc}
+                  style={[styles.button]}
+                  onPress={() => handleNext(data?.formattedInUsdc)}
+                >
+                  Pay Gas With USDC
+                </Button>
+              </Card.Content>
+            </Card>
           )}
         </View>
       </View>
+
       {/* Next Button at the Bottom */}
       <View
         style={{
-          paddingBottom: 20,
+          paddingBottom: 4,
+          paddingHorizontal: 0,
           alignItems: "center",
           marginHorizontal: 16,
         }}

@@ -9,6 +9,7 @@ import { theme } from "../../../styles/color";
 import { useBalance } from "../../../hooks/useBalance";
 import { useTokenBalance } from "../../../hooks/useTokenBalance";
 import UballetSpinner from "../../../components/UballetSpinner/UballetSpinner";
+import { Separator } from "../../../components/Separator/Separator";
 
 function AmountAndCurrencyScreen() {
   const { toAddress } = useLocalSearchParams<{ toAddress: `0x${string}` }>(); // Receiving the address from the previous screen
@@ -69,7 +70,7 @@ function AmountAndCurrencyScreen() {
         backgroundColor: theme.colors.background,
       }}
     >
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+      <View style={{ flex: 1 }}>
         <View style={{ width: "100%", paddingHorizontal: 20 }}>
           {ethBalanceLoading || tokenBalancesLoading ? (
             <View
@@ -83,35 +84,45 @@ function AmountAndCurrencyScreen() {
             </View>
           ) : (
             <>
-              <Card mode="contained" style={{ marginBottom: 16 }}>
-                <Card.Title
-                  title={"Sending ETH to: "}
-                  titleStyle={{ fontWeight: "bold" }}
-                />
+              <Card style={{ marginTop: 16 }}>
                 <Card.Content>
-                  <Text style={styles.infoText}>{toAddress}</Text>
+                  <Text style={styles.infoText}>
+                    Sending tokens to the following address
+                  </Text>
+                  <Text style={{ ...styles.infoText, color: "gray" }}>
+                    {toAddress}
+                  </Text>
+                  <Separator />
+                  <Text style={styles.infoText}>
+                    Enter the amount and currency
+                  </Text>
+
+                  <TransferInput
+                    testID="transfer-amount-input"
+                    amount={amount}
+                    currency={currency}
+                    currencies={currencies}
+                    isAmountValid={isAmountValid}
+                    handleAmountChange={handleAmountChange}
+                    setCurrency={setCurrency}
+                    currentBalance={currentBalance}
+                  />
+                  <Text style={styles.infoText}>
+                    Balance available:{" "}
+                    {currentBalance ? `${currentBalance} ${currency}` : "N/A"}
+                  </Text>
+                  {error && (
+                    <Text className="text-red-500 mt-2">
+                      Error loading token balances{" "}
+                    </Text>
+                  )}
+
+                  <Text style={{ ...styles.infoText, color: "gray" }}>
+                    In the next screen, you will be able to check the gas price
+                    and confirm the transaction
+                  </Text>
                 </Card.Content>
               </Card>
-              <Text style={styles.infoText}>Enter the amount and currency</Text>
-              <TransferInput
-                testID="transfer-amount-input"
-                amount={amount}
-                currency={currency}
-                currencies={currencies}
-                isAmountValid={isAmountValid}
-                handleAmountChange={handleAmountChange}
-                setCurrency={setCurrency}
-                currentBalance={currentBalance}
-              />
-              <Text style={styles.infoText}>
-                Balance:{" "}
-                {currentBalance ? `${currentBalance} ${currency}` : "N/A"}
-              </Text>
-              {error && (
-                <Text className="text-red-500 mt-2">
-                  Error loading token balances{" "}
-                </Text>
-              )}
             </>
           )}
         </View>
@@ -120,7 +131,7 @@ function AmountAndCurrencyScreen() {
       {/* Next Button */}
       <View
         style={{
-          paddingBottom: 20,
+          paddingBottom: 4,
           alignItems: "center",
           marginHorizontal: 16,
         }}
