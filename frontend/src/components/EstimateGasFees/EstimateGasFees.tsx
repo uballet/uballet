@@ -29,7 +29,9 @@ const EstimateGasFees: React.FC<EstimateGasFeesProps> = ({
   if (isLoading) {
     return (
       <View style={{ margin: 8 }}>
-        <UballetSpinner testID="ActivityIndicator" />
+        <Text variant="labelLarge" testID="ActivityIndicator">
+          Estimated Max Fees in ETH: 0.000000 ETH
+        </Text>
       </View>
     );
   }
