@@ -59,6 +59,27 @@ function GasInfoScreen() {
     });
   };
 
+  if (isLoadingErc20 || loadingSponsorship) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: theme.colors.background,
+        }}
+      >
+        <View
+          style={{
+            justifyContent: "center",
+            alignItems: "center",
+            height: 100,
+          }}
+        >
+          <UballetSpinner />
+        </View>
+      </View>
+    );
+  }
+
   return (
     <View
       style={{
@@ -150,15 +171,6 @@ function GasInfoScreen() {
                   </Text>
                 </View>
 
-                <Text
-                  variant="labelLarge"
-                  style={{
-                    textAlign: "center",
-                    color: data!.enoughInUsdc ? "green" : "red", // Apply green or custom red depending on the condition
-                  }}
-                >
-                  Your USDC Balance: {data!.formattedUsdcBalance}
-                </Text>
                 <Button
                   testID="transfer-gas-previous-button"
                   mode="contained"
@@ -168,6 +180,15 @@ function GasInfoScreen() {
                 >
                   Pay Gas With USDC
                 </Button>
+                <Text
+                  variant="labelLarge"
+                  style={{
+                    textAlign: "center",
+                    color: data!.enoughInUsdc ? "green" : "red", // Apply green or custom red depending on the condition
+                  }}
+                >
+                  Your USDC Balance: {data!.formattedUsdcBalance}
+                </Text>
               </Card.Content>
             </Card>
           )}

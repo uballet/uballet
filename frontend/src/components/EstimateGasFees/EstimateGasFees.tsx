@@ -3,6 +3,7 @@ import { View, ActivityIndicator } from "react-native";
 import { Card, Text } from "react-native-paper";
 import { useGasEstimation } from "../../hooks/useGasEstimation";
 import { theme } from "../../styles/color";
+import UballetSpinner from "../UballetSpinner/UballetSpinner";
 
 interface EstimateGasFeesProps {
   address: `0x${string}`;
@@ -28,11 +29,9 @@ const EstimateGasFees: React.FC<EstimateGasFeesProps> = ({
   if (isLoading) {
     return (
       <View style={{ margin: 8 }}>
-        <ActivityIndicator
-          testID="ActivityIndicator"
-          size="small"
-          color={theme.colors.primary}
-        />
+        <Text variant="labelLarge">
+          Estimated Max Fees in ETH: 0.000000 ETH
+        </Text>
       </View>
     );
   }

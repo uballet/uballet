@@ -62,6 +62,27 @@ function AmountAndCurrencyScreen() {
     });
   };
 
+  if (ethBalanceLoading || tokenBalancesLoading) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: theme.colors.background,
+        }}
+      >
+        <View
+          style={{
+            justifyContent: "center",
+            alignItems: "center",
+            height: 100,
+          }}
+        >
+          <UballetSpinner />
+        </View>
+      </View>
+    );
+  }
+
   return (
     <ScrollView
       contentContainerStyle={{

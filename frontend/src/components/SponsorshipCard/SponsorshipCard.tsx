@@ -28,9 +28,9 @@ const SponsorshipCard: React.FC<SponsorshipCardProps> = ({
         />
       ) : (
         <Text
+          variant="labelLarge"
           style={{
             fontSize: 16,
-            fontWeight: "bold",
             color: isSponsored ? "green" : "red",
           }}
         >
