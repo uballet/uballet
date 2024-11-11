@@ -17,10 +17,12 @@ router.post('/address-activity', async (req: Request, res: Response) => {
     }
     const { activity } = event;
     activity.forEach(async (a: any) => {
-        const { fromAddress, toAddress, amount: activityAmount, value, asset } = a;
+        const { fromAddress, toAddress, amount: activityAmount, value, asset, type, category } = a;
         if (toAddress.toLowerCase() === ENTRYPOINT_06.toLowerCase() || toAddress.toLowerCase() === ENTRYPOINT_07.toLowerCase()) {
             return;
         }
+        console.log({ fromAddress, toAddress, amount: activityAmount, value, asset, type, category })
+        console.log({ a })
         const amount = activityAmount ?? value
         if (!(amount > 0)) {
             return;
