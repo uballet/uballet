@@ -157,8 +157,8 @@ const MovementsList: React.FC<MovementsListProps> = ({
       {isLoading ? (
         <ActivityIndicator testID="activity-indicator" />
       ) : !sortedTransfers.length ? (
-        <View style={{ padding: 16 }}>
-          <Text style={{ fontSize: 12, color: "gray" }}>
+        <View style={{ padding: 8 }}>
+          <Text style={{ fontSize: 14, color: "gray" }}>
             No transactions found
           </Text>
         </View>
