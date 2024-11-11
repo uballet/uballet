@@ -37,7 +37,7 @@ const getTokenDecimals = async (
       const tokenContract = new ethers.Contract(
         tokenContractAddress,
         abi,
-        provider
+        provider as unknown as ethers.Provider
       );
       const decimals = await tokenContract.decimals();
       return decimals;
