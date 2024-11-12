@@ -68,10 +68,24 @@ function GasInfoScreen() {
   }, [currency, toAddress, amount]);
 
   const handleNext = (usdcTokenGas?: string) => {
-    router.push({
-      pathname: "transfer/submit-transfer",
-      params: { toAddress, amount, currency, usdcTokenGas, gasEstimation },
-    });
+    if (isSponsored) {
+      const gasEstimationSponsored = "0";
+      router.push({
+        pathname: "transfer/submit-transfer",
+        params: {
+          toAddress,
+          amount,
+          currency,
+          usdcTokenGas,
+          gasEstimationSponsored,
+        },
+      });
+    } else {
+      router.push({
+        pathname: "transfer/submit-transfer",
+        params: { toAddress, amount, currency, usdcTokenGas, gasEstimation },
+      });
+    }
   };
 
   if (isLoadingErc20 || loadingSponsorship) {

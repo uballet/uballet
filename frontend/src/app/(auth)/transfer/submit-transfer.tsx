@@ -8,6 +8,7 @@ import { theme } from "../../../styles/color";
 import { useLocalSearchParams } from "expo-router";
 import { router } from "expo-router";
 import TransferButton from "../../../components/TransferButton/TransferButton";
+import { useCheckTransferSponsorship } from "../../../hooks/useCheckTransferSponsorship";
 
 function SubmitTransferScreen() {
   const { toAddress, amount, currency, usdcTokenGas, gasEstimation } =
@@ -33,6 +34,13 @@ function SubmitTransferScreen() {
   // Check if the blockchain name contains "sepolia"
   const isSepolia = blockchain.name.toLowerCase().includes("sepolia");
 
+  const {
+    checkTransferSponsorship,
+    loading: loadingSponsorship,
+    setIsSponsored,
+    isSponsored,
+  } = useCheckTransferSponsorship();
+
   const tokens = blockchain.erc20_tokens;
   const tokenAddresses = tokens.reduce<{ [key: string]: `0x${string}` }>(
     (acc, token) => {
@@ -43,6 +51,8 @@ function SubmitTransferScreen() {
   );
 
   useEffect(() => {
+    console.log("Checking sponsorship");
+    checkTransferSponsorship(toAddress, amount);
     if (error == "waitForUserOperationTransaction") {
       router.push({
         pathname: `transfer/pending-transaction`,
@@ -106,11 +116,6 @@ function SubmitTransferScreen() {
               {usdcTokenGas ? (
                 <Text style={{ ...styles.infoText, color: "gray" }}>
                   {usdcTokenGas} USDC
-                </Text>
-              ) : isSepolia ? (
-                <Text style={{ ...styles.infoText, color: "gray" }}>
-                  {" "}
-                  Transaction gas will be sponsored by us
                 </Text>
               ) : (
                 <Text style={{ ...styles.infoText, color: "gray" }}>
