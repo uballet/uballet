@@ -30,8 +30,8 @@ const BalanceScreen = () => {
     refetch();
   };
 
-  if (error) {
-    console.log(error)
+
+  if (error && !loading) {
     return (
       <ScrollView
         refreshControl={
@@ -39,7 +39,9 @@ const BalanceScreen = () => {
         }
       >
         <View style={{ ...styles.container, alignItems: "stretch" }}>
-          <Text>No data available :(</Text>
+          <View className="flex-1 justify-center items-center mt-4">
+            <Text className="text-2xl font-bold">No data available</Text>
+          </View>
         </View>
       </ScrollView>
     );
@@ -189,7 +191,9 @@ const BalanceScreen = () => {
                             adjustsFontSizeToFit
                             numberOfLines={1}
                           >
-                            {data?.[symbol]?.balance?.toString() ?? "-"}
+                            {parseFloat(
+                              data?.[symbol]?.balance?.toFixed(6)
+                            ).toString() ?? "-"}
                           </Text>
                           <Text>
                             {data?.[symbol].balanceInUSDT === undefined

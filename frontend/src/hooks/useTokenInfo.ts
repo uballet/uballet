@@ -9,17 +9,8 @@ interface Balances {
   [key: string]: {
     balance: number;
     balanceInUSDT?: number;
-    quote?: number;
-    maxSupply?: number;
-    circulatingSupply?: number;
-    totalSupply?: number;
-    volume24h?: number;
-    percentChange24h?: number;
-    marketCap?: number;
-    marketCapDominance?: number;
     name?: string;
     logoUrl?: string;
-    cmcUrl?: string;
   };
 }
 
@@ -69,6 +60,7 @@ export function useTokenInfo() {
 
     // Parse dataUseBalance and dataUseTokenBalance to float
     const ethBalance = parseFloat(dataUseBalance ?? "0");
+
     const tokenBalances = Object.fromEntries(
       Object.keys(dataUseTokenBalance).map((token) => [
         token,
@@ -87,17 +79,8 @@ export function useTokenInfo() {
         {
           balance: allBalances[token],
           balanceInUSDT: undefined,
-          quote: undefined,
-          maxSupply: undefined,
-          circulatingSupply: undefined,
-          totalSupply: undefined,
-          volume24h: undefined,
-          percentChange24h: undefined,
-          marketCap: undefined,
-          marketCapDominance: undefined,
           name: undefined,
           logoUrl: undefined,
-          cmcUrl: undefined,
         },
       ])
     );
@@ -116,20 +99,8 @@ export function useTokenInfo() {
         }
         const balance = balances[token].balance;
         balances[token].balanceInUSDT = (response[token].quote ?? 0) * balance;
-        balances[token].quote = response[token].quote ?? 0;
-        balances[token].maxSupply = response[token].max_supply;
-        balances[token].circulatingSupply =
-          response[token].circulating_supply ?? 0;
-        balances[token].totalSupply = response[token].total_supply ?? 0;
-        balances[token].volume24h = response[token].volume_24h ?? 0;
-        balances[token].percentChange24h =
-          response[token].percent_change_24h ?? 0;
-        balances[token].marketCap = response[token].market_cap ?? 0;
-        balances[token].marketCapDominance =
-          response[token].market_cap_dominance ?? 0;
         balances[token].name = response[token].name ?? undefined;
         balances[token].logoUrl = response[token].logo_url ?? undefined;
-        balances[token].cmcUrl = response[token].cmc_url ?? undefined;
       }
 
       // Obtain name from defaultTokenInfo
@@ -155,23 +126,12 @@ export function useTokenInfo() {
         const tokenInfo = defaultTokensInfo.find((t) => t.symbol === token);
         if (tokenInfo) {
           balances[token].logoUrl = tokenInfo.logo_url;
-          balances[token].cmcUrl = tokenInfo.cmc_url;
         } else {
           // If tokenInfo is not found, try to get name from the ERC20 contract
           const tokenInfo = userTokens.find((t) => t.symbol === token);
           if (tokenInfo) {
             balances[token].name = tokenInfo.name;
           }
-        }
-      }
-
-      // Obtain cmcUrl
-      for (const token in balances) {
-        if (balances[token].cmcUrl) continue;
-
-        const tokenInfo = defaultTokensInfo.find((t) => t.symbol === token);
-        if (tokenInfo) {
-          balances[token].cmcUrl = tokenInfo.cmc_url;
         }
       }
 
@@ -194,6 +154,7 @@ export function useTokenInfo() {
 
       setTotalSumData(totalSum);
       setData(sortedTokenBalances);
+      setError(null);
     } catch (err) {
       console.error("Failed to fetch data:", err);
       setError("Failed to fetch data");

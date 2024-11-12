@@ -68,24 +68,45 @@ function SubmitTransferScreen() {
         <Card style={{ marginVertical: 12 }}>
           <Card.Content>
             {/* Summary */}
-            <Text style={[styles.summaryText]}>Summary</Text>
+            <Text style={{ ...styles.summaryText, color: "black" }}>
+              Transaction summary
+            </Text>
 
             {/* To Address */}
-            <View style={{ marginVertical: 8 }}>
+            <View style={{ marginVertical: 0 }}>
               <Text style={styles.infoText}>
                 <Text style={{ fontWeight: "bold" }}>To Address:</Text>
               </Text>
-              <Text style={styles.infoText}>{toAddress}</Text>
+              <Text style={{ ...styles.infoText, color: "gray" }}>
+                {toAddress}
+              </Text>
             </View>
 
             {/* Amount */}
-            <View style={{ marginVertical: 8 }}>
+            <View style={{ marginVertical: 0 }}>
               <Text style={styles.infoText}>
                 <Text style={{ fontWeight: "bold" }}>Amount:</Text>
               </Text>
-              <Text style={styles.infoText}>
+              <Text style={{ ...styles.infoText, color: "gray" }}>
                 {amount} {currency}
               </Text>
+            </View>
+
+            {/* Amount */}
+            <View style={{ marginVertical: 0 }}>
+              <Text style={styles.infoText}>
+                <Text style={{ fontWeight: "bold" }}>Gas:</Text>
+              </Text>
+              {usdcTokenGas ? (
+                <Text style={{ ...styles.infoText, color: "gray" }}>
+                  {usdcTokenGas} USDC
+                </Text>
+              ) : (
+                <Text style={{ ...styles.infoText, color: "gray" }}>
+                  {" "}
+                  Gas ransaction will be sponsored by us!
+                </Text>
+              )}
             </View>
           </Card.Content>
         </Card>
