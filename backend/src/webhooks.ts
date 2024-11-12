@@ -18,49 +18,54 @@ const networks = [
 
 export async function initWebHooks({ url }: { url: string }) {
     for (const network of networks) {
-        const alchemyClient = new Alchemy({
-            apiKey: ALCHEMY_API_KEY,
-            authToken: ALCHEMY_NOTIFY_AUTH_TOKEN,
-            network
-        })
-        const webhooks = await alchemyClient.notify.getAllWebhooks();
-        const users = await User.find();
+        try {
+            const alchemyClient = new Alchemy({
+                apiKey: ALCHEMY_API_KEY,
+                authToken: ALCHEMY_NOTIFY_AUTH_TOKEN,
+                network
+            })
+            const webhooks = await alchemyClient.notify.getAllWebhooks();
+            const users = await User.find();
 
-        const addresses = users.map(user => user.walletAddress)
+            const addresses = users.map(user => user.walletAddress)
 
-        const existingWebHook = webhooks.totalCount > 0 &&
-            await WebHook.findOne({ where: { externalId: In(webhooks.webhooks.map(webhook => webhook.id)), network: network } })
+            const existingWebHook = webhooks.totalCount > 0 &&
+                await WebHook.findOne({ where: { externalId: In(webhooks.webhooks.map(webhook => webhook.id)), network: network } })
 
-        if (!webhooks.webhooks.length || !existingWebHook) {
-            if (!addresses.length) {
-                return;
-            }
-            const webhook = await alchemyClient.notify.createWebhook(
-                `${url}/address-activity`,
-                WebhookType.ADDRESS_ACTIVITY,
-                { addresses }
-            )
-
-            const newWebHook = new WebHook();
-            newWebHook.externalId = webhook.id;
-            newWebHook.name = "all-addresses-activity";
-            newWebHook.type = webhook.type;
-            newWebHook.network = network;
-            newWebHook.url = webhook.url;
-            await newWebHook.save();
-        } else {
-            if (existingWebHook.url !== url) {
-                existingWebHook.url = url;
-                await alchemyClient.notify.deleteWebhook(existingWebHook.externalId);
-                const newAlchemyWebhook = await alchemyClient.notify.createWebhook(
+            if (!webhooks.webhooks.length || !existingWebHook) {
+                if (!addresses.length) {
+                    return;
+                }
+                const webhook = await alchemyClient.notify.createWebhook(
                     `${url}/address-activity`,
                     WebhookType.ADDRESS_ACTIVITY,
                     { addresses }
                 )
-                existingWebHook.url = url;
-                existingWebHook.externalId = newAlchemyWebhook.id;
-                await existingWebHook.save();
+
+                const newWebHook = new WebHook();
+                newWebHook.externalId = webhook.id;
+                newWebHook.name = "all-addresses-activity";
+                newWebHook.type = webhook.type;
+                newWebHook.network = network;
+                newWebHook.url = webhook.url;
+                await newWebHook.save();
+            } else {
+                if (existingWebHook.url !== url) {
+                    existingWebHook.url = url;
+                    await alchemyClient.notify.deleteWebhook(existingWebHook.externalId);
+                    const newAlchemyWebhook = await alchemyClient.notify.createWebhook(
+                        `${url}/address-activity`,
+                        WebhookType.ADDRESS_ACTIVITY,
+                        { addresses }
+                    )
+                    existingWebHook.url = url;
+                    existingWebHook.externalId = newAlchemyWebhook.id;
+                    await existingWebHook.save();
+                }
             }
+        } catch (e) {
+            console.error("ERROR WHILE CREATING WEBHOOK");
+            console.error(e);
         }
     }
 }
