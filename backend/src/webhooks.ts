@@ -17,6 +17,9 @@ const networks = [
 ]
 
 export async function initWebHooks({ url }: { url: string }) {
+    const users = await User.find();
+    const addresses = users.map(user => user.walletAddress).filter(address => !!address)
+
     for (const network of networks) {
         try {
             const alchemyClient = new Alchemy({
@@ -25,9 +28,6 @@ export async function initWebHooks({ url }: { url: string }) {
                 network
             })
             const webhooks = await alchemyClient.notify.getAllWebhooks();
-            const users = await User.find();
-
-            const addresses = users.map(user => user.walletAddress)
 
             const existingWebHook = webhooks.totalCount > 0 &&
                 await WebHook.findOne({ where: { externalId: In(webhooks.webhooks.map(webhook => webhook.id)), network: network } })
