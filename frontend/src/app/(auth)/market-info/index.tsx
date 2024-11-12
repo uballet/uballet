@@ -9,7 +9,7 @@ import {
 import { Card, Text } from "react-native-paper";
 import { Entypo, FontAwesome5 } from "@expo/vector-icons";
 import { useLocalSearchParams } from "expo-router";
-import { useTokenInfo } from "../../../hooks/useTokenInfo";
+import { useTokenInfoMarket } from "../../../hooks/useTokenInfoMarket";
 import UballetSpinner from "../../../components/UballetSpinner/UballetSpinner";
 
 function MarketInfoScreen() {
@@ -18,7 +18,7 @@ function MarketInfoScreen() {
     name: string;
   }>();
 
-  const { data, loading, refetch } = useTokenInfo();
+  const { data, loading, refetch } = useTokenInfoMarket();
 
   const circulatingSupply = data?.[symbol]?.circulatingSupply;
   const maxSupply = data?.[symbol]?.maxSupply;
