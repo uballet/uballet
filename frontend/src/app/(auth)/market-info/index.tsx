@@ -62,6 +62,18 @@ function MarketInfoScreen() {
     );
   }
 
+  if (!data || !data[symbol]) {
+    return (
+      <SafeAreaView className="flex-1 bg-gray-100 w-full">
+        <ScrollView className="flex-grow p-4">
+          <View className="flex-1 justify-center items-center mt-4">
+            <Text className="text-2xl font-bold">No data available</Text>
+          </View>
+        </ScrollView>
+      </SafeAreaView>
+    );
+  }
+
   return (
     <SafeAreaView className="flex-1 bg-gray-100 w-full">
       <ScrollView
