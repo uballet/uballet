@@ -60,6 +60,7 @@ export function useTokenInfo() {
 
     // Parse dataUseBalance and dataUseTokenBalance to float
     const ethBalance = parseFloat(dataUseBalance ?? "0");
+
     const tokenBalances = Object.fromEntries(
       Object.keys(dataUseTokenBalance).map((token) => [
         token,
@@ -153,6 +154,7 @@ export function useTokenInfo() {
 
       setTotalSumData(totalSum);
       setData(sortedTokenBalances);
+      setError(null);
     } catch (err) {
       console.error("Failed to fetch data:", err);
       setError("Failed to fetch data");
