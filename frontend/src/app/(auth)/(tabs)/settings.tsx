@@ -101,8 +101,18 @@ function SettingsScreen() {
               }
             >
               <Menu.Item
+                onPress={() => handleNetworkChange("mainnet")}
+                title={"Ethereum"}
+              />
+              <Divider />
+              <Menu.Item
                 onPress={() => handleNetworkChange("sepolia")}
                 title={"Sepolia"}
+              />
+              <Divider />
+              <Menu.Item
+                onPress={() => handleNetworkChange("optimism")}
+                title={"Optimism"}
               />
               <Divider />
               <Menu.Item
@@ -111,14 +121,25 @@ function SettingsScreen() {
               />
               <Divider />
               <Menu.Item
+                onPress={() => handleNetworkChange("arbitrum")}
+                title={"Arbitrum"}
+              />
+              <Divider />
+              <Menu.Item
                 onPress={() => handleNetworkChange("arbitrumSepolia")}
                 title={"Arbitrum Sepolia"}
+              />
+              <Divider />
+              <Menu.Item
+                onPress={() => handleNetworkChange("base")}
+                title={"Base"}
               />
               <Divider />
               <Menu.Item
                 onPress={() => handleNetworkChange("baseSepolia")}
                 title={"Base Sepolia"}
               />
+
             </Menu>
           </Card.Content>
         </Card>
