@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import UballetAPI from "../api/uballet";
 import tokenInfo from "../../netconfig/erc20-token-info.json";
 import { useBlockchainContext } from "../providers/BlockchainProvider";
+import { all } from "axios";
 
 interface TokenMarketInfo {
   [key: string]: {
@@ -19,28 +20,15 @@ interface TokenMarketInfo {
   };
 }
 
-export function useTokenInfoMarket() {
+export function useTokenInfoMarket(symbol: string) {
   const [data, setData] = useState<TokenMarketInfo>();
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  const { blockchain } = useBlockchainContext();
-  const tokens = blockchain.erc20_tokens;
-
   const fetchData = async () => {
     setLoading(true);
-
     const defaultTokensInfo = tokenInfo.erc20_tokens;
-    const userTokens = blockchain.erc20_tokens;
-
-    const allTokens = tokens;
-    const allTokensSymbols = Object.entries(allTokens).map(
-      ([key, value]) => (value as { symbol: string }).symbol
-    );
-
-    // Add ETH to allTokensSymbols
-    allTokensSymbols.push("ETH");
-
+    const allTokensSymbols = [symbol];
     console.log("All Tokens Symbols:", allTokensSymbols);
 
     // Create a Balances objetct with all tokens frrom dataUseTokenBalance
@@ -64,24 +52,18 @@ export function useTokenInfoMarket() {
     );
 
     try {
-      let query = "ETH";
-      for (const token in tokensMarketInfo) {
-        if (token === "ETH") continue;
-        query += `,${token}`;
-      }
-
+      let query = allTokensSymbols.join(",");
       const response = await UballetAPI.getQuote({ coin: query });
 
       console.log("Response:", response);
 
       for (const token in tokensMarketInfo) {
         if (response[token] === undefined) {
+          // Remove token from tokensMarketInfo if not found in response
           console.log(`Token ${token} not found in response`);
-          // Remove token from tokensMarketInfo
           delete tokensMarketInfo[token];
           continue;
         }
-        console.log("Wrapping Token:", token);
         tokensMarketInfo[token].quote = response[token].quote ?? 0;
         tokensMarketInfo[token].maxSupply = response[token].max_supply;
         tokensMarketInfo[token].circulatingSupply =
@@ -100,56 +82,31 @@ export function useTokenInfoMarket() {
         console.log("Token:", token, "Data:", tokensMarketInfo[token]);
       }
 
-      // Obtain name from defaultTokenInfo
+      // Obtain name from defaultTokenInfo if not present
       for (const token in tokensMarketInfo) {
         if (tokensMarketInfo[token].name) continue;
 
         const tokenInfo = defaultTokensInfo.find((t) => t.symbol === token);
         if (tokenInfo) {
           tokensMarketInfo[token].name = tokenInfo.name;
-        } else {
-          // If tokenInfo is not found, try to get name from the ERC20 contract
-          const tokenInfo = userTokens.find((t) => t.symbol === token);
-          if (tokenInfo) {
-            tokensMarketInfo[token].name = tokenInfo.name;
-          }
         }
       }
 
-      // Obtain logoUrl
+      // Obtain logoUrl from defaultTokenInfo if not present
       for (const token in tokensMarketInfo) {
         if (tokensMarketInfo[token].logoUrl) {
-          console.log(
-            "Token:",
-            token,
-            "LogoUrl:",
-            tokensMarketInfo[token].logoUrl
-          );
           continue;
         }
 
         const tokenInfo = defaultTokensInfo.find((t) => t.symbol === token);
         if (tokenInfo) {
           tokensMarketInfo[token].logoUrl = tokenInfo.logo_url;
-          tokensMarketInfo[token].cmcUrl = tokenInfo.cmc_url;
-        } else {
-          // If tokenInfo is not found, try to get name from the ERC20 contract
-          const tokenInfo = userTokens.find((t) => t.symbol === token);
-          if (tokenInfo) {
-            tokensMarketInfo[token].name = tokenInfo.name;
-          }
         }
       }
 
-      // Obtain cmcUrl
+      // Obtain cmcUrl from defaultTokenInfo if not present
       for (const token in tokensMarketInfo) {
         if (tokensMarketInfo[token].cmcUrl) {
-          console.log(
-            "Token:",
-            token,
-            "CmcUrl:",
-            tokensMarketInfo[token].cmcUrl
-          );
           continue;
         }
 

@@ -18,7 +18,7 @@ function MarketInfoScreen() {
     name: string;
   }>();
 
-  const { data, loading, refetch } = useTokenInfoMarket();
+  const { data, loading, refetch } = useTokenInfoMarket(symbol);
 
   const circulatingSupply = data?.[symbol]?.circulatingSupply;
   const maxSupply = data?.[symbol]?.maxSupply;
@@ -30,8 +30,6 @@ function MarketInfoScreen() {
   const isPriceUp = (percentChange24h ?? 0) >= 0;
   const tokenCMCUrl = data?.[symbol]?.cmcUrl;
   const tokenLogoUrl = data?.[symbol]?.logoUrl?.replace("64x64", "128x128");
-
-  console.log("CMC URL is:", tokenCMCUrl);
 
   // Open browser with the link
   const openLink = () => {
