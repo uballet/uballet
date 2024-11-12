@@ -10,12 +10,14 @@ import { router } from "expo-router";
 import TransferButton from "../../../components/TransferButton/TransferButton";
 
 function SubmitTransferScreen() {
-  const { toAddress, amount, currency, usdcTokenGas } = useLocalSearchParams<{
-    toAddress: `0x${string}`;
-    amount: string;
-    currency: string;
-    usdcTokenGas?: string;
-  }>();
+  const { toAddress, amount, currency, usdcTokenGas, gasEstimation } =
+    useLocalSearchParams<{
+      toAddress: `0x${string}`;
+      amount: string;
+      currency: string;
+      usdcTokenGas?: string;
+      gasEstimation?: string;
+    }>();
 
   const eth_symbol = "ETH";
 
@@ -27,6 +29,10 @@ function SubmitTransferScreen() {
   const { transfer, loading, error, setError, txHash } = useTransfer();
 
   const { blockchain } = useBlockchainContext();
+
+  // Check if the blockchain name contains "sepolia"
+  const isSepolia = blockchain.name.toLowerCase().includes("sepolia");
+
   const tokens = blockchain.erc20_tokens;
   const tokenAddresses = tokens.reduce<{ [key: string]: `0x${string}` }>(
     (acc, token) => {
@@ -85,26 +91,30 @@ function SubmitTransferScreen() {
             {/* Amount */}
             <View style={{ marginVertical: 0 }}>
               <Text style={styles.infoText}>
-                <Text style={{ fontWeight: "bold" }}>Amount:</Text>
+                <Text style={{ fontWeight: "bold" }}>Amount and currency:</Text>
               </Text>
               <Text style={{ ...styles.infoText, color: "gray" }}>
                 {amount} {currency}
               </Text>
             </View>
 
-            {/* Amount */}
+            {/* Gas */}
             <View style={{ marginVertical: 0 }}>
               <Text style={styles.infoText}>
-                <Text style={{ fontWeight: "bold" }}>Gas:</Text>
+                <Text style={{ fontWeight: "bold" }}>Transaction Gas:</Text>
               </Text>
               {usdcTokenGas ? (
                 <Text style={{ ...styles.infoText, color: "gray" }}>
                   {usdcTokenGas} USDC
                 </Text>
-              ) : (
+              ) : isSepolia ? (
                 <Text style={{ ...styles.infoText, color: "gray" }}>
                   {" "}
-                  Gas ransaction will be sponsored by us!
+                  Transaction gas will be sponsored by us
+                </Text>
+              ) : (
+                <Text style={{ ...styles.infoText, color: "gray" }}>
+                  {gasEstimation} ETH
                 </Text>
               )}
             </View>

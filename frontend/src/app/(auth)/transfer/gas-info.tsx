@@ -7,7 +7,10 @@ import { useCheckTransferSponsorship } from "../../../hooks/useCheckTransferSpon
 import styles from "../../../styles/styles";
 import { theme } from "../../../styles/color";
 import SponsorshipCard from "../../../components/SponsorshipCard/SponsorshipCard";
-import { useERC20GasEstimation } from "../../../hooks/useGasEstimation";
+import {
+  useERC20GasEstimation,
+  useGasEstimation,
+} from "../../../hooks/useGasEstimation";
 import UballetSpinner from "../../../components/UballetSpinner/UballetSpinner";
 import { useBlockchainContext } from "../../../providers/BlockchainProvider";
 
@@ -46,6 +49,18 @@ function GasInfoScreen() {
     tokenAddress: tokenAddresses[currency],
   });
 
+  const {
+    data: gasEstimation,
+    isLoading,
+    isError,
+  } = useGasEstimation({
+    address: toAddress,
+    amount,
+    tokenAddress: tokenAddresses[currency],
+  });
+
+  console.log("Gas Estimation: ", gasEstimation);
+
   useEffect(() => {
     if (currency === eth_symbol) {
       checkTransferSponsorship(toAddress, amount);
@@ -55,7 +70,7 @@ function GasInfoScreen() {
   const handleNext = (usdcTokenGas?: string) => {
     router.push({
       pathname: "transfer/submit-transfer",
-      params: { toAddress, amount, currency, usdcTokenGas },
+      params: { toAddress, amount, currency, usdcTokenGas, gasEstimation },
     });
   };
 
