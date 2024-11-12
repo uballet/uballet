@@ -76,7 +76,9 @@ export function useTokenInfoMarket() {
 
       for (const token in tokensMarketInfo) {
         if (response[token] === undefined) {
-          console.error(`Token ${token} not found in response`);
+          console.log(`Token ${token} not found in response`);
+          // Remove token from tokensMarketInfo
+          delete tokensMarketInfo[token];
           continue;
         }
         console.log("Wrapping Token:", token);
