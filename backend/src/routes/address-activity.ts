@@ -15,9 +15,9 @@ router.post('/address-activity', async (req: Request, res: Response) => {
     if (!event) {
         return res.status(200);
     }
-    const { activity } = event;
+    const { activity, network } = event;
     activity.forEach(async (a: any) => {
-        const { fromAddress, toAddress, amount: activityAmount, value, asset } = a;
+        const { fromAddress, toAddress, amount: activityAmount, value, asset, typeTraceAddress } = a;
         if (toAddress.toLowerCase() === ENTRYPOINT_06.toLowerCase() || toAddress.toLowerCase() === ENTRYPOINT_07.toLowerCase()) {
             return;
         }
@@ -25,12 +25,16 @@ router.post('/address-activity', async (req: Request, res: Response) => {
         if (!(amount > 0)) {
             return;
         }
+        if (typeTraceAddress?.startsWith("DELEGATECALL")) {
+            return;
+        }
         const fromUser = await User.findOneBy({ walletAddress: fromAddress.toLowerCase() });
         const toUser = await User.findOneBy({ walletAddress: toAddress.toLowerCase() });
+        const networkForNotif = network?.replace("_", " ")?.replace("-", " ")
         if (fromUser) {
             await NotificationService.createNotification({
                 userId: fromUser?.id,
-                title: 'Transfer',
+                title: 'Transfer' + (networkForNotif ? ` on ${networkForNotif}` : ''),
                 type: 'transfer-sent',
                 body: `Transfered ${asset} ${amount} to ${toAddress}${toUser ? `(${toUser?.email})` : ''}`,
                 data: { type: 'transfer-sent'},
@@ -40,7 +44,7 @@ router.post('/address-activity', async (req: Request, res: Response) => {
         if (toUser) {
             await NotificationService.createNotification({
                 userId: toUser?.id,
-                title: 'Transfer',
+                title: 'Transfer' + (networkForNotif ? ` on ${networkForNotif}` : ''),
                 type: 'transfer-received',
                 body: `Received ${asset} ${amount} from ${fromAddress} ${fromUser ? `(${fromUser?.email})` : ''}`,
                 data: { type: 'transfer-received'},

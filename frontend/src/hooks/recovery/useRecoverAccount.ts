@@ -3,11 +3,13 @@ import uballet from "../../api/uballet"
 import { JoinedRecoveryTeam } from "../../api/uballet/types"
 import { useAccountContext } from "../useAccountContext"
 import { Signature } from "@account-kit/smart-contracts"
+import { useRouter } from "expo-router"
 
 export function useRecoverAccount() {
     const { lightAccount, initiator, createMultsigClient } = useAccountContext()
     const account = lightAccount || initiator
     const client = useQueryClient();
+    const router = useRouter();
     const mutation = useMutation({
         mutationFn: async ({ recoveryTeam }: { recoveryTeam: JoinedRecoveryTeam }) => {
             const recoveryRequest = recoveryTeam.request
@@ -44,9 +46,14 @@ export function useRecoverAccount() {
                     }
                 })
 
-                // const result = await recoveryClient!.waitForUserOperationTransaction(tx)
-
                 await uballet.recovery.confirmRecoveryRequest({ id: recoveryRequest.id })
+
+                try {
+                    const txHash = await recoveryClient.waitForUserOperationTransaction(tx)
+                } catch (e) {
+                    return router.replace({ pathname: '/(auth)/(tabs)/security/recovered', params: { user: recoveryTeam.email }})
+                }
+                return router.replace({ pathname: '/(auth)/(tabs)/security/recovered', params: { user: recoveryTeam.email, done: "true" } })
             }
         },
         onSuccess: () => {

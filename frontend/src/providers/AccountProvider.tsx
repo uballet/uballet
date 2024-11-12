@@ -12,7 +12,7 @@ import { createMultisigAccountAlchemyClient, createMultisigModularAccountClient,
 
 import { Alchemy } from "alchemy-sdk";
 import { useAuthContext } from "./AuthProvider";
-import { ALCHEMY_API_KEY, IS_E2E_TESTING, ARB_SEPOLIA_ALCHEMY_POLICY_ID, BASE_SEPOLIA_ALCHEMY_POLICY_ID, OPT_SEPOLIA_ALCHEMY_POLICY_ID, SEPOLIA_ALCHEMY_POLICY_ID, PIMLICO_API_KEY } from "../env";
+import { ALCHEMY_API_KEY, IS_E2E_TESTING, ARB_SEPOLIA_ALCHEMY_POLICY_ID, BASE_SEPOLIA_ALCHEMY_POLICY_ID, OPT_SEPOLIA_ALCHEMY_POLICY_ID, SEPOLIA_ALCHEMY_POLICY_ID, PIMLICO_API_KEY, ARB_ALCHEMY_POLICY_ID, BASE_ALCHEMY_POLICY_ID, MAINNET_ALCHEMY_POLICY_ID, OPT_ALCHEMY_POLICY_ID } from "../env";
 import { generateMnemonic } from "bip39";
 import uballet from "../api/uballet";
 import { User } from "../api/uballet/types";
@@ -31,17 +31,17 @@ const stackupClient = createClient({
 
 const getAlchemyChain = (name: string) => {
   switch (name) {
-    case "arbitrum":
+    case "arb-mainnet":
       return arbitrum;
     case "arb-sepolia":
       return arbitrumSepolia;
-    case "base":
+    case "base-mainnet":
       return base;
     case "base-sepolia":
       return baseSepolia;
-    case "mainnet":
+    case "eth-mainnet":
       return mainnet;
-    case "optimism":
+    case "opt-mainnet":
       return optimism;
     case "opt-sepolia":
       return optimismSepolia;
@@ -86,6 +86,14 @@ export const pimlicoClients = {
   [baseSepolia.id]: getPimlicoClient(baseSepolia),
   // @ts-ignore
   [optimismSepolia.id]: getPimlicoClient(optimismSepolia),
+  // @ts-ignore
+  [arbitrum.id]: getPimlicoClient(arbitrum),
+  // @ts-ignore
+  [base.id]: getPimlicoClient(base),
+  // @ts-ignore
+  [mainnet.id]: getPimlicoClient(mainnet),
+  // @ts-ignore
+  [optimism.id]: getPimlicoClient(optimism),
 }
  
 const erc7677Methods = ["pm_getPaymasterStubData", "pm_getPaymasterData"];
@@ -441,18 +449,18 @@ type AccountClient = AccountClientWithLight | AccountClientWithMultisig | {
 }
 const getAlchemyPolicyId = (name: string) => {
   switch (name) {
-    case "arbitrum":
-      return "";
+    case "arb-mainnet":
+      return ARB_ALCHEMY_POLICY_ID;
     case "arb-sepolia":
       return ARB_SEPOLIA_ALCHEMY_POLICY_ID;
-    case "base":
-      return "";
+    case "base-mainnet":
+      return BASE_ALCHEMY_POLICY_ID;
     case "base-sepolia":
       return BASE_SEPOLIA_ALCHEMY_POLICY_ID;
-    case "mainnet":
-      return "";
-    case "optimism":
-      return "";
+    case "eth-mainnet":
+      return MAINNET_ALCHEMY_POLICY_ID;
+    case "opt-mainnet":
+      return OPT_ALCHEMY_POLICY_ID;
     case "opt-sepolia":
       return OPT_SEPOLIA_ALCHEMY_POLICY_ID;
     case "eth-sepolia":
@@ -717,7 +725,9 @@ export function AccountProvider({ children }: PropsWithChildren) {
         lightAccount,
         // @ts-ignore
         erc20LightAccount,
+        // @ts-ignore
         erc20Initiator,
+        // @ts-ignore
         erc20Submitter,
         initiator,
         submitter,

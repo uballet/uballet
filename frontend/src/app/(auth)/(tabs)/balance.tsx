@@ -30,6 +30,7 @@ const BalanceScreen = () => {
     refetch();
   };
 
+
   if (error && !loading) {
     return (
       <ScrollView

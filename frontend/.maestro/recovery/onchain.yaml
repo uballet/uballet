@@ -115,7 +115,7 @@ appId: com.flperez.uballet
 - tapOn:
     id: "complete-recovery-button"
 - assertVisible:
-    id: "no-action-required-text"
+    id: "recovery-completed-text"
 - runFlow: ../common/log-out.yaml
 - runFlow:
     file: ../common/sign-in-with-email.yaml
