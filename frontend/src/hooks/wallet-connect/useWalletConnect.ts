@@ -11,6 +11,7 @@ import {
   rejectEIP155Request,
 } from "./EIP155RequestHandlerUtil";
 import { AlchemyLightAccountClient, AlchemyMultisigClient } from "../../providers/AccountProvider";
+import { JsonRpcError } from "ethers";
 
 const projectId = "bcf04074fe19f9c2663524759ae56420";
 const WALLET_CONNECTIONS = "wallet_connections";
@@ -137,11 +138,20 @@ export function useWalletConnect() {
           topic,
           response,
         });
+        let error = response as JsonRpcError
         setLoading(false);
-        setSnackbarData({
-          visible: true,
-          text: "Message signed",
-        });
+        if (error.error) {
+          setSnackbarData({
+            visible: true,
+            success: false,
+            text: error.error.message ?? "Error signing message",
+          });
+        } else {
+          setSnackbarData({
+            visible: true,
+            text: "Message signed",
+          });
+        }
       } catch (error: any) {
         console.error(error);
         console.log(error.message);
