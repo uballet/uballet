@@ -65,27 +65,21 @@ function GasInfoScreen() {
     if (currency === eth_symbol) {
       checkTransferSponsorship(toAddress, amount);
     }
+    // checkTransferSponsorship(toAddress, amount);
   }, [currency, toAddress, amount]);
 
   const handleNext = (usdcTokenGas?: string) => {
-    if (isSponsored) {
-      const gasEstimationSponsored = "0";
-      router.push({
-        pathname: "transfer/submit-transfer",
-        params: {
-          toAddress,
-          amount,
-          currency,
-          usdcTokenGas,
-          gasEstimationSponsored,
-        },
-      });
-    } else {
-      router.push({
-        pathname: "transfer/submit-transfer",
-        params: { toAddress, amount, currency, usdcTokenGas, gasEstimation },
-      });
-    }
+    router.push({
+      pathname: "transfer/submit-transfer",
+      params: {
+        toAddress,
+        amount,
+        currency,
+        usdcTokenGas,
+        gasEstimation,
+        isSponsored,
+      },
+    });
   };
 
   if (isLoadingErc20 || loadingSponsorship) {
