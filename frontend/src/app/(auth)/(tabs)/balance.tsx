@@ -31,6 +31,7 @@ const BalanceScreen = () => {
   };
 
   if (error) {
+    console.log(error)
     return (
       <ScrollView
         refreshControl={
