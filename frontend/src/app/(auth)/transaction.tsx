@@ -1,17 +1,27 @@
-import React from 'react';
+import React from "react";
 import { useGetTransactioDetail } from "../../hooks/useGetTransactionDetail";
 import { Stack, useLocalSearchParams } from "expo-router";
 import { View, Linking, Share } from "react-native";
-import { ActivityIndicator, Card, Text, FAB, IconButton } from "react-native-paper";
+import {
+  ActivityIndicator,
+  Card,
+  Text,
+  FAB,
+  IconButton,
+} from "react-native-paper";
 import { useBlockchainContext } from "../../providers/BlockchainProvider";
 import styles from "../../styles/styles";
 import { router } from "expo-router";
 import { useAccountContext } from "../../hooks/useAccountContext";
 import * as Clipboard from "expo-clipboard";
 import { formatUnits } from "ethers";
+import UballotSpinner from "../../components/UballetSpinner/UballetSpinner";
 
 const TransactionScreen: React.FC = () => {
-  const { txHash, isNew } = useLocalSearchParams<{ txHash?: string, isNew?: string }>();
+  const { txHash, isNew } = useLocalSearchParams<{
+    txHash?: string;
+    isNew?: string;
+  }>();
   const { transaction, loading } = useGetTransactioDetail(txHash ? txHash : "");
 
   const { blockchain } = useBlockchainContext();
@@ -31,8 +41,10 @@ const TransactionScreen: React.FC = () => {
 
   const isNewParam = isNew === "true";
 
-  const isInternalTransaction = transaction && 
-    (transaction.from !== publicKey && transaction.to !== publicKey);
+  const isInternalTransaction =
+    transaction &&
+    transaction.from !== publicKey &&
+    transaction.to !== publicKey;
 
   const handleCopyToClipboard = (address: string) => {
     Clipboard.setStringAsync(address);
@@ -52,13 +64,7 @@ const TransactionScreen: React.FC = () => {
   };
 
   return (
-    <View style={[styles.container, { flex: 1, justifyContent: 'center' }]}>
-      {isInternalTransaction && (
-        <Text style={{ color: 'orange', fontWeight: 'bold' }}>
-          This transaction is internal. Internal transactions are behind-the-scenes actions in smart contracts. Check the block explorer below for more details on recipients and amounts.
-        </Text>
-      )}
-
+    <View style={[styles.container, { flex: 1, justifyContent: "center" }]}>
       {!isNewParam && (
         <Stack.Screen
           options={{
@@ -75,11 +81,27 @@ const TransactionScreen: React.FC = () => {
       )}
 
       {loading ? (
-        <ActivityIndicator size="large" />
+        <UballotSpinner />
       ) : transaction ? (
-        <View style={{ justifyContent: 'center', alignItems: 'center', flex: 1 }}>
-          <Card style={{ width: '100%' }}>
+        <View
+          style={{ justifyContent: "center", alignItems: "center", flex: 1 }}
+        >
+          <Card style={{ width: "100%" }}>
             <Card.Content>
+              {isInternalTransaction && (
+                <Text
+                  style={{
+                    color: "orange",
+                    fontWeight: "bold",
+                    marginTop: 0,
+                    marginBottom: 0,
+                  }}
+                >
+                  This transaction is internal. Internal transactions are
+                  behind-the-scenes actions in smart contracts. Check the block
+                  explorer below for more details on recipients and amounts.
+                </Text>
+              )}
               <Text variant="titleMedium" style={styles.item}>
                 Hash:{" "}
               </Text>
@@ -89,8 +111,13 @@ const TransactionScreen: React.FC = () => {
               <Text variant="titleMedium" style={styles.item}>
                 From:{" "}
               </Text>
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <Text testID='transaction-from' variant="bodySmall" selectable style={styles.item}>
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
+                <Text
+                  testID="transaction-from"
+                  variant="bodySmall"
+                  selectable
+                  style={styles.item}
+                >
                   {transaction.from}
                 </Text>
                 <IconButton
@@ -103,24 +130,35 @@ const TransactionScreen: React.FC = () => {
               <Text variant="titleMedium" style={styles.item}>
                 To:{" "}
               </Text>
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <Text testID='transaction-to' variant="bodySmall" selectable style={styles.item}>
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
+                <Text
+                  testID="transaction-to"
+                  variant="bodySmall"
+                  selectable
+                  style={styles.item}
+                >
                   {transaction.to}
                 </Text>
                 <IconButton
                   icon="content-copy"
                   size={20}
-                  onPress={() => transaction.to && handleCopyToClipboard(transaction.to)}
+                  onPress={() =>
+                    transaction.to && handleCopyToClipboard(transaction.to)
+                  }
                   accessibilityLabel="Copy to address"
                 />
               </View>
               <Text variant="titleMedium" style={styles.item}>
                 Block Number:{" "}
               </Text>
-              <Text testID='transaction-block-number' variant="bodyMedium" style={styles.item}>
+              <Text
+                testID="transaction-block-number"
+                variant="bodyMedium"
+                style={styles.item}
+              >
                 {transaction.blockNumber}
               </Text>
-              {transaction.value.toNumber() > 0 && (
+              {transaction.value.gt(0) && (
                 <>
                   <Text variant="titleMedium" style={styles.item}>
                     Value:{" "}
@@ -145,7 +183,7 @@ const TransactionScreen: React.FC = () => {
             </Card.Content>
           </Card>
 
-          <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
+          <View style={{ flexDirection: "row", justifyContent: "center" }}>
             <FAB
               size="medium"
               icon="link-variant"
@@ -154,15 +192,17 @@ const TransactionScreen: React.FC = () => {
             />
             {isNewParam && (
               <FAB
-                testID='go-to-home-button'
+                testID="go-to-home-button"
                 size="medium"
                 icon="home"
-                style={styles.fab}
-                onPress={() => { router.navigate('/(auth)'); }}
+                style={[styles.fab, { marginRight: 16 }]}
+                onPress={() => {
+                  router.navigate("/(auth)");
+                }}
               />
             )}
             <FAB
-              testID='share-button'
+              testID="share-button"
               size="medium"
               icon="share"
               style={styles.fab}

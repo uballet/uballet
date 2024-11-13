@@ -40,11 +40,7 @@ export async function approveEIP155Request(
 
           return formatJsonRpcResult(id, signedMessage);
         } else {
-          // @ts-ignore
-          const signedMessage = await initiator.signMessageWith6492({
-            message: message,
-          })
-          return formatJsonRpcResult(id, signedMessage);
+          return formatJsonRpcError(id, "Cannot use multisign account to sign message");
         }
       } catch (error: any) {
         console.error(error);
@@ -67,9 +63,7 @@ export async function approveEIP155Request(
           const signedMessage = await lightAccount.signTypedData(args);
           return formatJsonRpcResult(id, signedMessage);
         } else {
-          // @ts-ignore
-          const signedMessage = await submitter.signTypedDataWith6492(args);
-          return formatJsonRpcResult(id, signedMessage);
+          return formatJsonRpcError(id, "Cannot use multisign account to sign message");
         }
       } catch (error: any) {
         console.error(error);

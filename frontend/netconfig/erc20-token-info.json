@@ -1,165 +1,164 @@
 {
-    "erc20_tokens": [
-      {
-        "name": "DAI",
-        "symbol": "DAI",
-        "decimals": 18,
-        "color": "#FF8C00",
-        "cmc_url": "https://coinmarketcap.com/currencies/dai/",
-        "logo_url": "https://cryptologos.cc/logos/multi-collateral-dai-dai-logo.png"
-      },
-      {
-        "name": "Tether USD",
-        "symbol": "USDT",
-        "decimals": 6,
-        "color": "#26A17B",
-        "cmc_url": "https://coinmarketcap.com/currencies/tether/",
-        "logo_url": "https://cryptologos.cc/logos/tether-usdt-logo.png"
-      },
-      {
-        "name": "USD Coin",
-        "symbol": "USDC",
-        "decimals": 6,
-        "color": "#2775CA",
-        "cmc_url": "https://coinmarketcap.com/currencies/usd-coin/",
-        "logo_url": "https://cryptologos.cc/logos/usd-coin-usdc-logo.png"
-      },
-      {
-        "name": "Wrapped Bitcoin",
-        "symbol": "WBTC",
-        "decimals": 8,
-        "color": "#F7931A",
-        "cmc_url": "https://coinmarketcap.com/currencies/wrapped-bitcoin/",
-        "logo_url": "https://cryptologos.cc/logos/wrapped-bitcoin-wbtc-logo.png"
-      },
-      {
-        "name": "Aave",
-        "symbol": "AAVE",
-        "decimals": 18,
-        "color": "#2EBAC6",
-        "cmc_url": "https://coinmarketcap.com/currencies/aave/",
-        "logo_url": "https://cryptologos.cc/logos/aave-aave-logo.png"
-      },
-      {
-        "name": "Chainlink",
-        "symbol": "LINK",
-        "decimals": 18,
-        "color": "#2A5ADA",
-        "cmc_url": "https://coinmarketcap.com/currencies/chainlink/",
-        "logo_url": "https://cryptologos.cc/logos/chainlink-link-logo.png"
-      },
-      {
-        "name": "Uniswap",
-        "symbol": "UNI",
-        "decimals": 18,
-        "color": "#FF007A",
-        "cmc_url": "https://coinmarketcap.com/currencies/uniswap/",
-        "logo_url": "https://cryptologos.cc/logos/uniswap-uni-logo.png"
-      },
-      {
-        "name": "Compound",
-        "symbol": "COMP",
-        "decimals": 18,
-        "color": "#00D395",
-        "cmc_url": "https://coinmarketcap.com/currencies/compound/",
-        "logo_url": "https://cryptologos.cc/logos/compound-comp-logo.png"
-      },
-      {
-        "name": "SushiSwap",
-        "symbol": "SUSHI",
-        "decimals": 18,
-        "color": "#FA52A0",
-        "cmc_url": "https://coinmarketcap.com/currencies/sushiswap/",
-        "logo_url": "https://cryptologos.cc/logos/sushiswap-sushi-logo.png"
-      },
-      {
-        "name": "Maker",
-        "symbol": "MKR",
-        "decimals": 18,
-        "color": "#1AAB9B",
-        "cmc_url": "https://coinmarketcap.com/currencies/maker/",
-        "logo_url": "https://cryptologos.cc/logos/maker-mkr-logo.png"
-      },
-      {
-        "name": "Synthetix",
-        "symbol": "SNX",
-        "decimals": 18,
-        "color": "#00D1FF",
-        "cmc_url": "https://coinmarketcap.com/currencies/synthetix/",
-        "logo_url": "https://cryptologos.cc/logos/synthetix-snx-logo.png"
-      },
-      {
-        "name": "Yearn Finance",
-        "symbol": "YFI",
-        "decimals": 18,
-        "color": "#006AE3",
-        "cmc_url": "https://coinmarketcap.com/currencies/yearn-finance/",
-        "logo_url": "https://cryptologos.cc/logos/yearn-finance-yfi-logo.png"
-      },
-      {
-        "name": "Basic Attention Token",
-        "symbol": "BAT",
-        "decimals": 18,
-        "color": "#FF5000",
-        "cmc_url": "https://coinmarketcap.com/currencies/basic-attention-token/",
-        "logo_url": "https://cryptologos.cc/logos/basic-attention-token-bat-logo.png"
-      },
-      {
-        "name": "Paxos Standard",
-        "symbol": "PAX",
-        "decimals": 18,
-        "color": "#00DC82",
-        "cmc_url": "https://coinmarketcap.com/currencies/paxos-standard/",
-        "logo_url": "https://cryptologos.cc/logos/paxos-standard-pax-logo.png"
-      },
-      {
-        "name": "TrueUSD",
-        "symbol": "TUSD",
-        "decimals": 18,
-        "color": "#1C70DD",
-        "cmc_url": "https://coinmarketcap.com/currencies/trueusd/",
-        "logo_url": "https://cryptologos.cc/logos/trueusd-tusd-logo.png"
-      },
-      {
-        "name": "1inch",
-        "symbol": "1INCH",
-        "decimals": 18,
-        "color": "#2B4CED",
-        "cmc_url": "https://coinmarketcap.com/currencies/1inch/",
-        "logo_url": "https://cryptologos.cc/logos/1inch-1inch-logo.png"
-      },
-      {
-        "name": "Curve DAO Token",
-        "symbol": "CRV",
-        "decimals": 18,
-        "color": "#406ABF",
-        "cmc_url": "https://coinmarketcap.com/currencies/curve-dao-token/",
-        "logo_url": "https://cryptologos.cc/logos/curve-dao-token-crv-logo.png"
-      },
-      {
-        "name": "Balancer",
-        "symbol": "BAL",
-        "decimals": 18,
-        "color": "#1C1CE1",
-        "cmc_url": "https://coinmarketcap.com/currencies/balancer/",
-        "logo_url": "https://cryptologos.cc/logos/balancer-bal-logo.png"
-      },
-      {
-        "name": "Enjin Coin",
-        "symbol": "ENJ",
-        "decimals": 18,
-        "color": "#624DBF",
-        "cmc_url": "https://coinmarketcap.com/currencies/enjin-coin/",
-        "logo_url": "https://cryptologos.cc/logos/enjin-coin-enj-logo.png"
-      },
-      {
-        "name": "Decentraland",
-        "symbol": "MANA",
-        "decimals": 18,
-        "color": "#F47D33",
-        "cmc_url": "https://coinmarketcap.com/currencies/decentraland/",
-        "logo_url": "https://cryptologos.cc/logos/decentraland-mana-logo.png"
-      }
-    ]
-  }
-  
+  "erc20_tokens": [
+    {
+      "name": "DAI",
+      "symbol": "DAI",
+      "decimals": 18,
+      "color": "#FF8C00",
+      "cmc_url": "https://coinmarketcap.com/currencies/dai/",
+      "logo_url": "https://cryptologos.cc/logos/multi-collateral-dai-dai-logo.png"
+    },
+    {
+      "name": "Tether USD",
+      "symbol": "USDT",
+      "decimals": 6,
+      "color": "#26A17B",
+      "cmc_url": "https://coinmarketcap.com/currencies/tether/",
+      "logo_url": "https://cryptologos.cc/logos/tether-usdt-logo.png"
+    },
+    {
+      "name": "USD Coin",
+      "symbol": "USDC",
+      "decimals": 6,
+      "color": "#2775CA",
+      "cmc_url": "https://coinmarketcap.com/currencies/usd-coin/",
+      "logo_url": "https://cryptologos.cc/logos/usd-coin-usdc-logo.png"
+    },
+    {
+      "name": "Wrapped Bitcoin",
+      "symbol": "WBTC",
+      "decimals": 8,
+      "color": "#F7931A",
+      "cmc_url": "https://coinmarketcap.com/currencies/wrapped-bitcoin/",
+      "logo_url": "https://cryptologos.cc/logos/wrapped-bitcoin-wbtc-logo.png"
+    },
+    {
+      "name": "Aave",
+      "symbol": "AAVE",
+      "decimals": 18,
+      "color": "#2EBAC6",
+      "cmc_url": "https://coinmarketcap.com/currencies/aave/",
+      "logo_url": "https://cryptologos.cc/logos/aave-aave-logo.png"
+    },
+    {
+      "name": "Chainlink",
+      "symbol": "LINK",
+      "decimals": 18,
+      "color": "#2A5ADA",
+      "cmc_url": "https://coinmarketcap.com/currencies/chainlink/",
+      "logo_url": "https://cryptologos.cc/logos/chainlink-link-logo.png"
+    },
+    {
+      "name": "Uniswap",
+      "symbol": "UNI",
+      "decimals": 18,
+      "color": "#FF007A",
+      "cmc_url": "https://coinmarketcap.com/currencies/uniswap/",
+      "logo_url": "https://cryptologos.cc/logos/uniswap-uni-logo.png"
+    },
+    {
+      "name": "Compound",
+      "symbol": "COMP",
+      "decimals": 18,
+      "color": "#00D395",
+      "cmc_url": "https://coinmarketcap.com/currencies/compound/",
+      "logo_url": "https://cryptologos.cc/logos/compound-comp-logo.png"
+    },
+    {
+      "name": "SushiSwap",
+      "symbol": "SUSHI",
+      "decimals": 18,
+      "color": "#FA52A0",
+      "cmc_url": "https://coinmarketcap.com/currencies/sushiswap/",
+      "logo_url": "https://cryptologos.cc/logos/sushiswap-sushi-logo.png"
+    },
+    {
+      "name": "Maker",
+      "symbol": "MKR",
+      "decimals": 18,
+      "color": "#1AAB9B",
+      "cmc_url": "https://coinmarketcap.com/currencies/maker/",
+      "logo_url": "https://cryptologos.cc/logos/maker-mkr-logo.png"
+    },
+    {
+      "name": "Synthetix",
+      "symbol": "SNX",
+      "decimals": 18,
+      "color": "#00D1FF",
+      "cmc_url": "https://coinmarketcap.com/currencies/synthetix/",
+      "logo_url": "https://cryptologos.cc/logos/synthetix-snx-logo.png"
+    },
+    {
+      "name": "Yearn Finance",
+      "symbol": "YFI",
+      "decimals": 18,
+      "color": "#006AE3",
+      "cmc_url": "https://coinmarketcap.com/currencies/yearn-finance/",
+      "logo_url": "https://cryptologos.cc/logos/yearn-finance-yfi-logo.png"
+    },
+    {
+      "name": "Basic Attention Token",
+      "symbol": "BAT",
+      "decimals": 18,
+      "color": "#FF5000",
+      "cmc_url": "https://coinmarketcap.com/currencies/basic-attention-token/",
+      "logo_url": "https://cryptologos.cc/logos/basic-attention-token-bat-logo.png"
+    },
+    {
+      "name": "Paxos Standard",
+      "symbol": "USDP",
+      "decimals": 18,
+      "color": "#00DC82",
+      "cmc_url": "https://coinmarketcap.com/currencies/paxos-standard/",
+      "logo_url": "https://cryptologos.cc/logos/paxos-standard-pax-logo.png"
+    },
+    {
+      "name": "TrueUSD",
+      "symbol": "TUSD",
+      "decimals": 18,
+      "color": "#1C70DD",
+      "cmc_url": "https://coinmarketcap.com/currencies/trueusd/",
+      "logo_url": "https://cryptologos.cc/logos/trueusd-tusd-logo.png"
+    },
+    {
+      "name": "1inch",
+      "symbol": "1INCH",
+      "decimals": 18,
+      "color": "#2B4CED",
+      "cmc_url": "https://coinmarketcap.com/currencies/1inch/",
+      "logo_url": "https://cryptologos.cc/logos/1inch-1inch-logo.png"
+    },
+    {
+      "name": "Curve DAO Token",
+      "symbol": "CRV",
+      "decimals": 18,
+      "color": "#406ABF",
+      "cmc_url": "https://coinmarketcap.com/currencies/curve-dao-token/",
+      "logo_url": "https://cryptologos.cc/logos/curve-dao-token-crv-logo.png"
+    },
+    {
+      "name": "Balancer",
+      "symbol": "BAL",
+      "decimals": 18,
+      "color": "#1C1CE1",
+      "cmc_url": "https://coinmarketcap.com/currencies/balancer/",
+      "logo_url": "https://cryptologos.cc/logos/balancer-bal-logo.png"
+    },
+    {
+      "name": "Enjin Coin",
+      "symbol": "ENJ",
+      "decimals": 18,
+      "color": "#624DBF",
+      "cmc_url": "https://coinmarketcap.com/currencies/enjin-coin/",
+      "logo_url": "https://cryptologos.cc/logos/enjin-coin-enj-logo.png"
+    },
+    {
+      "name": "Decentraland",
+      "symbol": "MANA",
+      "decimals": 18,
+      "color": "#F47D33",
+      "cmc_url": "https://coinmarketcap.com/currencies/decentraland/",
+      "logo_url": "https://cryptologos.cc/logos/decentraland-mana-logo.png"
+    }
+  ]
+}

@@ -47,7 +47,7 @@ export default function AuthProvider({ children }: PropsWithChildren) {
                         setTimeout(() => {
                             temporarilyMovedToBackground = false
                             setRequiresLocalAuthentication(false)
-                        }, 1000)
+                        }, 1500)
                     } else {
                         temporarilyMovedToBackground = false
                     }

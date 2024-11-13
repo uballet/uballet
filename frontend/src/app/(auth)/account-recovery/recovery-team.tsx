@@ -27,7 +27,7 @@ export default function RecoverWithTeamScreen() {
     const pendingRequest = myRecoveryRequest?.id
     const isEnough = estimationQuery.data?.isEnough
     return (
-        <SafeAreaView className="flex-1 items-center">
+        <SafeAreaView className="flex-1 mt-16 items-center">
             <Text className="m-4 text-lg font-semibold">Recover with Recovery Team</Text>
             <View className="w-3/4 p-4 border rounded-md mt-4">
                 <Text className="text-lg font-bold">Estimated Recovery Fee</Text>

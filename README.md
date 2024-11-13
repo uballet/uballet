@@ -74,6 +74,21 @@ e2e testing config, with specific addresses for the account factories living in 
 
 You need to go to the `/test-infra` directory and run the `./start-infra.sh` script. You need to keep an eye while doing this and make sure the scripts finishes its execution. If the execution seems to stall indefinitely waiting for tx receipts in the factory deploy process, you might need to stop the process, take down the docker-container for `erc-4337-devnet` and run the script again.
 
+The required `.env` variables are present in the `.env.local` files under each submodule. You'll need to copy these values into a `.env` file next to each `.env.local` file.
+
+After running the script, the multisig plugin should be deployed at `0xD1D8C2c0fd66DfA792Fa2A70296690dBf77cc8f4`, and the multisig account factory should be deployed at `0x42FfC8c171D7F62b231633E9d06f11a83aA6E09e`. You can see these results in the logs of the terminal you run the script with. If the resulting addresses are different, it means that something went wrong or you don't have the correct env variables, and you won't be able to run the e2e tests since it requires the deployments at the specified addresses.
+
+The script will also deploy erc20 like contracts at following addresses. You can also check the deployed addresses in the logs and should match the ones below.
+
+```
+USDT deployed to: 0xEC269cB9fA9bE1BDDBA386b6cA7c85c43E9815bf
+DAI deployed to: 0x9FEAa3710a0456740c59EcAB5db628b923903FF9
+USDC deployed to: 0x3Bca8F567E934fd3a2D0C7237EC8196612ab67cc
+WBTC deployed to: 0x37CBB2C4C1E8359f0b45bdbBe72bF6e8704b97EE
+AAVE deployed to: 0x689A308F09148039F5c6122dbCc1DF1EdD2Ccbb9
+UBALLET_TOKEN deployed to: 0xDECeBb93a3f41199eb2F8e4DD7520dF8Fb13773b
+```
+
 #### Running the tests
 
 Once you've completed the steps above. You can go to the `/frontend` directory and run `maestro test <flow>` to run a specific flow.

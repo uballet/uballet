@@ -17,7 +17,9 @@ import { useBlockchainContext } from "../../../providers/BlockchainProvider";
 import { useNavigation, CommonActions } from "@react-navigation/native";
 import { useAuthContext } from "../../../providers/AuthProvider";
 import { useAccountContext } from "../../../hooks/useAccountContext";
+import { Entypo } from "@expo/vector-icons";
 import { router } from "expo-router";
+import { Separator } from "../../../components/Separator/Separator";
 
 const networkLabels: Record<string, string> = {
   arbitrum: "Arbitrum",
@@ -32,7 +34,7 @@ const networkLabels: Record<string, string> = {
 
 function getNetworkName(networkKey: string) {
   if (networkLabels[networkKey]) {
-    return networkLabels[networkKey]
+    return networkLabels[networkKey];
   } else {
     return networkKey;
   }
@@ -73,17 +75,14 @@ function SettingsScreen() {
       <View
         style={{
           ...styles.container,
-          justifyContent: "space-between",
+
           alignItems: "stretch",
         }}
       >
         {/* Network Selection Section */}
-        <Card>
+        <Card className="mb-1 pb-1">
+          <Card.Title titleVariant="titleMedium" title="Network selection" />
           <Card.Content>
-            <Text variant="titleMedium" style={styles.item}>
-              Network selection
-            </Text>
-
             <Menu
               visible={menuVisible}
               onDismiss={closeMenu}
@@ -91,104 +90,153 @@ function SettingsScreen() {
                 <Button
                   mode="outlined"
                   onPress={openMenu}
-                  contentStyle={{ justifyContent: "space-between" }}
-                  style={settingsStyles.networkDropdown}
+                  contentStyle={{
+                    ...styles.button,
+                    padding: 1,
+                    margin: 0,
+                  }}
                 >
                   {networkLabel}
                 </Button>
               }
             >
               <Menu.Item
+                onPress={() => handleNetworkChange("mainnet")}
+                title={"Ethereum"}
+              />
+              <Divider />
+              <Menu.Item
                 onPress={() => handleNetworkChange("sepolia")}
                 title={"Sepolia"}
               />
               <Divider />
               <Menu.Item
-                onPress={() =>
-                  handleNetworkChange("optimismSepolia")
-                }
+                onPress={() => handleNetworkChange("optimism")}
+                title={"Optimism"}
+              />
+              <Divider />
+              <Menu.Item
+                onPress={() => handleNetworkChange("optimismSepolia")}
                 title={"Optimism Sepolia"}
               />
               <Divider />
               <Menu.Item
-                onPress={() =>
-                  handleNetworkChange("arbitrumSepolia")
-                }
+                onPress={() => handleNetworkChange("arbitrum")}
+                title={"Arbitrum"}
+              />
+              <Divider />
+              <Menu.Item
+                onPress={() => handleNetworkChange("arbitrumSepolia")}
                 title={"Arbitrum Sepolia"}
+              />
+              <Divider />
+              <Menu.Item
+                onPress={() => handleNetworkChange("base")}
+                title={"Base"}
               />
               <Divider />
               <Menu.Item
                 onPress={() => handleNetworkChange("baseSepolia")}
                 title={"Base Sepolia"}
               />
+
             </Menu>
           </Card.Content>
         </Card>
-
-        <Separator />
-
-        {/* Passkeys Section */}
         <View>
-          <Text className="text-xl mb-8 self-center">Passkeys</Text>
-            {hasNoPasskeys && <Text className="self-center">You don't have any passkeys</Text>}
-            {hasPasskeys && passkeys?.map((passkey) => (
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                <Text>{passkey.name.slice(0, 16) + '...'}</Text>
-                <Text>{'Registered At: ' + passkey.registeredAt.toLocaleDateString()}</Text>
-              </View>
-            ))}
-          {isLoading && <ActivityIndicator />}
-          <Button mode="contained" className="m-4" onPress={() => register()} disabled={isLoading}>
-            Register New Passkey
-          </Button>
+          <Separator />
         </View>
 
-        <Separator />
-        <Button testID="logout-button" mode="outlined" className="m-8" onPress={logout}>
-          <Text className="text-red-500">Logout</Text>
-        </Button>
-        <Button
-          mode="outlined"
-          style={styles.button}
-          onPress={() => router.push({ pathname: "wallet-connect" })}
-        >
-          Connections
-        </Button>
+        {/* Passkeys Section */}
+        <Card className="mb-1">
+          <Card.Title titleVariant="titleMedium" title="Passkeys" />
+          <Card.Content>
+            {hasNoPasskeys && (
+              <View className="flex-1 justify-center items-center bg-white p-2">
+                <Entypo name="key" size={24} color="gray" />
+                <Text className="text-xl font-bold text-gray-600">
+                  No passkeys
+                </Text>
+                <Text className="text-md text-gray-500 mt-2 text-center px-8">
+                  Passkeys are a the most secure way to access your account.
+                  Register a new passkey to secure your account.
+                </Text>
+              </View>
+            )}
+            {hasPasskeys &&
+              passkeys?.map((passkey) => (
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <Text>{passkey.name.slice(0, 16) + "..."}</Text>
+                  <Text>
+                    {"Registered At: " +
+                      passkey.registeredAt.toLocaleDateString()}
+                  </Text>
+                </View>
+              ))}
+            {isLoading && <ActivityIndicator />}
+            <Button
+              mode="contained"
+              style={styles.button}
+              onPress={() => register()}
+              disabled={isLoading}
+            >
+              <Text style={{ color: "white", fontWeight: "bold" }}>
+                {" "}
+                Register New Passkey{" "}
+              </Text>
+            </Button>
+          </Card.Content>
+        </Card>
+        <View>
+          <Separator />
+        </View>
+        {/* Settings Section */}
+        <View style={{ justifyContent: "center", alignItems: "center" }}>
+          <Button
+            mode="contained-tonal"
+            style={{
+              ...settingsStyles.settingButtons,
+              backgroundColor: theme.colors.primary,
+            }}
+            textColor="white"
+            onPress={() => router.push({ pathname: "wallet-connect" })}
+          >
+            <Text style={{ color: "white", fontWeight: "bold" }}>
+              {" "}
+              Connections{" "}
+            </Text>
+          </Button>
+          <Button
+            testID="logout-button"
+            mode="outlined"
+            style={{
+              ...settingsStyles.settingButtons,
+              backgroundColor: "white",
+            }}
+            onPress={logout}
+          >
+            <Text className="text-red-700 font-bold">Logout</Text>
+          </Button>
+        </View>
       </View>
     </ScrollView>
   );
 }
 
-const Separator = () => (
-  <View
-    style={{
-      height: 1,
-      backgroundColor: theme.colors.primary,
-      width: "100%",
-      marginVertical: 16,
-    }}
-  />
-);
-
 const settingsStyles = StyleSheet.create({
-  emptyText: {
-    alignSelf: "center",
-  },
-  sectionHeader: {
-    alignSelf: "center",
-    fontSize: 18,
-    marginTop: 12,
-    marginBottom: 22,
-    color: theme.colors.primary,
-  },
-  sectionContainer: {
-    width: "90%",
-    padding: 8,
-  },
   networkDropdown: {
     width: "70%",
     alignSelf: "center",
     marginVertical: 16,
+  },
+  settingButtons: {
+    ...styles.button,
+    marginVertical: 8,
   },
 });
 

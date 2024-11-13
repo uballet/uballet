@@ -6,10 +6,11 @@ import {
   TouchableOpacity,
   RefreshControl,
 } from "react-native";
-import { ActivityIndicator, Card, Text } from "react-native-paper";
+import { Card, Text } from "react-native-paper";
 import { Entypo, FontAwesome5 } from "@expo/vector-icons";
 import { useLocalSearchParams } from "expo-router";
-import { useTokenInfo } from "../../../hooks/useTokenInfo";
+import { useTokenInfoMarket } from "../../../hooks/useTokenInfoMarket";
+import UballetSpinner from "../../../components/UballetSpinner/UballetSpinner";
 
 function MarketInfoScreen() {
   const { symbol, name } = useLocalSearchParams<{
@@ -17,7 +18,7 @@ function MarketInfoScreen() {
     name: string;
   }>();
 
-  const { data, loading, refetch } = useTokenInfo();
+  const { data, loading, refetch } = useTokenInfoMarket(symbol);
 
   const circulatingSupply = data?.[symbol]?.circulatingSupply;
   const maxSupply = data?.[symbol]?.maxSupply;
@@ -29,8 +30,6 @@ function MarketInfoScreen() {
   const isPriceUp = (percentChange24h ?? 0) >= 0;
   const tokenCMCUrl = data?.[symbol]?.cmcUrl;
   const tokenLogoUrl = data?.[symbol]?.logoUrl?.replace("64x64", "128x128");
-
-  console.log("CMC URL is:", tokenCMCUrl);
 
   // Open browser with the link
   const openLink = () => {
@@ -49,12 +48,32 @@ function MarketInfoScreen() {
     refetch();
   };
 
+  if (
+    !loading &&
+    (!data || data[symbol] === undefined || data[symbol] === null)
+  ) {
+    return (
+      <SafeAreaView className="flex-1 bg-gray-100 w-full">
+        <ScrollView
+          className="flex-grow p-4"
+          refreshControl={
+            <RefreshControl refreshing={false} onRefresh={refresh} />
+          }
+        >
+          <View className="flex-1 justify-center items-center mt-4">
+            <Text className="text-2xl font-bold">No data available</Text>
+          </View>
+        </ScrollView>
+      </SafeAreaView>
+    );
+  }
+
   if (loading) {
     return (
       <SafeAreaView className="flex-1 bg-gray-100 w-full">
         <ScrollView className="flex-grow p-4">
           <View className="flex-1 justify-center items-center mt-4">
-            <ActivityIndicator animating={true} color="gray" size="large" />
+            <UballetSpinner />
           </View>
         </ScrollView>
       </SafeAreaView>

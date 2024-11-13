@@ -1,7 +1,42 @@
 appId: com.flperez.uballet
 ---
-- tapOn: "Recover with seedphrase" 
-- tapOn: "Enter seed phrase"
-- inputText: ${SEED_PHRASE}
+- evalScript: ${output.words = SEED_PHRASE.split(' ')}
+- tapOn: "Recover with seedphrase"
+- tapOn:
+    id: "seed-phrase-input-0"
+- inputText: ${output.words[0]}
+- tapOn:
+    id: "seed-phrase-input-1"
+- inputText: ${output.words[1]}
+- tapOn:
+    id: "seed-phrase-input-2"
+- inputText: ${output.words[2]}
+- tapOn:
+    id: "seed-phrase-input-3"
+- inputText: ${output.words[3]}
+- tapOn:
+    id: "seed-phrase-input-4"
+- inputText: ${output.words[4]}
+- tapOn:
+    id: "seed-phrase-input-5"
+- inputText: ${output.words[5]}
+- tapOn:
+    id: "seed-phrase-input-6"
+- inputText: ${output.words[6]}
+- tapOn:
+    id: "seed-phrase-input-7"
+- inputText: ${output.words[7]}
+- tapOn:
+    id: "seed-phrase-input-8"
+- inputText: ${output.words[8]}
+- tapOn:
+    id: "seed-phrase-input-9"
+- inputText: ${output.words[9]}
+- tapOn:
+    id: "seed-phrase-input-10"
+- inputText: ${output.words[10]}
+- tapOn:
+    id: "seed-phrase-input-11"
+- inputText: ${output.words[11]}
 - tapOn: "done"
 - tapOn: "Recover"

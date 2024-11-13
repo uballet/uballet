@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, Redirect } from "expo-router";
 import { Button, TextInput } from "react-native-paper";
-import { View, Image, Text, KeyboardAvoidingView } from "react-native";
+import { View, Image, Text, KeyboardAvoidingView, Platform } from "react-native";
 import { useEmailSignIn } from "../../hooks/useEmailSignIn";
 import { usePasskeySignIn } from "../../hooks/usePasskeySignIn";
 import styles from "../../styles/styles";
@@ -21,13 +21,13 @@ export default function LoginScreen() {
     }
 
   return (
-    <KeyboardAvoidingView style={styles.containerLogin}>
+    <KeyboardAvoidingView style={styles.containerLogin} behavior={'height'}>
       <View style={styles.item}>
         <Image
           style={styles.image}
           source={require("../../assets/logo.webp")}
         />
-        {isSupported && <Button loading={isPendingPasskey} disabled={isLoading} style={{ ...styles.button, marginTop: 64 }} onPress={() => loginWithPasskey()} mode="contained">
+        {isSupported && <Button loading={isPendingPasskey} disabled={isLoading} style={{ ...styles.button, marginTop: 40 }} onPress={() => loginWithPasskey()} mode="contained">
             <Text>Sign in with passkey</Text>
         </Button>}
         <TextInput
@@ -42,7 +42,7 @@ export default function LoginScreen() {
         />
         {isError && <Text className="text-red-500 mb-4">Wrong email. Check you're using the right email.</Text>}
         <Link testID="sign-up-link" href={'/(public)/signup'}>
-          <Text className="text-blue-500">Don't have an account? Sign Up!</Text>
+          <Text style={styles.linkText}>Don't have an account? Sign Up!</Text>
         </Link>
       </View>
       <Button testID="sign-in-button" loading={isEmailPending} disabled={isLoading} mode="contained" style={styles.button} onPress={() => signIn({ email })}>

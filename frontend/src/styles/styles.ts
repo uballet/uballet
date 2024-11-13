@@ -1,4 +1,5 @@
 import { StyleSheet } from "react-native";
+import { theme } from "./color";
 
 const globalStyles = StyleSheet.create({
   container: {
@@ -10,6 +11,7 @@ const globalStyles = StyleSheet.create({
   containerTransfer: {
     flex: 1,
     alignItems: "center",
+    marginTop: 4,
     padding: 16,
   },
   containerLogin: {
@@ -126,6 +128,9 @@ const globalStyles = StyleSheet.create({
   errorText: {
     color: "red",
     marginLeft: 8,
+  },
+  linkText: {
+    color: theme.colors.secondary,
   },
 });
 
