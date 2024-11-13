@@ -172,36 +172,72 @@ export function useTransfer() {
           const submitterAccount = usdcGasCallData ? erc20Submitter : submitter;
 
           try {
-            const {
-              signatureObj: signature1,
-              aggregatedSignature,
-              request,
-            } = await initiatorAccount!.proposeUserOperation({
-              uo: usdcGasCallData
-                ? [usdcGasCallData, transferUoCallData]
-                : transferUoCallData,
-              overrides: {
-                preVerificationGas: { multiplier: 3 },
-              },
-            });
-            uo = await submitterAccount.sendUserOperation({
-              uo: request.callData,
-              context: {
-                signatures: [signature1],
+            // Send
+            if (avoidPaymaster && gasInUsdc === undefined) {
+              console.log("Submitting UO without paymaster, paying gas in ETH");
+              const {
+                signatureObj: signature1,
                 aggregatedSignature,
-                userOpSignatureType: "UPPERLIMIT",
-              },
-              overrides: {
-                preVerificationGas: request.preVerificationGas,
-                callGasLimit: request.callGasLimit,
-                verificationGasLimit: request.verificationGasLimit,
-                maxFeePerGas: request.maxFeePerGas,
-                maxPriorityFeePerGas: request.maxPriorityFeePerGas,
-                // @ts-ignore
-                paymasterAndData:
-                  request.paymasterAndData ?? request.paymasterData,
-              },
-            });
+                request,
+              } = await initiatorAccount!.proposeUserOperation({
+                uo: usdcGasCallData
+                  ? [usdcGasCallData, transferUoCallData]
+                  : transferUoCallData,
+                overrides: {
+                  preVerificationGas: { multiplier: 3 },
+                  paymasterAndData: "0x",
+                },
+              });
+              uo = await submitterAccount.sendUserOperation({
+                uo: request.callData,
+                context: {
+                  signatures: [signature1],
+                  aggregatedSignature,
+                  userOpSignatureType: "UPPERLIMIT",
+                },
+                overrides: {
+                  preVerificationGas: request.preVerificationGas,
+                  callGasLimit: request.callGasLimit,
+                  verificationGasLimit: request.verificationGasLimit,
+                  maxFeePerGas: request.maxFeePerGas,
+                  maxPriorityFeePerGas: request.maxPriorityFeePerGas,
+                  // @ts-ignore
+                  paymasterAndData:
+                    request.paymasterAndData ?? request.paymasterData,
+                },
+              });
+            } else {
+              const {
+                signatureObj: signature1,
+                aggregatedSignature,
+                request,
+              } = await initiatorAccount!.proposeUserOperation({
+                uo: usdcGasCallData
+                  ? [usdcGasCallData, transferUoCallData]
+                  : transferUoCallData,
+                overrides: {
+                  preVerificationGas: { multiplier: 3 },
+                },
+              });
+              uo = await submitterAccount.sendUserOperation({
+                uo: request.callData,
+                context: {
+                  signatures: [signature1],
+                  aggregatedSignature,
+                  userOpSignatureType: "UPPERLIMIT",
+                },
+                overrides: {
+                  preVerificationGas: request.preVerificationGas,
+                  callGasLimit: request.callGasLimit,
+                  verificationGasLimit: request.verificationGasLimit,
+                  maxFeePerGas: request.maxFeePerGas,
+                  maxPriorityFeePerGas: request.maxPriorityFeePerGas,
+                  // @ts-ignore
+                  paymasterAndData:
+                    request.paymasterAndData ?? request.paymasterData,
+                },
+              });
+            }
           } catch (error) {
             console.error("Error sending user operation:", error);
             setLoading(false);

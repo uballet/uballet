@@ -61,6 +61,7 @@ export function useGasEstimation({
       address,
       amount,
       tokenAddress,
+      avoidPaymaster: false,
     });
 
     if (initiator) {
@@ -113,6 +114,7 @@ export function useGasEstimationWithoutPaymaster({
       address,
       amount,
       tokenAddress,
+      avoidPaymaster: false,
     });
 
     if (initiator) {
@@ -134,6 +136,7 @@ export function useGasEstimationWithoutPaymaster({
       });
     }
 
+    console.log("Built UO", uo);
     const { formatted } = formatUoEstimation(uo);
     return formatted;
   }, []);
@@ -184,6 +187,7 @@ export function useERC20GasEstimation({
         address,
         amount,
         gasInUsdc: "1",
+        avoidPaymaster: false,
       });
 
     if (erc20Initiator) {
