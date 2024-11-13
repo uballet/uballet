@@ -155,6 +155,13 @@ function GasInfoScreen() {
     }
   }
 
+  if (isError) {
+    if (parseFloat(gasEstimationWithoutPaymaster) > parseFloat(balance)) {
+      notEnoughEthToBuildUO = true;
+      console.log("Not enough ETH to build UO");
+    }
+  }
+
   useEffect(() => {}, [currency, toAddress, amount]);
 
   const handleNextPayGasWithEth = () => {
