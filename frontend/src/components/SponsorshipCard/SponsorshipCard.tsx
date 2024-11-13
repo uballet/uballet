@@ -16,7 +16,7 @@ const SponsorshipCard: React.FC<SponsorshipCardProps> = ({
     <View
       style={{
         margin: 0,
-        padding: 8,
+        padding: 0,
         alignItems: "center",
       }}
     >
@@ -30,11 +30,10 @@ const SponsorshipCard: React.FC<SponsorshipCardProps> = ({
         <Text
           variant="labelLarge"
           style={{
-            fontSize: 16,
             color: isSponsored ? "green" : "red",
           }}
         >
-          {isSponsored ? "We'll pay for gas!" : "You'll pay for gas"}
+          {isSponsored ? "We'll pay for gas!" : "You'll have to pay for gas"}
         </Text>
       )}
     </View>

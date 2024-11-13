@@ -1,15 +1,28 @@
 import { useState, useEffect } from "react";
 import { View } from "react-native";
-import { ActivityIndicator, Button, Card, Text } from "react-native-paper";
+import { Button, Card, Text } from "react-native-paper";
 import { useLocalSearchParams, router } from "expo-router";
-import EstimateGasFees from "../../../components/EstimateGasFees/EstimateGasFees";
-import { useCheckTransferSponsorship } from "../../../hooks/useCheckTransferSponsorship";
 import styles from "../../../styles/styles";
 import { theme } from "../../../styles/color";
 import SponsorshipCard from "../../../components/SponsorshipCard/SponsorshipCard";
-import { useERC20GasEstimation } from "../../../hooks/useGasEstimation";
+import {
+  useERC20GasEstimation,
+  useGasEstimation,
+  useGasEstimationWithoutPaymaster,
+} from "../../../hooks/useGasEstimation";
 import UballetSpinner from "../../../components/UballetSpinner/UballetSpinner";
 import { useBlockchainContext } from "../../../providers/BlockchainProvider";
+import {
+  ARB_SEPOLIA_ALCHEMY_POLICY_ID,
+  BASE_SEPOLIA_ALCHEMY_POLICY_ID,
+  OPT_SEPOLIA_ALCHEMY_POLICY_ID,
+  SEPOLIA_ALCHEMY_POLICY_ID,
+  ARB_ALCHEMY_POLICY_ID,
+  BASE_ALCHEMY_POLICY_ID,
+  MAINNET_ALCHEMY_POLICY_ID,
+  OPT_ALCHEMY_POLICY_ID,
+} from "../../../env";
+import { useBalance } from "../../../hooks/useBalance";
 
 function GasInfoScreen() {
   const { toAddress, amount, currency } = useLocalSearchParams<{
@@ -19,7 +32,9 @@ function GasInfoScreen() {
   }>();
 
   const { blockchain } = useBlockchainContext();
+  const blockchainName = blockchain.name;
   const tokens = blockchain.erc20_tokens;
+  const eth_symbol = "ETH";
   const tokenAddresses = tokens.reduce<{ [key: string]: `0x${string}` }>(
     (acc, token) => {
       acc[token.symbol] = token.address as `0x${string}`;
@@ -27,14 +42,6 @@ function GasInfoScreen() {
     },
     {}
   );
-
-  const eth_symbol = "ETH";
-  const {
-    checkTransferSponsorship,
-    loading: loadingSponsorship,
-    setIsSponsored,
-    isSponsored,
-  } = useCheckTransferSponsorship();
 
   const {
     data,
@@ -46,20 +53,156 @@ function GasInfoScreen() {
     tokenAddress: tokenAddresses[currency],
   });
 
-  useEffect(() => {
-    if (currency === eth_symbol) {
-      checkTransferSponsorship(toAddress, amount);
-    }
-  }, [currency, toAddress, amount]);
+  const {
+    data: gasEstimation,
+    isLoading,
+    isError,
+  } = useGasEstimation({
+    address: toAddress,
+    amount,
+    tokenAddress: tokenAddresses[currency],
+  });
 
-  const handleNext = (usdcTokenGas?: string) => {
+  const {
+    data: gasEstimationWithoutPaymaster,
+    isLoading: isLoadingWithoutPaymaster,
+    isError: isErrorWithoutPaymaster,
+  } = useGasEstimationWithoutPaymaster({
+    address: toAddress,
+    amount,
+    tokenAddress: tokenAddresses[currency],
+  });
+
+  console.log("blockchainName:", blockchainName);
+
+  let isConfiguredPolicy = false;
+  if (blockchainName === "Sepolia") {
+    if (SEPOLIA_ALCHEMY_POLICY_ID) {
+      console.log("SEPOLIA_ALCHEMY_POLICY_ID:", SEPOLIA_ALCHEMY_POLICY_ID);
+      isConfiguredPolicy = true;
+    }
+  } else if (blockchainName === "Optimism Sepolia") {
+    if (OPT_SEPOLIA_ALCHEMY_POLICY_ID) {
+      console.log(
+        "OPT_SEPOLIA_ALCHEMY_POLICY_ID:",
+        OPT_SEPOLIA_ALCHEMY_POLICY_ID
+      );
+      isConfiguredPolicy = true;
+    }
+  } else if (blockchainName === "Arbitrum Sepolia") {
+    if (ARB_SEPOLIA_ALCHEMY_POLICY_ID) {
+      console.log(
+        "ARB_SEPOLIA_ALCHEMY_POLICY_ID:",
+        ARB_SEPOLIA_ALCHEMY_POLICY_ID
+      );
+      isConfiguredPolicy = true;
+    }
+  } else if (blockchainName === "Base Sepolia") {
+    if (BASE_SEPOLIA_ALCHEMY_POLICY_ID) {
+      console.log(
+        "BASE_SEPOLIA_ALCHEMY_POLICY_ID:",
+        BASE_SEPOLIA_ALCHEMY_POLICY_ID
+      );
+      isConfiguredPolicy = true;
+    }
+  } else {
+    // In this case, we are in Mainnet (ARB, BASE, OPT or ETH). So assume no policy is configured
+    isConfiguredPolicy = false;
+  }
+
+  console.log("isConfiguredPolicy:", isConfiguredPolicy);
+
+  console.log("gasEstimation", gasEstimation);
+  console.log("isLoading", isLoading);
+  console.log("isError", isError);
+
+  console.log("gasEstimationWithoutPaymaster", gasEstimationWithoutPaymaster);
+  console.log("isLoadingWithoutPaymaster", isLoadingWithoutPaymaster);
+  console.log("isErrorWithoutPaymaster", isErrorWithoutPaymaster);
+
+  let isSponsored = isConfiguredPolicy && !isError;
+  let notEnoughEthToBuildUO =
+    (!isConfiguredPolicy && isError && isErrorWithoutPaymaster) ||
+    (isConfiguredPolicy && isError && isErrorWithoutPaymaster);
+  let haveToPayGas =
+    (!isConfiguredPolicy && !isError && !isErrorWithoutPaymaster) ||
+    (isConfiguredPolicy && isError && !isErrorWithoutPaymaster);
+
+  let isLoadingSponsorship = isLoading || isLoadingWithoutPaymaster;
+
+  const { data: balance, isLoading: isLoadingBalance } = useBalance();
+
+  console.log("Currency is:", currency);
+  if (isError && currency === "ETH") {
+    console.log("Checking if amount balance is enough");
+    console.log("balance:", balance);
+    console.log(
+      "gasEstimationWithoutPaymaster:",
+      gasEstimationWithoutPaymaster
+    );
+    console.log("balance:", balance);
+    console.log(
+      "amount + gasEstimationWithoutPaymaster:",
+      parseFloat(amount) + parseFloat(gasEstimationWithoutPaymaster)
+    );
+
+    if (
+      parseFloat(balance) <=
+      parseFloat(gasEstimationWithoutPaymaster) + parseFloat(amount)
+    ) {
+      notEnoughEthToBuildUO = true;
+      console.log("Not enough ETH to build UO");
+    }
+  }
+
+  useEffect(() => {}, [currency, toAddress, amount]);
+
+  const handleNextPayGasWithEth = () => {
+    const isSponsored = "no";
     router.push({
       pathname: "transfer/submit-transfer",
-      params: { toAddress, amount, currency, usdcTokenGas },
+      params: {
+        toAddress,
+        amount,
+        currency,
+        usdcTokenGas: undefined,
+        gasEstimation: gasEstimationWithoutPaymaster,
+        isSponsored,
+      },
     });
   };
 
-  if (isLoadingErc20 || loadingSponsorship) {
+  const handleNextSponsored = () => {
+    const isSponsored = "yes";
+    router.push({
+      pathname: "transfer/submit-transfer",
+      params: {
+        toAddress,
+        amount,
+        currency,
+        usdcTokenGas: undefined,
+        gasEstimation: undefined,
+        isSponsored,
+      },
+    });
+  };
+
+  const handleNext = (usdcTokenGas?: string) => {
+    const isSponsored = "no";
+    router.push({
+      pathname: "transfer/submit-transfer",
+      params: {
+        toAddress,
+        amount,
+        currency,
+        usdcTokenGas,
+        gasEstimation: undefined,
+        isSponsored,
+      },
+    });
+  };
+
+  if (isLoadingErc20 || isLoadingSponsorship) {
     return (
       <View
         style={{
@@ -108,7 +251,7 @@ function GasInfoScreen() {
               estimate of how much gas you'll need to pay to complete your
               transaction:
             </Text>
-            {loadingSponsorship ? (
+            {isLoadingSponsorship ? (
               <UballetSpinner />
             ) : (
               <View
@@ -119,11 +262,24 @@ function GasInfoScreen() {
                   width: "100%",
                 }}
               >
-                <EstimateGasFees
-                  address={toAddress}
-                  amount={amount}
-                  tokenAddress={tokenAddresses[currency]}
-                />
+                {isSponsored ? (
+                  <Text style={{ ...styles.infoText, color: "green" }}>
+                    Gas fees will be sponsored by us!
+                  </Text>
+                ) : notEnoughEthToBuildUO ? (
+                  <Text style={{ ...styles.infoText, color: "red" }}>
+                    Not enough ETH for gas fees in order to continue with the
+                    transaction.
+                  </Text>
+                ) : haveToPayGas ? (
+                  <Text style={{ ...styles.infoText, color: "black" }}>
+                    Gas fees estimated: {gasEstimationWithoutPaymaster}.
+                  </Text>
+                ) : (
+                  <Text style={{ ...styles.infoText, color: "red" }}>
+                    Not valid case. Please contact support.
+                  </Text>
+                )}
               </View>
             )}
             {/* Sponsorship Card */}
@@ -134,9 +290,18 @@ function GasInfoScreen() {
                   checking if someone else can cover the fee for this
                   transaction.
                 </Text>
+                <Button
+                  testID="transfer-gas-next-button"
+                  mode="contained"
+                  disabled={!isError || notEnoughEthToBuildUO}
+                  style={styles.button}
+                  onPress={() => handleNextPayGasWithEth()}
+                >
+                  Pay Gas With ETH
+                </Button>
                 <SponsorshipCard
-                  loadingSponsorship={loadingSponsorship}
-                  isSponsored={isSponsored ?? false}
+                  loadingSponsorship={isLoadingSponsorship}
+                  isSponsored={isSponsored}
                 />
               </>
             }
@@ -151,10 +316,8 @@ function GasInfoScreen() {
             width: "100%",
           }}
         >
-          {!isSponsored && !loadingSponsorship && isLoadingErc20 && (
-            <UballetSpinner />
-          )}
-          {!isSponsored && !loadingSponsorship && data?.formattedInUsdc && (
+          {isError && !isLoading && isLoadingErc20 && <UballetSpinner />}
+          {isError && !isLoading && data?.formattedInUsdc && (
             <Card>
               <Card.Content>
                 <Text style={styles.infoText}>
@@ -207,10 +370,11 @@ function GasInfoScreen() {
         <Button
           testID="transfer-gas-next-button"
           mode="contained"
+          disabled={isError}
           style={styles.button}
-          onPress={() => handleNext()}
+          onPress={() => handleNextSponsored()}
         >
-          Next
+          Continue with sponsored transaction
         </Button>
       </View>
     </View>

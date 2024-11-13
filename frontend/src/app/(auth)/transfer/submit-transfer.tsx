@@ -10,11 +10,20 @@ import { router } from "expo-router";
 import TransferButton from "../../../components/TransferButton/TransferButton";
 
 function SubmitTransferScreen() {
-  const { toAddress, amount, currency, usdcTokenGas } = useLocalSearchParams<{
+  const {
+    toAddress,
+    amount,
+    currency,
+    usdcTokenGas,
+    gasEstimation,
+    isSponsored,
+  } = useLocalSearchParams<{
     toAddress: `0x${string}`;
     amount: string;
     currency: string;
     usdcTokenGas?: string;
+    gasEstimation?: string;
+    isSponsored: string;
   }>();
 
   const eth_symbol = "ETH";
@@ -27,6 +36,7 @@ function SubmitTransferScreen() {
   const { transfer, loading, error, setError, txHash } = useTransfer();
 
   const { blockchain } = useBlockchainContext();
+
   const tokens = blockchain.erc20_tokens;
   const tokenAddresses = tokens.reduce<{ [key: string]: `0x${string}` }>(
     (acc, token) => {
@@ -85,26 +95,29 @@ function SubmitTransferScreen() {
             {/* Amount */}
             <View style={{ marginVertical: 0 }}>
               <Text style={styles.infoText}>
-                <Text style={{ fontWeight: "bold" }}>Amount:</Text>
+                <Text style={{ fontWeight: "bold" }}>Amount and currency:</Text>
               </Text>
               <Text style={{ ...styles.infoText, color: "gray" }}>
                 {amount} {currency}
               </Text>
             </View>
 
-            {/* Amount */}
+            {/* Gas */}
             <View style={{ marginVertical: 0 }}>
               <Text style={styles.infoText}>
-                <Text style={{ fontWeight: "bold" }}>Gas:</Text>
+                <Text style={{ fontWeight: "bold" }}>Transaction Gas:</Text>
               </Text>
               {usdcTokenGas ? (
                 <Text style={{ ...styles.infoText, color: "gray" }}>
                   {usdcTokenGas} USDC
                 </Text>
+              ) : isSponsored === "yes" ? (
+                <Text style={{ ...styles.infoText, color: "gray" }}>
+                  Transaction gas will be sponsored by us!
+                </Text>
               ) : (
                 <Text style={{ ...styles.infoText, color: "gray" }}>
-                  {" "}
-                  Gas ransaction will be sponsored by us!
+                  {gasEstimation} ETH
                 </Text>
               )}
             </View>
@@ -127,7 +140,12 @@ function SubmitTransferScreen() {
           ethSymbol={eth_symbol}
           loading={loading}
           onTransferETH={() =>
-            transfer({ address: toAddress, amount, gasInUsdc: usdcTokenGas })
+            transfer({
+              address: toAddress,
+              amount,
+              gasInUsdc: usdcTokenGas,
+              avoidPaymaster: isSponsored === "no",
+            })
           }
           onTransferToken={() =>
             transfer({
@@ -135,6 +153,7 @@ function SubmitTransferScreen() {
               tokenAddress: tokenAddresses[currency],
               amount,
               gasInUsdc: usdcTokenGas,
+              avoidPaymaster: isSponsored === "no",
             })
           }
         />
