@@ -130,7 +130,7 @@ export function useTransfer() {
           console.log("avoidPaymaster", avoidPaymaster, "gasInUsdc", gasInUsdc);
           try {
             if (avoidPaymaster && gasInUsdc === undefined) {
-              console.log("Submitting UO without paymaster");
+              console.log("Submitting UO without paymaster, paying gas in ETH");
               uo = await account.sendUserOperation({
                 uo: usdcGasCallData
                   ? [usdcGasCallData, transferUoCallData]
@@ -141,7 +141,7 @@ export function useTransfer() {
                 },
               });
             } else {
-              console.log("Submitting UO with paymaster");
+              console.log("Submitting UO with paymaster or paying gas in USDC");
               uo = await account.sendUserOperation({
                 uo: usdcGasCallData
                   ? [usdcGasCallData, transferUoCallData]
