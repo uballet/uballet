@@ -20,7 +20,7 @@ export function useBalance() {
       });
       return formatEther(balance);
     },
-  })
+  });
 
   return query;
 }

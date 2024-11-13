@@ -23,7 +23,7 @@ function SubmitTransferScreen() {
     currency: string;
     usdcTokenGas?: string;
     gasEstimation?: string;
-    isSponsored?: boolean;
+    isSponsored: string;
   }>();
 
   const eth_symbol = "ETH";
@@ -45,8 +45,6 @@ function SubmitTransferScreen() {
     },
     {}
   );
-
-  console.log("Gas Estimation: ", gasEstimation);
 
   useEffect(() => {
     if (error == "waitForUserOperationTransaction") {
@@ -113,7 +111,7 @@ function SubmitTransferScreen() {
                 <Text style={{ ...styles.infoText, color: "gray" }}>
                   {usdcTokenGas} USDC
                 </Text>
-              ) : isSponsored ? (
+              ) : isSponsored === "yes" ? (
                 <Text style={{ ...styles.infoText, color: "gray" }}>
                   Transaction gas will be sponsored by us!
                 </Text>
@@ -142,7 +140,12 @@ function SubmitTransferScreen() {
           ethSymbol={eth_symbol}
           loading={loading}
           onTransferETH={() =>
-            transfer({ address: toAddress, amount, gasInUsdc: usdcTokenGas })
+            transfer({
+              address: toAddress,
+              amount,
+              gasInUsdc: usdcTokenGas,
+              avoidPaymaster: isSponsored === "no",
+            })
           }
           onTransferToken={() =>
             transfer({
@@ -150,6 +153,7 @@ function SubmitTransferScreen() {
               tokenAddress: tokenAddresses[currency],
               amount,
               gasInUsdc: usdcTokenGas,
+              avoidPaymaster: isSponsored === "no",
             })
           }
         />
