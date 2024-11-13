@@ -126,40 +126,46 @@ function GasInfoScreen() {
     (isConfiguredPolicy && isError && isErrorWithoutPaymaster);
   let haveToPayGas =
     (!isConfiguredPolicy && !isError && !isErrorWithoutPaymaster) ||
+    (isConfiguredPolicy && !isError && !isErrorWithoutPaymaster) ||
     (isConfiguredPolicy && isError && !isErrorWithoutPaymaster);
 
   let isLoadingSponsorship = isLoading || isLoadingWithoutPaymaster;
 
   const { data: balance, isLoading: isLoadingBalance } = useBalance();
+  const parsedBalance = parseFloat(balance);
+  const parsedAmount = parseFloat(amount);
+  const parsedGas = parseFloat(gasEstimationWithoutPaymaster);
+  let disabledPayGasWithEth = true;
 
-  console.log("Currency is:", currency);
-  if (isError && currency === "ETH") {
-    console.log("Checking if amount balance is enough");
-    console.log("balance:", balance);
-    console.log(
-      "gasEstimationWithoutPaymaster:",
-      gasEstimationWithoutPaymaster
-    );
-    console.log("balance:", balance);
-    console.log(
-      "amount + gasEstimationWithoutPaymaster:",
-      parseFloat(amount) + parseFloat(gasEstimationWithoutPaymaster)
-    );
-
-    if (
-      parseFloat(balance) <=
-      parseFloat(gasEstimationWithoutPaymaster) + parseFloat(amount)
-    ) {
-      notEnoughEthToBuildUO = true;
-      console.log("Not enough ETH to build UO");
-    }
+  // Case when there is a policy configured and there is no error
+  if (isConfiguredPolicy && !isError) {
+    haveToPayGas = false;
+    isSponsored = true;
+    notEnoughEthToBuildUO = false;
+    disabledPayGasWithEth = true;
   }
 
-  if (isError) {
-    if (parseFloat(gasEstimationWithoutPaymaster) > parseFloat(balance)) {
-      notEnoughEthToBuildUO = true;
+  // Case when there is a policy configured and there is an error (policy desactivated or limit reached)
+  // Or the case where there is no policy configured (Mainnets)
+  if ((isConfiguredPolicy && isError) || !isConfiguredPolicy) {
+    // Check if there is enough ETH to build UO
+    if (currency != "ETH" && parsedBalance <= parsedGas) {
       console.log("Not enough ETH to build UO");
+      notEnoughEthToBuildUO = true;
+      disabledPayGasWithEth = true;
+    } else if (
+      currency === "ETH" &&
+      parsedBalance <= parsedGas + parsedAmount
+    ) {
+      console.log("Not enough ETH to build UO");
+      notEnoughEthToBuildUO = true;
+      disabledPayGasWithEth = true;
+    } else {
+      notEnoughEthToBuildUO = false;
+      disabledPayGasWithEth = false;
     }
+    isSponsored = false;
+    haveToPayGas = true;
   }
 
   useEffect(() => {}, [currency, toAddress, amount]);
@@ -300,7 +306,7 @@ function GasInfoScreen() {
                 <Button
                   testID="transfer-gas-next-button"
                   mode="contained"
-                  disabled={!isError || notEnoughEthToBuildUO}
+                  disabled={disabledPayGasWithEth}
                   style={styles.button}
                   onPress={() => handleNextPayGasWithEth()}
                 >
@@ -323,8 +329,8 @@ function GasInfoScreen() {
             width: "100%",
           }}
         >
-          {isError && !isLoading && isLoadingErc20 && <UballetSpinner />}
-          {isError && !isLoading && data?.formattedInUsdc && (
+          {haveToPayGas && !isLoading && isLoadingErc20 && <UballetSpinner />}
+          {haveToPayGas && !isLoading && data?.formattedInUsdc && (
             <Card>
               <Card.Content>
                 <Text style={styles.infoText}>
@@ -377,7 +383,7 @@ function GasInfoScreen() {
         <Button
           testID="transfer-gas-next-button"
           mode="contained"
-          disabled={isError}
+          disabled={!isSponsored}
           style={styles.button}
           onPress={() => handleNextSponsored()}
         >
