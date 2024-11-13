@@ -33,7 +33,7 @@ const SponsorshipCard: React.FC<SponsorshipCardProps> = ({
             color: isSponsored ? "green" : "red",
           }}
         >
-          {isSponsored ? "We'll pay for gas!" : "You'll pay for gas"}
+          {isSponsored ? "We'll pay for gas!" : "You'll have to pay for gas"}
         </Text>
       )}
     </View>

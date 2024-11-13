@@ -22,6 +22,7 @@ import {
   MAINNET_ALCHEMY_POLICY_ID,
   OPT_ALCHEMY_POLICY_ID,
 } from "../../../env";
+import { useBalance } from "../../../hooks/useBalance";
 
 function GasInfoScreen() {
   const { toAddress, amount, currency } = useLocalSearchParams<{
@@ -128,6 +129,31 @@ function GasInfoScreen() {
     (isConfiguredPolicy && isError && !isErrorWithoutPaymaster);
 
   let isLoadingSponsorship = isLoading || isLoadingWithoutPaymaster;
+
+  const { data: balance, isLoading: isLoadingBalance } = useBalance();
+
+  console.log("Currency is:", currency);
+  if (isError && currency === "ETH") {
+    console.log("Checking if amount balance is enough");
+    console.log("balance:", balance);
+    console.log(
+      "gasEstimationWithoutPaymaster:",
+      gasEstimationWithoutPaymaster
+    );
+    console.log("balance:", balance);
+    console.log(
+      "amount + gasEstimationWithoutPaymaster:",
+      parseFloat(amount) + parseFloat(gasEstimationWithoutPaymaster)
+    );
+
+    if (
+      parseFloat(balance) <=
+      parseFloat(gasEstimationWithoutPaymaster) + parseFloat(amount)
+    ) {
+      notEnoughEthToBuildUO = true;
+      console.log("Not enough ETH to build UO");
+    }
+  }
 
   useEffect(() => {}, [currency, toAddress, amount]);
 
@@ -240,18 +266,18 @@ function GasInfoScreen() {
                   <Text style={{ ...styles.infoText, color: "green" }}>
                     Gas fees will be sponsored by us!
                   </Text>
-                ) : haveToPayGas ? (
-                  <Text style={{ ...styles.infoText, color: "black" }}>
-                    Gas fees estimated: {gasEstimationWithoutPaymaster}
-                  </Text>
                 ) : notEnoughEthToBuildUO ? (
                   <Text style={{ ...styles.infoText, color: "red" }}>
                     Not enough ETH for gas fees in order to continue with the
                     transaction.
                   </Text>
+                ) : haveToPayGas ? (
+                  <Text style={{ ...styles.infoText, color: "black" }}>
+                    Gas fees estimated: {gasEstimationWithoutPaymaster}.
+                  </Text>
                 ) : (
                   <Text style={{ ...styles.infoText, color: "red" }}>
-                    Not valid case. Please contact support
+                    Not valid case. Please contact support.
                   </Text>
                 )}
               </View>
@@ -267,7 +293,7 @@ function GasInfoScreen() {
                 <Button
                   testID="transfer-gas-next-button"
                   mode="contained"
-                  disabled={!isError}
+                  disabled={!isError || notEnoughEthToBuildUO}
                   style={styles.button}
                   onPress={() => handleNextPayGasWithEth()}
                 >
