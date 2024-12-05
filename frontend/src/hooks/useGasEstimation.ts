@@ -88,6 +88,7 @@ export function useGasEstimation({
       tokenAddress,
       account?.chain?.id,
     ],
+    retry: false,
     queryFn: async () => {
       return await estimateGas();
     },
